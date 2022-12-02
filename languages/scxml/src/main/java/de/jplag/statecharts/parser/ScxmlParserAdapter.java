@@ -3,7 +3,6 @@ package de.jplag.statecharts.parser;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
-import de.jplag.emf.util.MetamodelTreeView;
 import de.jplag.statecharts.parser.model.Statechart;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
 import org.xml.sax.SAXException;
@@ -17,12 +16,12 @@ import java.util.Set;
 
 /**
  * Parser adapter for SCXML statecharts.
+ *
  * @author Jonas Strittmatter
  */
 public class ScxmlParserAdapter extends AbstractParser {
     protected List<Token> tokens;
     protected File currentFile;
-    protected MetamodelTreeView treeView;
     protected AbstractStatechartVisitor visitor;
 
     /**
@@ -34,6 +33,7 @@ public class ScxmlParserAdapter extends AbstractParser {
 
     /**
      * Parses all tokens from a set of files.
+     *
      * @param files the set of files.
      * @return the list of parsed tokens.
      */
@@ -47,6 +47,7 @@ public class ScxmlParserAdapter extends AbstractParser {
 
     /**
      * Loads a statechart from a file and parses it.
+     *
      * @param file is the statechart file.
      */
     protected void parseModelFile(File file) throws ParsingException {
@@ -75,6 +76,7 @@ public class ScxmlParserAdapter extends AbstractParser {
 
     /**
      * Extension point for subclasses to employ different token generators.
+     *
      * @return a token generating statechart visitor.
      */
     protected AbstractStatechartVisitor createStatechartVisitor() {

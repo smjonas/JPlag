@@ -2,6 +2,7 @@ package de.jplag.statecharts.util;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
+ *
  * @author Timur Saglam
  */
 public abstract class AbstractStatechartVisitor {
@@ -13,6 +14,7 @@ public abstract class AbstractStatechartVisitor {
 
     /**
      * Returns the current depth in the containment tree from the starting point.
+     *
      * @return the depth in tree node levels.
      */
     public int getCurrentTreeDepth() {

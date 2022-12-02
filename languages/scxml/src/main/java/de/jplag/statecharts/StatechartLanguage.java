@@ -1,4 +1,4 @@
-package de.jplag.emf;
+package de.jplag.statecharts;
 
 import de.jplag.ParsingException;
 import de.jplag.Token;
@@ -11,10 +11,11 @@ import java.util.Set;
 
 /**
  * Language for EMF metamodels from the Eclipse Modeling Framework (EMF).
+ *
  * @author Timur Saglam
  */
 @MetaInfServices(de.jplag.Language.class)
-public class Language implements de.jplag.Language {
+public class StatechartLanguage implements de.jplag.Language {
     public static final String VIEW_FILE_SUFFIX = ".TreeView";
     public static final String FILE_ENDING = ".scxml";
 
@@ -24,13 +25,13 @@ public class Language implements de.jplag.Language {
 
     protected final ScxmlParserAdapter parser;
 
-    public Language() {
+    public StatechartLanguage() {
         this.parser = new ScxmlParserAdapter();
     }
 
     @Override
     public String[] suffixes() {
-        return new String[] {FILE_ENDING};
+        return new String[]{FILE_ENDING};
     }
 
     @Override
