@@ -1,7 +1,10 @@
 package de.jplag.statecharts.parser.model;
 
-public class State {
+import java.util.List;
 
+public class State extends StatechartElement {
+
+    public List<Transition> transitions;
     public final boolean initial;
 
     public State(boolean initial) {

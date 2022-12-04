@@ -1,7 +1,12 @@
 package de.jplag.statecharts.parser.model;
 
-public class Statechart {
+import java.util.List;
 
-    protected Statechart() {
+public class Statechart extends StatechartElement {
+
+    public List<State> states;
+
+    public Statechart(List<State> states) {
+        this.states = states;
     }
 }
