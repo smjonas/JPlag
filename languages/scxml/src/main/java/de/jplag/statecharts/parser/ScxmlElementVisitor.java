@@ -1,7 +1,6 @@
 package de.jplag.statecharts.parser;
 
 import de.jplag.statecharts.parser.model.StatechartElement;
-import de.jplag.statecharts.parser.model.Transition;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 

@@ -1,4 +1,4 @@
 package de.jplag.statecharts.parser.model.executable_content;
 
-public class Cancel extends ExecutableContent {
+public record Cancel(String sendid) implements ExecutableContent {
 }

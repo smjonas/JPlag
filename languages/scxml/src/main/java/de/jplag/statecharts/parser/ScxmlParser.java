@@ -4,7 +4,8 @@ import de.jplag.ParsingException;
 import de.jplag.statecharts.parser.model.*;
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.util.NodeUtil;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,31 +25,12 @@ import java.util.stream.Stream;
  */
 public class ScxmlParser extends ScxmlElementVisitor {
 
-    enum ScxmlElement {
-        ROOT("scxml"),
-        STATE("state"),
-        PARALLEL("parallel"),
-        TRANSITION("transition");
-
-        public String getElementName() {
-            return elementName;
-        }
-
-        private final String elementName;
-
-        ScxmlElement(String elementName) {
-            this.elementName = elementName;
-        }
-    }
-
-    private Statechart statechart;
-    private List<String> initialStateTargets = new ArrayList<>();
-
-    private final DocumentBuilder builder;
     private static final List<String> scxmlElementNames = Stream.of(ScxmlElement.values())
             .map(ScxmlElement::getElementName)
             .toList();
-
+    private final DocumentBuilder builder;
+    private Statechart statechart;
+    private final List<String> initialStateTargets = new ArrayList<>();
     public ScxmlParser() throws ParserConfigurationException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         builder = factory.newDocumentBuilder();
@@ -75,19 +57,20 @@ public class ScxmlParser extends ScxmlElementVisitor {
         String id = NodeUtil.getAttribute(node, "id");
         assert id != null : "state element must have id attribute";
 
+        //assert initialStateTargets.isEmpty() : initialStateTargets.toString();
         boolean initial = NodeUtil.getAttribute(node, "initial") != null || initialStateTargets.contains(id);
 
         // Store all encountered initial states for later
-        List<Node> initialChildren = NodeUtil.getChildNodes(node, "initial");
-        if (!initialChildren.isEmpty()) {
-            Node child = initialChildren.get(initialChildren.size() - 1);
-            initialStateTargets.add(visitInitialTransition(child).target);
+        Node child = NodeUtil.getFirstChild(node, "initial");
+        if (child != null) {
+            initialStateTargets.add(visitInitialTransition(child).target());
         }
 
         OnEntry onEntry = visitOnEntry(NodeUtil.getFirstChild(node, "onentry"));
         OnExit onExit = visitOnExit(NodeUtil.getFirstChild(node, "onexit"));
         List<Transition> transitions = NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList();
-        return new State(initial, onEntry, onExit, transitions);
+        List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
+        return new State(id, transitions, states, initial, onEntry, onExit);
     }
 
     private List<ExecutableContent> parseExecutableContents(Node node) {
@@ -97,12 +80,12 @@ public class ScxmlParser extends ScxmlElementVisitor {
 
     @Override
     public OnEntry visitOnEntry(Node node) {
-        return new OnEntry(parseExecutableContents(node));
+        return node == null ? null : new OnEntry(parseExecutableContents(node));
     }
 
     @Override
     public OnExit visitOnExit(Node node) {
-        return new OnExit(parseExecutableContents(node));
+        return node == null ? null : new OnExit(parseExecutableContents(node));
     }
 
     @Override
@@ -117,10 +100,27 @@ public class ScxmlParser extends ScxmlElementVisitor {
     @Override
     public Transition visitTransition(Node node) {
         return new Transition(
-            NodeUtil.getAttribute(node, "target"),
-            NodeUtil.getAttribute(node, "cond"),
-            NodeUtil.getAttribute(node, "event")
+                NodeUtil.getAttribute(node, "target"),
+                NodeUtil.getAttribute(node, "event"),
+                NodeUtil.getAttribute(node, "cond")
         );
+    }
+
+    enum ScxmlElement {
+        ROOT("scxml"),
+        STATE("state"),
+        PARALLEL("parallel"),
+        TRANSITION("transition");
+
+        private final String elementName;
+
+        ScxmlElement(String elementName) {
+            this.elementName = elementName;
+        }
+
+        public String getElementName() {
+            return elementName;
+        }
     }
 }
 

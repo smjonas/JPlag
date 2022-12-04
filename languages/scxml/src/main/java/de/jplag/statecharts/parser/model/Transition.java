@@ -1,18 +1,16 @@
 package de.jplag.statecharts.parser.model;
 
-public class Transition extends StatechartElement {
+public record Transition(String target, String event, String cond) implements StatechartElement {
 
-    public final String target;
-    public final String cond;
-    public final String event;
+    public Transition(String target, String event) {
+        this(target, event, null);
+    }
 
-    public Transition(String targetState, String cond, String event) {
-        this.target = targetState;
-        this.cond = cond;
-        this.event = event;
+    public Transition(String target) {
+        this(target, null, null);
     }
 
     public boolean isInitial() {
-        return target != null && cond == null && event == null;
+        return target != null && event == null && cond == null;
     }
 }

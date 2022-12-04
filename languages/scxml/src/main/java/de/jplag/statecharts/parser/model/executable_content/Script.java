@@ -1,4 +1,4 @@
 package de.jplag.statecharts.parser.model.executable_content;
 
-public class Script extends ExecutableContent {
+public record Script() implements ExecutableContent {
 }
