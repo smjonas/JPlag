@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * An SCXML parser implementation based on a SAX ("Simple API for XML") parser.
@@ -25,12 +24,9 @@ import java.util.stream.Stream;
  */
 public class ScxmlParser extends ScxmlElementVisitor {
 
-    private static final List<String> scxmlElementNames = Stream.of(ScxmlElement.values())
-            .map(ScxmlElement::getElementName)
-            .toList();
     private final DocumentBuilder builder;
-    private Statechart statechart;
     private final List<String> initialStateTargets = new ArrayList<>();
+
     public ScxmlParser() throws ParserConfigurationException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         builder = factory.newDocumentBuilder();
@@ -104,23 +100,6 @@ public class ScxmlParser extends ScxmlElementVisitor {
                 NodeUtil.getAttribute(node, "event"),
                 NodeUtil.getAttribute(node, "cond")
         );
-    }
-
-    enum ScxmlElement {
-        ROOT("scxml"),
-        STATE("state"),
-        PARALLEL("parallel"),
-        TRANSITION("transition");
-
-        private final String elementName;
-
-        ScxmlElement(String elementName) {
-            this.elementName = elementName;
-        }
-
-        public String getElementName() {
-            return elementName;
-        }
     }
 }
 

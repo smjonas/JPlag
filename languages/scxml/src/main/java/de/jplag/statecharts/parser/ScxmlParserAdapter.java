@@ -46,7 +46,7 @@ public class ScxmlParserAdapter extends AbstractParser {
     }
 
     /**
-     * Loads a statechart from a file and parses it.
+     * Loads a statechart from a file, parses it and extracts tokens from it.
      *
      * @param file is the statechart file.
      */
@@ -59,9 +59,7 @@ public class ScxmlParserAdapter extends AbstractParser {
             throw new ParsingException(file, "failed to parse statechart");
         }
 
-        if (statechart != null) {
 
-        }
 
 //        if (model == null) {
 //            throw new ParsingException(file, "failed to load model");

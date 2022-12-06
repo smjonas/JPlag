@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ public final class NodeUtil {
                 filteredChildren.add(children.item(i));
             }
         }
+        filteredChildren.sort(Comparator.comparing(Node::getNodeName));
         return filteredChildren;
     }
 
