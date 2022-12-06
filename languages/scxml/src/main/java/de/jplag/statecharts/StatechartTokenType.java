@@ -13,8 +13,18 @@ public enum StatechartTokenType implements TokenType {
     TRANSITION("Transition"),
     TIMED_TRANSITION("Timed transition"),
     STATE("State"),
+    INITIAL_STATE("Initial state"),
+    PARALLEL_STATE("Parllel state"),
     ON_ENTRY("OnEntry"),
     ON_EXIT("OnExit"),
+    // Simple executable content
+    RAISE("Raise"),
+    IF("If"),
+    ELSE_IF("Else if"),
+    ELSE("Else"),
+    FOREACH("For each"),
+    LOG("Log"),
+    // Other executable content
     ASSIGNMENT("Assignment"),
     CANCEL("Cancel"),
     SCRIPT("Script"),

@@ -34,38 +34,43 @@ public abstract class AbstractStatechartVisitor {
      * single element. For example <code>visitEClass()</code> and <code>visitEObject()</code>.
      */
     public final void visit(StatechartElement element) {
-        Map<Class<?>, Consumer<StatechartElement>> visitByType = Map.ofEntries(
-            entry(Statechart.class, this::visitStatechart),
-            entry(State.class, this::visitState),
-            entry(OnEntry.class, this::visitOnEntry),
-            entry(OnExit.class, this::visitOnExit),
-            entry(SimpleExecutableContent.class, this::visitSimpleExecutableContent),
-            entry(Transition.class, this::visitTransition),
-            entry(Assign.class, this::visitAssign),
-            entry(Cancel.class, this::visitCancel),
-            entry(Script.class, this::visitScript),
-            entry(Send.class, this::visitSend)
-        );
-        visitByType.get(element.getClass()).accept(element);
+        // Map<Class<?>, Consumer<>> visitByType = Map.ofEntries(
+        //     entry(OnEntry.class, this::visitOnEntry),
+        //     entry(OnExit.class, this::visitOnExit),
+        //     entry(SimpleExecutableContent.class, this::visitSimpleExecutableContent),
+        //     entry(Transition.class, this::visitTransition),
+        //     entry(Assign.class, this::visitAssign),
+        //     entry(Cancel.class, this::visitCancel),
+        //     entry(Script.class, this::visitScript),
+        //     entry(Send.class, this::visitSend)
+        // );
+        // visitByType.get(element.getClass()).accept(element);
+
+        if (element instanceof Statechart statechart) {
+            visitStatechart(statechart);
+        } else if (element instanceof State state) {
+            visitState(state);
+        } else if (element instanceof OnEntry onEntry) {
+            visitOnEntry(onEntry);
+        } else if (element instanceof OnExit onExit) {
+            visitOnExit(onExit);
+        } else if (element instanceof ExecutableContent content) {
+            visitExecutableContent(content);
+        }
     }
 
-    protected abstract void visitStatechart(StatechartElement element);
+    protected abstract void visitStatechart(Statechart statechart);
 
-    protected abstract void visitState(State element);
+    protected abstract void visitState(State state);
 
-    protected abstract void visitOnEntry(OnEntry element);
+    protected abstract void visitOnEntry(OnEntry onEntry);
 
-    protected abstract void visitOnExit(OnExit element);
+    protected abstract void visitOnExit(OnExit onExit);
 
-    protected abstract void visitSimpleExecutableContent(SimpleExecutableContent element);
+    protected abstract void visitExecutableContent(ExecutableContent content);
 
-    protected abstract void visitTransition(Transition element);
+    protected abstract void visitSimpleExecutableContent(SimpleExecutableContent content);
 
-    protected abstract void visitAssign(Assign element);
+    protected abstract void visitTransition(Transition transition);
 
-    protected abstract void visitCancel(Cancel element);
-
-    protected abstract void visitScript(Script element);
-
-    protected abstract void visitSend(StatechartElement element);
 }

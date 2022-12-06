@@ -4,4 +4,16 @@ import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 
 import java.util.List;
 
-public record OnExit(OnExit... contents) implements StatechartElement {}
+public record OnExit(ExecutableContent... contents) implements StatechartElement {
+
+    @Override
+    public String toString() {
+        String c = "";
+        for (ExecutableContent content : contents) {
+            c += content.getClass() + ", ";
+        }
+        return "OnEntry{" +
+                "contents=" + c +
+                '}';
+    }
+}

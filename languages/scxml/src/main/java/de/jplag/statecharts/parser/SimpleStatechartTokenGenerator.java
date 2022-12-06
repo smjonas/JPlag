@@ -1,6 +1,16 @@
 package de.jplag.statecharts.parser;
 
+import de.jplag.Token;
+import de.jplag.TokenType;
+import de.jplag.statecharts.StatechartToken;
+import de.jplag.statecharts.StatechartTokenType;
+import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.executable_content.*;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
+
+import static de.jplag.statecharts.StatechartTokenType.*;
+import static de.jplag.statecharts.StatechartTokenType.ELSE_IF;
+
 
 /**
  * Visits a metamodel containment tree and extracts the relevant token.
@@ -21,20 +31,26 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        parser.addToken(STATECHART);
+        adapter.addToken(STATECHART, statechart);
         for (State state : statechart.states()) {
-            visitState();
+            visitState(state);
         }
     }
 
     @Override
     public void visitState(State state) {
-        if (state.initial()) {
-            parser.addToken(INITIAL_STATE);
+        boolean isSimpleState = !state.initial() && !state.parallel();
+        if (isSimpleState) {
+            adapter.addToken(STATE, state);
+        } else {
+            if (state.initial()) {
+                adapter.addToken(INITIAL_STATE, state);
+            }
+            if (state.parallel()) {
+                adapter.addToken(PARALLEL_STATE, state);
+            }
         }
-        if (state.parallel()) {
-            parser.addToken(PARALLEL_STATE);
-        }
+
         if (state.transitions() != null) {
             for (Transition transition : state.transitions()) {
                 visitTransition(transition);
@@ -49,7 +65,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         if (onEntry == null) {
             return;
         }
-        for (ExecutableContent content : onEntry.executableContent) {
+        for (ExecutableContent content : onEntry.contents()) {
             visitExecutableContent(content);
         }
     }
@@ -59,40 +75,46 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         if (onExit == null) {
             return;
         }
-        for (ExecutableContent content : onEntry.executableContent) {
+        for (ExecutableContent content : onExit.contents()) {
             visitExecutableContent(content);
         }
     }
 
     @Override
     public void visitTransition(Transition transition) {
-        parser.addToken(TRANSITION);
+        adapter.addToken(TRANSITION, transition);
     }
 
     @Override
     public void visitExecutableContent(ExecutableContent content) {
-        Token token;
-        switch(content.getClass()) {
-            case SimpleExecutableContent.class: visitSimpleExecutableContent((SimpleExecutableContent) content);
-            case Assign.class: token = ASSIGNMENT;
-            case Script.class: token = SCRIPT;
-            case Send.class: token = SEND;
-            case Cancel.class: token = CANCEL;
+        StatechartTokenType type = null;
+        if (content instanceof SimpleExecutableContent simpleContent) {
+            visitSimpleExecutableContent(simpleContent);
+            return;
         }
-        parser.addToken(token);
+
+        if (content instanceof Assign) {
+            type = ASSIGNMENT;
+        } else if (content instanceof Script) {
+            type = SCRIPT;
+        } else if (content instanceof Send) {
+            type = SEND;
+        } else if (content instanceof Cancel) {
+            type = CANCEL;
+        }
+        adapter.addToken(type, content);
     }
 
     @Override
     public void visitSimpleExecutableContent(SimpleExecutableContent content) {
-        Token token;
-        switch(content.type()) {
-            case RAISE: token = RAISE;
-            case IF: token = IF;
-            case ELSEIF: token = ELSEIF;
-            case ELSE: token = ELSE;
-            case FOREACH: token = FOREACH;
-            case LOG: token = LOG;
-        }
-        parser.addToken(token);
+        StatechartTokenType type = switch (content.type()) {
+            case RAISE -> RAISE;
+            case IF -> IF;
+            case ELSEIF -> ELSE_IF;
+            case ELSE -> ELSE;
+            case FOREACH -> FOREACH;
+            case LOG -> LOG;
+        };
+        adapter.addToken(type, content);
     }
 }

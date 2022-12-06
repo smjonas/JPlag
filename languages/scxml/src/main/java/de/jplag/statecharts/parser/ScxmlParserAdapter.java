@@ -3,7 +3,10 @@ package de.jplag.statecharts.parser;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
+import de.jplag.statecharts.StatechartToken;
+import de.jplag.statecharts.StatechartTokenType;
 import de.jplag.statecharts.parser.model.Statechart;
+import de.jplag.statecharts.parser.model.StatechartElement;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
 import org.xml.sax.SAXException;
 
@@ -59,17 +62,13 @@ public class ScxmlParserAdapter extends AbstractParser {
             throw new ParsingException(file, "failed to parse statechart");
         }
 
+        AbstractStatechartVisitor visitor = createStatechartVisitor();
+        visitor.visit(statechart);
+        tokens.add(Token.fileEnd(currentFile));
+    }
 
-
-//        if (model == null) {
-//            throw new ParsingException(file, "failed to load model");
-//        } else {
-//            for (EObject root : model) {
-//                visitor = createMetamodelVisitor();
-//                visitor.visit(root);
-//            }
-//            tokens.add(Token.fileEnd(currentFile));
-//        }
+    public void addToken(StatechartTokenType type, StatechartElement source) {
+        tokens.add(new StatechartToken(type, currentFile, source));
     }
 
     /**

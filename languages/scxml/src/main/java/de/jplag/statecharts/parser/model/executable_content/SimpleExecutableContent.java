@@ -17,4 +17,11 @@ public record SimpleExecutableContent(Type type) implements ExecutableContent {
         FOREACH,
         LOG
     }
+
+    @Override
+    public String toString() {
+        return "SimpleExecutableContent{" +
+                "type=" + type +
+                '}';
+    }
 }
