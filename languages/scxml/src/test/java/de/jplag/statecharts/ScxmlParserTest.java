@@ -54,23 +54,25 @@ class ScxmlParserTest {
         File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
         Statechart actual = new ScxmlParser().parse(testFile);
 
-        State start = new State("Start", List.of(new Transition("Blinking", "user.press_button")), true);
-        State light = new State("Light", List.of(new Transition("Dark")), new OnEntry(List.of(new Assign())));
-        State dark = new State("Dark",  List.of(
-            new Transition("Start", null, "t == 5"),
-            new Transition("Light", "Dark_t_1_timeEvent_0")
-        ),
-           new OnEntry(List.of(new Send("Dark_t_1_timeEvent_0", "1s"))),
-           new OnExit(List.of(new Cancel("Dark_t_1_timeEvent_0")))
-        );
+        State start = new State("Start").setInitial()
+            .addTransitions(new Transition("Blinking", "user.press_button"));
 
-        State blinking = new State("Blinking",  List.of(new Transition("Start", "user.press_button")),
-            List.of(light, dark), false,
-            new OnEntry(List.of(new Assign())),
-            null
-        );
-        State mainRegion = new State("main_region", List.of(start, blinking));
-        Statechart expected = new Statechart(List.of(mainRegion));
+        State light = new State("Light")
+            .addTransitions(new Transition("Dark"))
+            .addOnEntry(new Assign());
+
+        State dark = new State("Dark")
+            .addTransitions(new Transition("Start", null, "t == 5"), new Transition("Light", "Dark_t_1_timeEvent_0"))
+            .addOnEntry(new OnEntry(new Send("Dark_t_1_timeEvent_0", "1s")))
+            .addOnExit(new OnExit(new Cancel("Dark_t_1_timeEvent_0")));
+
+        State blinking = new State("Blinking")
+            .addStates(light, dark, false)
+            .addTransitions(new Transition("Start", "user.press_button"))
+            .addOnEntry(new OnEntry(List.of(new Assign())));
+
+        State mainRegion = new State("main_region").addStates(start, blinking);
+        Statechart expected = new Statechart(mainRegion);
         assertEquals(expected, actual);
 
 //        List<Token> result = language.parse(Set.of(testFile));
