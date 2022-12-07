@@ -62,12 +62,12 @@ public record State(String id, List<Transition> transitions, List<State> substat
         }
 
         public Builder addOnEntry(OnEntry onEntry) {
-            this.onEntry = List.of(onEntry);
+            this.onEntries = List.of(onEntry);
             return this;
         }
 
         public Builder addOnExit(OnExit onExit) {
-            this.onExit = List.of(onExit);
+            this.onExits = List.of(onExit);
             return this;
         }
 

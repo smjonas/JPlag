@@ -14,7 +14,7 @@ import static de.jplag.statecharts.StatechartTokenType.*;
  * @author Timur Saglam
  */
 public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
-    private final ScxmlParserAdapter adapter;
+    protected final ScxmlParserAdapter adapter;
 
     /**
      * Creates the visitor.

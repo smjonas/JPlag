@@ -6,12 +6,12 @@ public record OnExit(ExecutableContent... contents) implements StatechartElement
 
     @Override
     public String toString() {
-        String c = "";
+        StringBuilder b = new StringBuilder();
         for (ExecutableContent content : contents) {
-            c += content.getClass() + ", ";
+            b.append(content.getClass()).append(", ");
         }
         return "OnEntry{" +
-                "contents=" + c +
+                "contents=" + b +
                 '}';
     }
 }
