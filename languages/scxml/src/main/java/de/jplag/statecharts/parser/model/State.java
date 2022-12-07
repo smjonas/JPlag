@@ -3,15 +3,15 @@ package de.jplag.statecharts.parser.model;
 import java.util.Arrays;
 import java.util.List;
 
-public record State(String id, List<Transition> transitions, List<State> substates, OnEntry onEntry,
-                    OnExit onExit, boolean initial, boolean parallel) implements StatechartElement {
+public record State(String id, List<Transition> transitions, List<State> substates, List<OnEntry> onEntries,
+                    List<OnExit> onExits, boolean initial, boolean parallel) implements StatechartElement {
 
-    public State(String id, List<Transition> transitions, List<State> substates, OnEntry onEntry, OnExit onExit, boolean initial, boolean parallel) {
+    public State(String id, List<Transition> transitions, List<State> substates, List<OnEntry> onEntries, List<OnExit> onExits, boolean initial, boolean parallel) {
         this.id = id;
         this.transitions = transitions != null && transitions.isEmpty() ? null : transitions;
         this.substates = substates != null && substates.isEmpty() ? null : substates;
-        this.onEntry = onEntry;
-        this.onExit = onExit;
+        this.onEntries = onEntries != null && onEntries.isEmpty() ? null : onEntries;
+        this.onExits = onExits != null && onExits.isEmpty() ? null : onExits;
         this.initial = initial;
         this.parallel = parallel;
     }
@@ -32,8 +32,8 @@ public record State(String id, List<Transition> transitions, List<State> substat
         private final String id;
         private List<Transition> transitions;
         private List<State> substates;
-        private OnEntry onEntry;
-        private OnExit onExit;
+        private List<OnEntry> onEntries;
+        private List<OnExit> onExits;
         private boolean initial;
         private boolean parallel;
 
@@ -62,17 +62,17 @@ public record State(String id, List<Transition> transitions, List<State> substat
         }
 
         public Builder addOnEntry(OnEntry onEntry) {
-            this.onEntry = onEntry;
+            this.onEntry = List.of(onEntry);
             return this;
         }
 
         public Builder addOnExit(OnExit onExit) {
-            this.onExit = onExit;
+            this.onExit = List.of(onExit);
             return this;
         }
 
         public State build() {
-            return new State(id, transitions, substates, onEntry, onExit, initial, parallel);
+            return new State(id, transitions, substates, onEntries, onExits, initial, parallel);
         }
     }
 }

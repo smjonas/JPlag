@@ -62,11 +62,11 @@ public class ScxmlParser implements ScxmlElementVisitor {
             initialStateTargets.add(visitInitialTransition(child).target());
         }
 
-        OnEntry onEntry = visitOnEntry(NodeUtil.getFirstChild(node, "onentry"));
-        OnExit onExit = visitOnExit(NodeUtil.getFirstChild(node, "onexit"));
+        List<OnEntry> onEntries = NodeUtil.getChildNodes(node, "onentry").stream().map(this::visitOnEntry).toList();
+        List<OnExit> onExits = NodeUtil.getChildNodes(node, "onexit").stream().map(this::visitOnExit).toList();
         List<Transition> transitions = NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList();
         List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
-        return new State(id, transitions, states, onEntry, onExit, initial, false);
+        return new State(id, transitions, states, onEntries, onExits, initial, false);
     }
 
     private ExecutableContent[] parseExecutableContents(Node node) {

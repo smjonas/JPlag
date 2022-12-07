@@ -52,8 +52,18 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
                 visitTransition(transition);
             }
         }
-        visitOnEntry(state.onEntry());
-        visitOnExit(state.onExit());
+
+        if (state.onEntries() != null) {
+            for (OnEntry onEntry : state.onEntries()) {
+                visitOnEntry(onEntry);
+            }
+        }
+
+        if (state.onExits() != null) {
+            for (OnExit onExit : state.onExits()) {
+                visitOnExit(onExit);
+            }
+        }
     }
 
     @Override

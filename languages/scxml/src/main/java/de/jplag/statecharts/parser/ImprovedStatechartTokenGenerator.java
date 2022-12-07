@@ -28,12 +28,12 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartVisitor {
     }
 
     /**
-    * Checks if the transition is timed:
+    * Checks if the transition is timed.
     * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
     * and transition element with matching IDs.
     **/
     private int getTimedTransitionsCount(State state) {
-        if (state.transitions() == null && state.onExits() == null && state.onEntries() == null) {
+        if (state.transitions() == null || state.onExits() == null || state.onEntries() == null) {
             return 0;
         }
         List<List<ExecutableContent>> onExitContents = state.onExits().stream().map(e -> e.contents());
@@ -60,7 +60,6 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartVisitor {
 
     @Override
     public void visitState(State state) {
-        // TODO: make onEntry and onExit a list
         if (state.initial()) {
             parser.addToken(INITIAL_STATE);
         }
