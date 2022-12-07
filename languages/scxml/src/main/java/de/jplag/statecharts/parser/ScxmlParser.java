@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  *
  * @author Jonas Strittmatter
  */
-public class ScxmlParser extends ScxmlElementVisitor {
+public class ScxmlParser implements ScxmlElementVisitor {
 
     private final DocumentBuilder builder;
     private final List<String> initialStateTargets = new ArrayList<>();

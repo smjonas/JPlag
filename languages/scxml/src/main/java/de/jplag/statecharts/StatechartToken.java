@@ -1,11 +1,9 @@
 package de.jplag.statecharts;
 
 import de.jplag.Token;
-import de.jplag.TokenType;
 import de.jplag.statecharts.parser.model.StatechartElement;
 
 import java.io.File;
-import java.util.Optional;
 
 /**
  * EMF metamodel token.
@@ -18,8 +16,9 @@ public class StatechartToken extends Token {
 
     /**
      * Creates an Ecore metamodel token that corresponds to an EObject.
-     * @param type is the type of the token.
-     * @param file is the source model file.
+     *
+     * @param type    is the type of the token.
+     * @param file    is the source model file.
      * @param element is the corresponding eObject in the model from which this token was extracted.
      */
     public StatechartToken(StatechartTokenType type, File file, StatechartElement element) {

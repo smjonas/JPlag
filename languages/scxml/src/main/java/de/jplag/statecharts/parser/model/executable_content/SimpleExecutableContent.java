@@ -9,6 +9,13 @@ package de.jplag.statecharts.parser.model.executable_content;
  */
 public record SimpleExecutableContent(Type type) implements ExecutableContent {
 
+    @Override
+    public String toString() {
+        return "SimpleExecutableContent{" +
+                "type=" + type +
+                '}';
+    }
+
     public enum Type {
         RAISE,
         IF,
@@ -16,12 +23,5 @@ public record SimpleExecutableContent(Type type) implements ExecutableContent {
         ELSE,
         FOREACH,
         LOG
-    }
-
-    @Override
-    public String toString() {
-        return "SimpleExecutableContent{" +
-                "type=" + type +
-                '}';
     }
 }

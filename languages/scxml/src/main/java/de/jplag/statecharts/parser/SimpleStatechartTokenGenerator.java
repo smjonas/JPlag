@@ -1,15 +1,11 @@
 package de.jplag.statecharts.parser;
 
-import de.jplag.Token;
-import de.jplag.TokenType;
-import de.jplag.statecharts.StatechartToken;
 import de.jplag.statecharts.StatechartTokenType;
 import de.jplag.statecharts.parser.model.*;
 import de.jplag.statecharts.parser.model.executable_content.*;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
 
 import static de.jplag.statecharts.StatechartTokenType.*;
-import static de.jplag.statecharts.StatechartTokenType.ELSE_IF;
 
 
 /**

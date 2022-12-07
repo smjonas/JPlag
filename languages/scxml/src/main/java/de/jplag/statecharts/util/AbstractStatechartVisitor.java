@@ -1,12 +1,8 @@
 package de.jplag.statecharts.util;
 
 import de.jplag.statecharts.parser.model.*;
-import de.jplag.statecharts.parser.model.executable_content.*;
-
-import java.util.Map;
-import java.util.function.Consumer;
-
-import static java.util.Map.entry;
+import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
@@ -15,10 +11,10 @@ import static java.util.Map.entry;
  */
 public abstract class AbstractStatechartVisitor {
 
+    private int currentTreeDepth;
+
     protected AbstractStatechartVisitor() {
     }
-
-    private int currentTreeDepth;
 
     /**
      * Returns the current depth in the containment tree from the starting point.
@@ -57,6 +53,10 @@ public abstract class AbstractStatechartVisitor {
         } else if (element instanceof ExecutableContent content) {
             visitExecutableContent(content);
         }
+    }
+
+    public void visit() {
+
     }
 
     protected abstract void visitStatechart(Statechart statechart);

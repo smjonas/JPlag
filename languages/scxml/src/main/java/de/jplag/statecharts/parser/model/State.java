@@ -20,12 +20,12 @@ public record State(String id, List<Transition> transitions, List<State> substat
         this(id, null, null, null, null, false, false);
     }
 
-    public boolean isRegion() {
-        return substates != null && !substates.isEmpty();
-    }
-
     public static Builder builder(String id) {
         return new Builder(id);
+    }
+
+    public boolean isRegion() {
+        return substates != null && !substates.isEmpty();
     }
 
     public static class Builder {
