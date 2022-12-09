@@ -13,4 +13,14 @@ public record Transition(String target, String event, String cond) implements St
     public boolean isInitial() {
         return target != null && event == null && cond == null;
     }
+
+    @Override
+    public String toString() {
+        assert !isInitial();
+        return String.format(
+            "Transition (-> %s) (event='%s', cond='%s')",
+            target, event != null ? cond : "" : event,
+            cond != null ? cond : ""
+        );
+    }
 }

@@ -51,7 +51,7 @@ class ScxmlParserTest {
 
         State start = State.builder("Start").setInitial().addTransitions(new Transition("Blinking", "user.press_button")).build();
         State mainRegion = State.builder("main_region").addSubstates(start).build();
-        Statechart expected = new Statechart(List.of(mainRegion));
+        Statechart expected = new Statechart("Statechart", List.of(mainRegion));
         //assertEquals(expected, actual);
     }
 
@@ -78,7 +78,7 @@ class ScxmlParserTest {
             .addOnEntry(new OnEntry(new Assign())).build();
 
         State mainRegion = State.builder("main_region").addSubstates( blinking).build();
-        Statechart expected = new Statechart(List.of(mainRegion));
+        Statechart expected = new Statechart("Statechart", List.of(mainRegion));
         //assertEquals(new Assign(), new Assign());
 
         //assertEquals(State.builder("main_region").addSubstates(blinking).build(), actual.states().get(0));

@@ -43,9 +43,12 @@ public class ScxmlParser implements ScxmlElementVisitor {
 
     @Override
     public Statechart visitRoot(Node node) {
+        String name = NodeUtil.getAttribute(node, "name");
+        assert name != null : "statechart element must have name attribute";
+
         List<Node> stateNodes = NodeUtil.getChildNodes(node, "state");
         List<State> states = stateNodes.stream().map(this::visitState).collect(Collectors.toList());
-        return new Statechart(states);
+        return new Statechart(name, states);
     }
 
     @Override

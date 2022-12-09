@@ -11,9 +11,7 @@ public record SimpleExecutableContent(Type type) implements ExecutableContent {
 
     @Override
     public String toString() {
-        return "SimpleExecutableContent{" +
-                "type=" + type +
-                '}';
+        return String.format("SimpleExecutableContent (type=%s)");
     }
 
     public enum Type {
