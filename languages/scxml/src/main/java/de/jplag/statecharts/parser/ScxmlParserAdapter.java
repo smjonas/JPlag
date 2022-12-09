@@ -56,6 +56,8 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
         Statechart statechart;
+        ScxmlView view = new ScxmlView();
+
         try {
             statechart = new ScxmlParser().parse(file);
         } catch (ParserConfigurationException | IOException | SAXException e) {
@@ -65,6 +67,7 @@ public class ScxmlParserAdapter extends AbstractParser {
         AbstractStatechartVisitor visitor = createStatechartVisitor();
         visitor.visit(statechart);
         tokens.add(Token.fileEnd(currentFile));
+        view.writeToFile(StatechartLanguage.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(StatechartTokenType type, StatechartElement source) {

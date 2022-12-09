@@ -63,7 +63,7 @@ public record State(String id, List<Transition> transitions, List<State> substat
 
     @Override
     public String toString() {
-        return id + ": State";
+        return String.format("%s: %s", id, isRegion() ? "Region" : "State");
     }
 
     public static Builder builder(String id) {
