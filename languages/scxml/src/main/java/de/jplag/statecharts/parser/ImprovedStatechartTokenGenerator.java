@@ -53,7 +53,7 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
             }
         }
 
-        int timedTransitionsCount = state.getTimedTransitionsCount();
+        int timedTransitionsCount = state.getTimedTransitions().size();
         for (int i = 0; i < timedTransitionsCount; i++) {
             adapter.addToken(TIMED_TRANSITION, state);
         }

@@ -14,6 +14,7 @@ public record State(String id, List<Transition> transitions, List<State> substat
         this.onExits = onExits != null && onExits.isEmpty() ? null : onExits;
         this.initial = initial;
         this.parallel = parallel;
+        updateTimedTransitions();
     }
 
     public State(String id) {
@@ -25,35 +26,39 @@ public record State(String id, List<Transition> transitions, List<State> substat
     }
 
     /**
-     * Returns the number of timed transitions within the state element.
+     * Sets the timed attribute of each transition of this state that is timed.
      * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
      * and transition elements with matching IDs.
      **/
-    public int getTimedTransitionsCount() {
+    private void updateTimedTransitions() {
         if (state.transitions() == null || state.onExits() == null || state.onEntries() == null) {
-            return 0;
+            return;
         }
         int[] x = new int[]{1,2,3};
         Stream<ExecutableContent[]> onExitContents = state.onExits().stream().map(OnExit::contents);
         List<Cancel> onExitCancellations = onExitContents.flatMap(Arrays::stream).filter(c -> c instanceof Cancel).map(c -> (Cancel) c).toList();
         if (onExitCancellations.isEmpty()) {
-            return 0;
+            return;
         }
 
-        int timedTransitionsCount = 0;
         Stream<String> cancelSendIds = onExitCancellations.stream().map(Cancel::sendid);
         for (String id : cancelSendIds.toList()) {
             // First check if there is a matching transition for the sendid
-            if (state.transitions().stream().anyMatch(c -> c.event().equals(id))) {
-                // Then check if there is also a matching send element in onentry
-                Stream<ExecutableContent[]> onEntryContents = state.onEntries().stream().map(OnEntry::contents);
-                Stream<String> onEntrySendEvents = onEntryContents.flatMap(Arrays::stream).filter(c -> c instanceof Send).map(s -> ((Send) s).event());
-                if (onEntrySendEvents.anyMatch(s -> s.equals(id))) {
-                    timedTransitionsCount++;
+            for (Transition transition : state.transitions()) {
+                if (transition.event().equals(id)) {
+                    // Then check if there is also a matching send element in onentry
+                    Stream<ExecutableContent[]> onEntryContents = state.onEntries().stream().map(OnEntry::contents);
+                    Stream<String> onEntrySendEvents = onEntryContents.flatMap(Arrays::stream).filter(c -> c instanceof Send).map(s -> ((Send) s).event());
+                    if (onEntrySendEvents.anyMatch(s -> s.equals(id))) {
+                        transition.setTimed();
+                    }
                 }
             }
         }
-        return timedTransitionsCount;
+    }
+
+    public List<Transition> getTimedTransitions() {
+        return transitions.stream().map(t -> t.isTimed());
     }
 
     @Override
