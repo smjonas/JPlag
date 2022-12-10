@@ -1,7 +1,12 @@
 package de.jplag.statecharts.parser.model;
 
+import de.jplag.statecharts.parser.model.executable_content.Cancel;
+import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+import de.jplag.statecharts.parser.model.executable_content.Send;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public record State(String id, List<Transition> transitions, List<State> substates, List<OnEntry> onEntries,
                     List<OnExit> onExits, boolean initial, boolean parallel) implements StatechartElement {
@@ -25,17 +30,21 @@ public record State(String id, List<Transition> transitions, List<State> substat
         return substates != null && !substates.isEmpty();
     }
 
+    public boolean isSimple() {
+        return !initial && !parallel;
+    }
+
     /**
      * Sets the timed attribute of each transition of this state that is timed.
      * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
      * and transition elements with matching IDs.
      **/
     private void updateTimedTransitions() {
-        if (state.transitions() == null || state.onExits() == null || state.onEntries() == null) {
+        if (this.transitions() == null || this.onExits() == null || this.onEntries() == null) {
             return;
         }
         int[] x = new int[]{1,2,3};
-        Stream<ExecutableContent[]> onExitContents = state.onExits().stream().map(OnExit::contents);
+        Stream<ExecutableContent[]> onExitContents = this.onExits().stream().map(OnExit::contents);
         List<Cancel> onExitCancellations = onExitContents.flatMap(Arrays::stream).filter(c -> c instanceof Cancel).map(c -> (Cancel) c).toList();
         if (onExitCancellations.isEmpty()) {
             return;
@@ -44,10 +53,10 @@ public record State(String id, List<Transition> transitions, List<State> substat
         Stream<String> cancelSendIds = onExitCancellations.stream().map(Cancel::sendid);
         for (String id : cancelSendIds.toList()) {
             // First check if there is a matching transition for the sendid
-            for (Transition transition : state.transitions()) {
+            for (Transition transition : this.transitions()) {
                 if (transition.event().equals(id)) {
                     // Then check if there is also a matching send element in onentry
-                    Stream<ExecutableContent[]> onEntryContents = state.onEntries().stream().map(OnEntry::contents);
+                    Stream<ExecutableContent[]> onEntryContents = this.onEntries().stream().map(OnEntry::contents);
                     Stream<String> onEntrySendEvents = onEntryContents.flatMap(Arrays::stream).filter(c -> c instanceof Send).map(s -> ((Send) s).event());
                     if (onEntrySendEvents.anyMatch(s -> s.equals(id))) {
                         transition.setTimed();
@@ -58,7 +67,7 @@ public record State(String id, List<Transition> transitions, List<State> substat
     }
 
     public List<Transition> getTimedTransitions() {
-        return transitions.stream().map(t -> t.isTimed());
+        return transitions().stream().filter(Transition::isTimed).toList();
     }
 
     @Override

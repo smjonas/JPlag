@@ -11,6 +11,7 @@ public enum StatechartTokenType implements TokenType {
     TRANSITION("Transition"),
     TIMED_TRANSITION("Timed transition"),
     STATE("State"),
+    REGION("Region"),
     INITIAL_STATE("Initial state"),
     PARALLEL_STATE("Parallel state"),
     ON_ENTRY("OnEntry"),

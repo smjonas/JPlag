@@ -5,9 +5,8 @@ import de.jplag.Token;
 import de.jplag.TokenType;
 import de.jplag.statecharts.parser.ScxmlParser;
 import de.jplag.statecharts.parser.ScxmlParserAdapter;
-import de.jplag.statecharts.parser.SimpleStatechartTokenGenerator;
 import de.jplag.statecharts.parser.model.*;
-import de.jplag.statecharts.parser.model.executable_content.Assign;
+import de.jplag.statecharts.parser.model.executable_content.Assignment;
 import de.jplag.statecharts.parser.model.executable_content.Cancel;
 import de.jplag.statecharts.parser.model.executable_content.Send;
 import de.jplag.testutils.FileUtil;
@@ -65,7 +64,7 @@ class ScxmlParserTest {
 
         State light = State.builder("Light")
             .addTransitions(new Transition("Dark"))
-            .addOnEntry(new OnEntry(new Assign())).build();
+            .addOnEntry(new OnEntry(new Assignment())).build();
 
         State dark = State.builder("Dark")
             .addTransitions(new Transition("Start", null, "t == 5"), new Transition("Light", "Dark_t_1_timeEvent_0"))
@@ -75,7 +74,7 @@ class ScxmlParserTest {
         State blinking = State.builder("Blinking")
             //.addSubstates(light, dark)
             // .addTransitions(new Transition("Start", "user.press_button"))
-            .addOnEntry(new OnEntry(new Assign())).build();
+            .addOnEntry(new OnEntry(new Assignment())).build();
 
         State mainRegion = State.builder("main_region").addSubstates( blinking).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));

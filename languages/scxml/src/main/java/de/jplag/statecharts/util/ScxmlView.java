@@ -1,8 +1,17 @@
 package de.jplag.statecharts.util;
 
+import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class ScxmlView extends AbstractStatechartVisitor {
 
-    private final StringBuilder builder;
+    private final StringBuilder builder = new StringBuilder();
     private int depth = 0;
 
     public void writeToFile(String suffix) {
@@ -46,7 +55,7 @@ public class ScxmlView extends AbstractStatechartVisitor {
     @Override
     public void visitOnEntry(OnEntry onEntry) {
         addElement(onEntry);
-        for (content : onEntry.contents()) {
+        for (ExecutableContent content : onEntry.contents()) {
             visitExecutableContent(content);
         }
     }

@@ -33,20 +33,22 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         }
     }
 
+    protected void visitStateAttributes(State state) {
+        if (state.initial()) {
+            adapter.addToken(INITIAL_STATE, state);
+        }
+        if (state.parallel()) {
+            adapter.addToken(PARALLEL_STATE, state);
+        }
+    }
+
     @Override
     public void visitState(State state) {
-        boolean isSimpleState = !state.initial() && !state.parallel();
-        if (isSimpleState) {
+        if (state.isSimple()) {
             adapter.addToken(STATE, state);
         } else {
-            if (state.initial()) {
-                adapter.addToken(INITIAL_STATE, state);
-            }
-            if (state.parallel()) {
-                adapter.addToken(PARALLEL_STATE, state);
-            }
+            visitStateAttributes(state);
         }
-
         if (state.transitions() != null) {
             for (Transition transition : state.transitions()) {
                 visitTransition(transition);
@@ -94,12 +96,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     @Override
     public void visitExecutableContent(ExecutableContent content) {
         StatechartTokenType type = null;
-        if (content instanceof SimpleExecutableContent simpleContent) {
-            visitSimpleExecutableContent(simpleContent);
-            return;
-        }
-
-        if (content instanceof Assign) {
+        if (content instanceof Assignment) {
             type = ASSIGNMENT;
         } else if (content instanceof Script) {
             type = SCRIPT;

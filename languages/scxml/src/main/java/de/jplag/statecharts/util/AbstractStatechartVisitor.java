@@ -50,6 +50,8 @@ public abstract class AbstractStatechartVisitor {
             visitOnEntry(onEntry);
         } else if (element instanceof OnExit onExit) {
             visitOnExit(onExit);
+        } else if (content instanceof SimpleExecutableContent simpleContent) {
+            visitSimpleExecutableContent(simpleContent);
         } else if (element instanceof ExecutableContent content) {
             visitExecutableContent(content);
         }

@@ -1,13 +1,6 @@
 package de.jplag.statecharts.parser;
 
 import de.jplag.statecharts.parser.model.*;
-import de.jplag.statecharts.parser.model.executable_content.Cancel;
-import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
-import de.jplag.statecharts.parser.model.executable_content.Send;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static de.jplag.statecharts.StatechartTokenType.*;
 
@@ -37,21 +30,8 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
 
     @Override
     public void visitState(State state) {
-        if (state.isRegion()) {
-            adapter.addToken(REGION, state);
-        } else {
-            boolean isSimpleState = !state.initial() && !state.parallel();
-            if (isSimpleState) {
-                adapter.addToken(STATE, state);
-            } else {
-                if (state.initial()) {
-                    adapter.addToken(INITIAL_STATE, state);
-                }
-                if (state.parallel()) {
-                    adapter.addToken(PARALLEL_STATE, state);
-                }
-            }
-        }
+        adapter.addToken(state.isRegion() ? REGION : STATE, state);
+        visitStateAttributes(state);
 
         int timedTransitionsCount = state.getTimedTransitions().size();
         for (int i = 0; i < timedTransitionsCount; i++) {
@@ -71,6 +51,7 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
             visitOnExit(onExit);
         }
     }
+
 
     @Override
     public void visitTransition(Transition transition) {
