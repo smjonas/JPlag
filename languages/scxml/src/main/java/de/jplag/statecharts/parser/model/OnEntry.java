@@ -6,18 +6,17 @@ import java.util.Arrays;
 
 public record OnEntry(ExecutableContent... contents) implements StatechartElement {
 
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof OnEntry other)) {
             return false;
         }
-
-        for (int i = 0; i < this.contents.length; i++) {
-            if (!this.contents[i].equals(other.contents[i])) {
-                return false;
-            }
-        }
-        return true;
+        // This is necessary because otherwise the ExecutableContent
+        // varargs would be compared as instances of their base classes instead of
+        // their subclasses such as SimpleExecutableContent or Assignment.
+        // Only the subclasses are records and implement the equals() method.
+        return Arrays.equals(this.contents, other.contents);
     }
 
     @Override

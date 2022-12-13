@@ -2,7 +2,17 @@ package de.jplag.statecharts.parser.model;
 
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 
+import java.util.Arrays;
+
 public record OnExit(ExecutableContent... contents) implements StatechartElement {
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof OnExit other)) {
+            return false;
+        }
+        return Arrays.equals(this.contents, other.contents);
+    }
 
     // @Override
     // public String toString() {

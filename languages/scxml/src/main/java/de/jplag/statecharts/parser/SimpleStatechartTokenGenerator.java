@@ -49,7 +49,6 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         } else {
             visitStateAttributes(state);
         }
-        assert false : state.onEntries();
         if (state.transitions() != null) {
             for (Transition transition : state.transitions()) {
                 visitTransition(transition);

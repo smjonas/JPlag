@@ -51,7 +51,7 @@ class ScxmlParserTest {
         State start = State.builder("Start").setInitial().addTransitions(new Transition("Blinking", "user.press_button")).build();
         State mainRegion = State.builder("main_region").addSubstates(start).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));
-        //assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -72,16 +72,13 @@ class ScxmlParserTest {
             .addOnExit(new OnExit(new Cancel("Dark_t_1_timeEvent_0"))).build();
 
         State blinking = State.builder("Blinking")
-            //.addSubstates(light, dark)
-            // .addTransitions(new Transition("Start", "user.press_button"))
+            .addSubstates(light, dark)
+            .addTransitions(new Transition("Start", "user.press_button"))
             .addOnEntry(new OnEntry(new Assignment())).build();
 
-        State mainRegion = State.builder("main_region").addSubstates( blinking).build();
+        State mainRegion = State.builder("main_region").addSubstates(start, blinking).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));
-        //assertEquals(new Assign(), new Assign());
-
-        //assertEquals(State.builder("main_region").addSubstates(blinking).build(), actual.states().get(0));
-        //assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
 //        List<Token> result = language.parse(Set.of(testFile));
 
@@ -98,15 +95,15 @@ class ScxmlParserTest {
 //        assertIterableEquals(bookstoreTokens, bookstoreRenamedTokens);
     }
 
-    @Test
-    void testSimpleTokenExtractionStrategy() throws ParsingException {
-        File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
-        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
-        List<Token> tokens = adapter.parse(Set.of(testFile));
-        List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
-
-        assertEquals(List.of(STATE, STATE, ON_ENTRY, ASSIGNMENT, INITIAL_STATE), tokenTypes);
-    }
+    // @Test
+    // void testSimpleTokenExtractionStrategy() throws ParsingException {
+    //     File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
+    //     ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+    //     List<Token> tokens = adapter.parse(Set.of(testFile));
+    //     List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
+    //
+    //     assertEquals(List.of(STATE, STATE, ON_ENTRY, ASSIGNMENT, INITIAL_STATE), tokenTypes);
+    // }
 
     @AfterEach
     public void tearDown() {

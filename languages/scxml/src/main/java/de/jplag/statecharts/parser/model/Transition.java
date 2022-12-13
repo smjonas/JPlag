@@ -28,7 +28,7 @@ public record Transition(String target, String event, String cond, boolean timed
 
     @Override
     public String toString() {
-        assert !isInitial();
+        // assert !isInitial();
         String prefix = isTimed() ? "Timed t" : "T";
         return String.format(
             "%sransition (-> %s) (event='%s', cond='%s')",
