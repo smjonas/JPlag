@@ -28,6 +28,7 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
     }
 
     public boolean isRegion() {
+        // TODO: do not use null, always an empty list
         return substates != null && !substates.isEmpty();
     }
 
@@ -74,8 +75,21 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
 
     @Override
     public String toString() {
-        return String.format("%s: %s", id, isRegion() ? "Region" : "State");
+        return ("State{" +
+                "id='" + id + '\'' +
+                ", transitions=" + transitions +
+                ", substates=" + substates +
+                ", onEntries=" + onEntries +
+                ", onExits=" + onExits +
+                ", initial=" + initial +
+                ", parallel=" + parallel +
+                "}").replace("], ", "],\n");
     }
+
+    // @Override
+    // public String toString() {
+    //     return String.format("%s: %s", id, isRegion() ? "Region" : "State");
+    // }
 
     public static Builder builder(String id) {
         return new Builder(id);
@@ -85,8 +99,8 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         private final String id;
         private ArrayList<Transition> transitions;
         private List<State> substates;
-        private List<OnEntry> onEntries;
-        private List<OnExit> onExits;
+        private List<OnEntry> onEntries = new ArrayList<>();
+        private List<OnExit> onExits = new ArrayList<>();
         private boolean initial;
         private boolean parallel;
 
@@ -115,12 +129,12 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
 
         public Builder addOnEntry(OnEntry onEntry) {
-            this.onEntries = List.of(onEntry);
+            this.onEntries.add(onEntry);
             return this;
         }
 
         public Builder addOnExit(OnExit onExit) {
-            this.onExits = List.of(onExit);
+            this.onExits.add(onExit);
             return this;
         }
 

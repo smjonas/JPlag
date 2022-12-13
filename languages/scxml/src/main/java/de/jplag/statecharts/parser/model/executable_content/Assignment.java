@@ -4,7 +4,7 @@ public record Assignment() implements ExecutableContent {
 
     @Override
     public String toString() {
-        return "Assign";
+        return "Assignment";
     }
 
 }
