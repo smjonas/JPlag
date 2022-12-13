@@ -8,6 +8,7 @@ import de.jplag.statecharts.StatechartTokenType;
 import de.jplag.statecharts.parser.model.Statechart;
 import de.jplag.statecharts.parser.model.StatechartElement;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
+import de.jplag.statecharts.util.ScxmlView;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,7 +68,7 @@ public class ScxmlParserAdapter extends AbstractParser {
         AbstractStatechartVisitor visitor = createStatechartVisitor();
         visitor.visit(statechart);
         tokens.add(Token.fileEnd(currentFile));
-        view.writeToFile(StatechartLanguage.VIEW_FILE_SUFFIX);
+        //view.writeToFile(StatechartLanguage.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(StatechartTokenType type, StatechartElement source) {

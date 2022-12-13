@@ -67,7 +67,7 @@ public class ScxmlParser implements ScxmlElementVisitor {
 
         List<OnEntry> onEntries = NodeUtil.getChildNodes(node, "onentry").stream().map(this::visitOnEntry).toList();
         List<OnExit> onExits = NodeUtil.getChildNodes(node, "onexit").stream().map(this::visitOnExit).toList();
-        List<Transition> transitions = NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList();
+        ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList());
         List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
         return new State(id, transitions, states, onEntries, onExits, initial, false);
     }
@@ -101,7 +101,9 @@ public class ScxmlParser implements ScxmlElementVisitor {
         return new Transition(
                 NodeUtil.getAttribute(node, "target"),
                 NodeUtil.getAttribute(node, "event"),
-                NodeUtil.getAttribute(node, "cond")
+                NodeUtil.getAttribute(node, "cond"),
+                // Set timed attribute to false initially, may be updated later in the State class
+                false
         );
     }
 }

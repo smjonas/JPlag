@@ -50,15 +50,11 @@ public abstract class AbstractStatechartVisitor {
             visitOnEntry(onEntry);
         } else if (element instanceof OnExit onExit) {
             visitOnExit(onExit);
-        } else if (content instanceof SimpleExecutableContent simpleContent) {
+        } else if (element instanceof SimpleExecutableContent simpleContent) {
             visitSimpleExecutableContent(simpleContent);
         } else if (element instanceof ExecutableContent content) {
             visitExecutableContent(content);
         }
-    }
-
-    public void visit() {
-
     }
 
     protected abstract void visitStatechart(Statechart statechart);

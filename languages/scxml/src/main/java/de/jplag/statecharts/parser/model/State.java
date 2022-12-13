@@ -4,14 +4,15 @@ import de.jplag.statecharts.parser.model.executable_content.Cancel;
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.model.executable_content.Send;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record State(String id, List<Transition> transitions, List<State> substates, List<OnEntry> onEntries,
+public record State(String id, ArrayList<Transition> transitions, List<State> substates, List<OnEntry> onEntries,
                     List<OnExit> onExits, boolean initial, boolean parallel) implements StatechartElement {
 
-    public State(String id, List<Transition> transitions, List<State> substates, List<OnEntry> onEntries, List<OnExit> onExits, boolean initial, boolean parallel) {
+    public State(String id, ArrayList<Transition> transitions, List<State> substates, List<OnEntry> onEntries, List<OnExit> onExits, boolean initial, boolean parallel) {
         this.id = id;
         this.transitions = transitions != null && transitions.isEmpty() ? null : transitions;
         this.substates = substates != null && substates.isEmpty() ? null : substates;
@@ -53,13 +54,14 @@ public record State(String id, List<Transition> transitions, List<State> substat
         Stream<String> cancelSendIds = onExitCancellations.stream().map(Cancel::sendid);
         for (String id : cancelSendIds.toList()) {
             // First check if there is a matching transition for the sendid
-            for (Transition transition : this.transitions()) {
-                if (transition.event().equals(id)) {
+            for (int i = 0; i < transitions.size(); i++) {
+                Transition transition = transitions.get(i);
+                if (transition.event() != null && transition.event().equals(id)) {
                     // Then check if there is also a matching send element in onentry
                     Stream<ExecutableContent[]> onEntryContents = this.onEntries().stream().map(OnEntry::contents);
                     Stream<String> onEntrySendEvents = onEntryContents.flatMap(Arrays::stream).filter(c -> c instanceof Send).map(s -> ((Send) s).event());
                     if (onEntrySendEvents.anyMatch(s -> s.equals(id))) {
-                        transition.setTimed();
+                        transitions.set(i, Transition.makeTimed(transition));
                     }
                 }
             }
@@ -81,7 +83,7 @@ public record State(String id, List<Transition> transitions, List<State> substat
 
     public static class Builder {
         private final String id;
-        private List<Transition> transitions;
+        private ArrayList<Transition> transitions;
         private List<State> substates;
         private List<OnEntry> onEntries;
         private List<OnExit> onExits;
@@ -103,7 +105,7 @@ public record State(String id, List<Transition> transitions, List<State> substat
         }
 
         public Builder addTransitions(Transition... transitions) {
-            this.transitions = Arrays.asList(transitions);
+            this.transitions = new ArrayList<>(List.of(transitions));
             return this;
         }
 
