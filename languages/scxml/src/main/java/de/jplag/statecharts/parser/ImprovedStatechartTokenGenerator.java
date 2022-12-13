@@ -28,6 +28,15 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
         }
     }
 
+    protected void visitStateAttributes(State state) {
+        if (state.initial()) {
+            adapter.addToken(INITIAL_STATE, state);
+        }
+        if (state.parallel()) {
+            adapter.addToken(PARALLEL_STATE, state);
+        }
+    }
+
     @Override
     public void visitState(State state) {
         adapter.addToken(state.isRegion() ? REGION : STATE, state);

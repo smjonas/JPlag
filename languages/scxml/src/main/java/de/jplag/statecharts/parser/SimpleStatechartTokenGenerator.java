@@ -33,38 +33,26 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         }
     }
 
-    protected void visitStateAttributes(State state) {
-        if (state.initial()) {
-            adapter.addToken(INITIAL_STATE, state);
-        }
-        if (state.parallel()) {
-            adapter.addToken(PARALLEL_STATE, state);
-        }
-    }
-
     @Override
     public void visitState(State state) {
         if (state.isSimple()) {
             adapter.addToken(STATE, state);
-        } else {
-            visitStateAttributes(state);
         }
-        if (state.transitions() != null) {
-            for (Transition transition : state.transitions()) {
-                visitTransition(transition);
-            }
+        // assert false : "visiting state " + state;
+        for (OnEntry onEntry : state.onEntries()) {
+            visitOnEntry(onEntry);
         }
 
-        if (state.onEntries() != null) {
-            for (OnEntry onEntry : state.onEntries()) {
-                visitOnEntry(onEntry);
-            }
+        for (OnExit onExit : state.onExits()) {
+            visitOnExit(onExit);
         }
 
-        if (state.onExits() != null) {
-            for (OnExit onExit : state.onExits()) {
-                visitOnExit(onExit);
-            }
+        for (Transition transition : state.transitions()) {
+            visitTransition(transition);
+        }
+
+        for (State substate : state.substates()) {
+            visitState(substate);
         }
     }
 
@@ -73,6 +61,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         if (onEntry == null) {
             return;
         }
+        adapter.addToken(ON_ENTRY, onEntry);
         for (ExecutableContent content : onEntry.contents()) {
             visitExecutableContent(content);
         }
@@ -83,6 +72,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         if (onExit == null) {
             return;
         }
+        adapter.addToken(ON_EXIT, onExit);
         for (ExecutableContent content : onExit.contents()) {
             visitExecutableContent(content);
         }

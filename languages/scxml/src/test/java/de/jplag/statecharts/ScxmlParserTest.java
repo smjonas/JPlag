@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
+import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.statecharts.StatechartTokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -95,15 +96,14 @@ class ScxmlParserTest {
 //        assertIterableEquals(bookstoreTokens, bookstoreRenamedTokens);
     }
 
-    // @Test
-    // void testSimpleTokenExtractionStrategy() throws ParsingException {
-    //     File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
-    //     ScxmlParserAdapter adapter = new ScxmlParserAdapter();
-    //     List<Token> tokens = adapter.parse(Set.of(testFile));
-    //     List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
-    //
-    //     assertEquals(List.of(STATE, STATE, ON_ENTRY, ASSIGNMENT, INITIAL_STATE), tokenTypes);
-    // }
+     @Test
+     void testSimpleTokenExtractionStrategy() throws ParsingException {
+         File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
+         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+         List<Token> tokens = adapter.parse(Set.of(testFile));
+         List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
+         assertEquals(List.of(STATECHART, STATE, STATE, TRANSITION, STATE, ON_ENTRY, STATE, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, TRANSITION, FILE_END), tokenTypes);
+     }
 
     @AfterEach
     public void tearDown() {

@@ -14,22 +14,21 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
 
     public State(String id, ArrayList<Transition> transitions, List<State> substates, List<OnEntry> onEntries, List<OnExit> onExits, boolean initial, boolean parallel) {
         this.id = id;
-        this.transitions = transitions != null && transitions.isEmpty() ? null : transitions;
-        this.substates = substates != null && substates.isEmpty() ? null : substates;
-        this.onEntries = onEntries != null && onEntries.isEmpty() ? null : onEntries;
-        this.onExits = onExits != null && onExits.isEmpty() ? null : onExits;
+        this.transitions = transitions;
+        this.substates = substates;
+        this.onEntries = onEntries;
+        this.onExits = onExits;
         this.initial = initial;
         this.parallel = parallel;
         updateTimedTransitions();
     }
 
     public State(String id) {
-        this(id, null, null, null, null, false, false);
+        this(id, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false, false);
     }
 
     public boolean isRegion() {
-        // TODO: do not use null, always an empty list
-        return substates != null && !substates.isEmpty();
+        return !substates.isEmpty();
     }
 
     public boolean isSimple() {
@@ -42,7 +41,7 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
      * and transition elements with matching IDs.
      **/
     private void updateTimedTransitions() {
-        if (this.transitions() == null || this.onExits() == null || this.onEntries() == null) {
+        if (this.transitions().isEmpty() || this.onExits().isEmpty() || this.onEntries().isEmpty()) {
             return;
         }
         int[] x = new int[]{1,2,3};
@@ -51,6 +50,10 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         if (onExitCancellations.isEmpty()) {
             return;
         }
+
+//STATECHART, STATE, INITIAL_STATE, TRANSITION, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END
+//xxxxxxxxxx, xxxxx, xxxxxxxxxxxxx, xxxxxxxxxx, xxxxx, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END , STATE, INITIAL_STATE, TRANSITION, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END
+//xxxxxxxxxx, xxxxx, xxxxxxxxxxxxx, xxxxxxxxxx, xxxxx, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, FILE_END>
 
         Stream<String> cancelSendIds = onExitCancellations.stream().map(Cancel::sendid);
         for (String id : cancelSendIds.toList()) {
