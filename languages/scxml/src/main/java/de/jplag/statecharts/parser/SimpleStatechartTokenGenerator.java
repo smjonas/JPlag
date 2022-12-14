@@ -31,13 +31,12 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         for (State state : statechart.states()) {
             visitState(state);
         }
+        adapter.addToken(STATECHART_END, statechart);
     }
 
     @Override
     public void visitState(State state) {
-        if (state.isSimple()) {
-            adapter.addToken(STATE, state);
-        }
+        adapter.addToken(STATE, state);
         // assert false : "visiting state " + state;
         for (OnEntry onEntry : state.onEntries()) {
             visitOnEntry(onEntry);
@@ -54,6 +53,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         for (State substate : state.substates()) {
             visitState(substate);
         }
+        adapter.addToken(STATE_END, state);
     }
 
     @Override
@@ -65,6 +65,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         for (ExecutableContent content : onEntry.contents()) {
             visitExecutableContent(content);
         }
+        adapter.addToken(ON_ENTRY_END, onEntry);
     }
 
     @Override
@@ -76,6 +77,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         for (ExecutableContent content : onExit.contents()) {
             visitExecutableContent(content);
         }
+        adapter.addToken(ON_EXIT_END, onExit);
     }
 
     @Override

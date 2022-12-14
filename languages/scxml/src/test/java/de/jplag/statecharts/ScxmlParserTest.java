@@ -102,7 +102,7 @@ class ScxmlParserTest {
          ScxmlParserAdapter adapter = new ScxmlParserAdapter();
          List<Token> tokens = adapter.parse(Set.of(testFile));
          List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
-         assertEquals(List.of(STATECHART, STATE, STATE, TRANSITION, STATE, ON_ENTRY, STATE, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, TRANSITION, FILE_END), tokenTypes);
+         assertEquals(List.of(STATECHART, STATE, STATE, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, TRANSITION, FILE_END), tokenTypes);
      }
 
     @AfterEach

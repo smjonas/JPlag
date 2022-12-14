@@ -8,9 +8,12 @@ import de.jplag.TokenType;
 public enum StatechartTokenType implements TokenType {
 
     STATECHART("Statechart"),
+    STATECHART_END("Statechart end"),
     TRANSITION("Transition"),
+    TRANSITION_END("Transition end"),
     TIMED_TRANSITION("Timed transition"),
-    STATE("State"),
+    STATE("State begin"),
+    STATE_END("State end"),
     REGION("Region"),
     INITIAL_STATE("Initial state"),
     PARALLEL_STATE("Parallel state"),
