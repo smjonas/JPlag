@@ -36,14 +36,13 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitState(State state) {
+        if (state.id().equals("Blinking")) {
+        //    assert false : state;
+        }
         adapter.addToken(STATE, state);
         // assert false : "visiting state " + state;
-        for (OnEntry onEntry : state.onEntries()) {
-            visitOnEntry(onEntry);
-        }
-
-        for (OnExit onExit : state.onExits()) {
-            visitOnExit(onExit);
+        for (Action action : state.actions()) {
+            visitAction(action);
         }
 
         for (Transition transition : state.transitions()) {
@@ -57,27 +56,15 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     }
 
     @Override
-    public void visitOnEntry(OnEntry onEntry) {
-        if (onEntry == null) {
+    public void visitAction(Action action) {
+        if (action == null) {
             return;
         }
-        adapter.addToken(ON_ENTRY, onEntry);
-        for (ExecutableContent content : onEntry.contents()) {
+        adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
+        for (ExecutableContent content : action.contents()) {
             visitExecutableContent(content);
         }
-        adapter.addToken(ON_ENTRY_END, onEntry);
-    }
-
-    @Override
-    public void visitOnExit(OnExit onExit) {
-        if (onExit == null) {
-            return;
-        }
-        adapter.addToken(ON_EXIT, onExit);
-        for (ExecutableContent content : onExit.contents()) {
-            visitExecutableContent(content);
-        }
-        adapter.addToken(ON_EXIT_END, onExit);
+        adapter.addToken(ACTION_END, action);
     }
 
     @Override

@@ -9,9 +9,7 @@ public interface ScxmlElementVisitor {
 
     StatechartElement visitState(Node node);
 
-    StatechartElement visitOnEntry(Node node);
-
-    StatechartElement visitOnExit(Node node);
+    StatechartElement visitAction(Node node);
 
     StatechartElement visitInitialTransition(Node node);
 

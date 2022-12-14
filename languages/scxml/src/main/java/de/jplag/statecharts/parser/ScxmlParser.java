@@ -2,6 +2,7 @@ package de.jplag.statecharts.parser;
 
 import de.jplag.ParsingException;
 import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.executable_content.Action;
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.util.NodeUtil;
 import org.w3c.dom.Document;
@@ -15,7 +16,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static de.jplag.statecharts.parser.model.executable_content.Action.Type.ON_ENTRY;
+import static de.jplag.statecharts.parser.model.executable_content.Action.Type.ON_EXIT;
 
 /**
  * An SCXML parser implementation based on a SAX ("Simple API for XML") parser.
@@ -65,11 +70,10 @@ public class ScxmlParser implements ScxmlElementVisitor {
             initialStateTargets.add(visitInitialTransition(child).target());
         }
 
-        List<OnEntry> onEntries = NodeUtil.getChildNodes(node, "onentry").stream().map(this::visitOnEntry).toList();
-        List<OnExit> onExits = NodeUtil.getChildNodes(node, "onexit").stream().map(this::visitOnExit).toList();
+        List<Action> actions = NodeUtil.getChildNodes(node, Set.of("onentry", "onexit")).stream().map(this::visitAction).toList();
         ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList());
         List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
-        return new State(id, transitions, states, onEntries, onExits, initial, false);
+        return new State(id, transitions, states, actions, initial, false);
     }
 
     private ExecutableContent[] parseExecutableContents(Node node) {
@@ -78,13 +82,12 @@ public class ScxmlParser implements ScxmlElementVisitor {
     }
 
     @Override
-    public OnEntry visitOnEntry(Node node) {
-        return node == null ? null : new OnEntry(parseExecutableContents(node));
-    }
-
-    @Override
-    public OnExit visitOnExit(Node node) {
-        return node == null ? null : new OnExit(parseExecutableContents(node));
+    public Action visitAction(Node node) {
+        if (node == null) {
+            return null;
+        }
+        Action.Type type = node.getNodeName().equals("onentry") ? ON_ENTRY : ON_EXIT;
+        return new Action(type, parseExecutableContents(node));
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public record Action(Type type, ExecutableContent... contents) implements ExecutableContent {
 
-    enum Type {
+    public enum Type {
         ON_ENTRY,
         ON_EXIT,
     }
@@ -21,7 +21,7 @@ public record Action(Type type, ExecutableContent... contents) implements Execut
         // varargs would be compared as instances of their base classes instead of
         // their subclasses such as SimpleExecutableContent or Assignment.
         // Only the subclasses are records and implement the equals() method.
-        return Arrays.equals(this.contents, other.contents);
+        return this.type == other.type && Arrays.equals(this.contents, other.contents);
     }
 
     @Override

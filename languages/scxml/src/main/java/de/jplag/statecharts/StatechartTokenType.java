@@ -19,6 +19,7 @@ public enum StatechartTokenType implements TokenType {
     PARALLEL_STATE("Parallel state"),
     ON_ENTRY("OnEntry"),
     ON_EXIT("OnExit"),
+    ACTION_END("Action end"),
     // Simple executable content
     RAISE("Raise"),
     IF("If"),

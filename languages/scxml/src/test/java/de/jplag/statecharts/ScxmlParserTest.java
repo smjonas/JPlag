@@ -65,17 +65,20 @@ class ScxmlParserTest {
 
         State light = State.builder("Light")
             .addTransitions(new Transition("Dark"))
-            .addOnEntry(new OnEntry(new Assignment())).build();
+            .addOnEntry(new Assignment()).build();
 
         State dark = State.builder("Dark")
-            .addTransitions(new Transition("Start", null, "t == 5"), new Transition("Light", "Dark_t_1_timeEvent_0"))
-            .addOnEntry(new OnEntry(new Send("Dark_t_1_timeEvent_0", "1s")))
-            .addOnExit(new OnExit(new Cancel("Dark_t_1_timeEvent_0"))).build();
+            .addTransitions(
+                    new Transition("Start", null, "t == 5"),
+                    Transition.makeTimed(new Transition("Light", "Dark_t_1_timeEvent_0"))
+            )
+            .addOnEntry(new Send("Dark_t_1_timeEvent_0", "1s"))
+            .addOnExit(new Cancel("Dark_t_1_timeEvent_0")).build();
 
         State blinking = State.builder("Blinking")
             .addSubstates(light, dark)
             .addTransitions(new Transition("Start", "user.press_button"))
-            .addOnEntry(new OnEntry(new Assignment())).build();
+            .addOnEntry(new Assignment()).build();
 
         State mainRegion = State.builder("main_region").addSubstates(start, blinking).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));
@@ -102,7 +105,9 @@ class ScxmlParserTest {
          ScxmlParserAdapter adapter = new ScxmlParserAdapter();
          List<Token> tokens = adapter.parse(Set.of(testFile));
          List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
-         assertEquals(List.of(STATECHART, STATE, STATE, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, TRANSITION, FILE_END), tokenTypes);
+         assertEquals(List.of(
+            STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
+        ), tokenTypes);
      }
 
     @AfterEach

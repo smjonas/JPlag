@@ -1,6 +1,7 @@
 package de.jplag.statecharts.parser;
 
 import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.executable_content.Action;
 
 import static de.jplag.statecharts.StatechartTokenType.*;
 
@@ -52,15 +53,10 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
             adapter.addToken(TRANSITION, state);
         }
 
-        // TODO: use single class for OnEntry and OnExit
-        for (OnEntry onEntry : state.onEntries()) {
-            visitOnEntry(onEntry);
-        }
-        for (OnExit onExit : state.onExits()) {
-            visitOnExit(onExit);
+        for (Action action : state.actions()) {
+            visitAction(action);
         }
     }
-
 
     @Override
     public void visitTransition(Transition transition) {
