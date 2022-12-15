@@ -143,12 +143,12 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
 
         public Builder addOnEntry(ExecutableContent... contents) {
-            this.actions.add(new Action(ON_ENTRY));
+            this.actions.add(new Action(ON_ENTRY, contents));
             return this;
         }
 
         public Builder addOnExit(ExecutableContent... contents) {
-            this.actions.add(new Action(ON_EXIT));
+            this.actions.add(new Action(ON_EXIT, contents));
             return this;
         }
 

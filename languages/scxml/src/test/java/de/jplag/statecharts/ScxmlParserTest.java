@@ -1,11 +1,14 @@
 package de.jplag.statecharts;
 
+import de.jplag.Language;
 import de.jplag.ParsingException;
 import de.jplag.Token;
 import de.jplag.TokenType;
 import de.jplag.statecharts.parser.ScxmlParser;
 import de.jplag.statecharts.parser.ScxmlParserAdapter;
-import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.State;
+import de.jplag.statecharts.parser.model.Statechart;
+import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.Assignment;
 import de.jplag.statecharts.parser.model.executable_content.Cancel;
 import de.jplag.statecharts.parser.model.executable_content.Send;
@@ -26,15 +29,14 @@ import java.util.Set;
 
 import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.statecharts.StatechartTokenType.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ScxmlParserTest {
-    private final Logger logger = LoggerFactory.getLogger(ScxmlParserTest.class);
-
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "statecharts");
     private static final String[] TEST_SUBJECTS = {"simple_state.scxml", "statechart.scxml"};
-
-    private de.jplag.Language language;
+    private final Logger logger = LoggerFactory.getLogger(ScxmlParserTest.class);
+    private Language language;
     private File baseDirectory;
 
     @BeforeEach
@@ -53,6 +55,7 @@ class ScxmlParserTest {
         State mainRegion = State.builder("main_region").addSubstates(start).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));
         assertEquals(expected, actual);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -61,28 +64,28 @@ class ScxmlParserTest {
         Statechart actual = new ScxmlParser().parse(testFile);
 
         State start = State.builder("Start").setInitial()
-            .addTransitions(new Transition("Blinking", "user.press_button")).build();
+                .addTransitions(new Transition("Blinking", "user.press_button")).build();
 
         State light = State.builder("Light")
-            .addTransitions(new Transition("Dark"))
-            .addOnEntry(new Assignment()).build();
+                .addTransitions(new Transition("Dark"))
+                .addOnEntry(new Assignment()).build();
 
         State dark = State.builder("Dark")
-            .addTransitions(
-                    new Transition("Start", null, "t == 5"),
-                    Transition.makeTimed(new Transition("Light", "Dark_t_1_timeEvent_0"))
-            )
-            .addOnEntry(new Send("Dark_t_1_timeEvent_0", "1s"))
-            .addOnExit(new Cancel("Dark_t_1_timeEvent_0")).build();
+                .addTransitions(
+                        new Transition("Start", null, "t == 5"),
+                        Transition.makeTimed(new Transition("Light", "Dark_t_1_timeEvent_0"))
+                )
+                .addOnEntry(new Send("Dark_t_1_timeEvent_0", "1s"))
+                .addOnExit(new Cancel("Dark_t_1_timeEvent_0")).build();
 
         State blinking = State.builder("Blinking")
-            .addSubstates(light, dark)
-            .addTransitions(new Transition("Start", "user.press_button"))
-            .addOnEntry(new Assignment()).build();
+                .addSubstates(light, dark)
+                .addTransitions(new Transition("Start", "user.press_button"))
+                .addOnEntry(new Assignment()).build();
 
         State mainRegion = State.builder("main_region").addSubstates(start, blinking).build();
         Statechart expected = new Statechart("Statechart", List.of(mainRegion));
-        assertEquals(expected, actual);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
 
 //        List<Token> result = language.parse(Set.of(testFile));
 
@@ -99,16 +102,18 @@ class ScxmlParserTest {
 //        assertIterableEquals(bookstoreTokens, bookstoreRenamedTokens);
     }
 
-     @Test
-     void testSimpleTokenExtractionStrategy() throws ParsingException {
-         File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
-         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
-         List<Token> tokens = adapter.parse(Set.of(testFile));
-         List<TokenType> tokenTypes =  tokens.stream().map(Token::getType).toList();
-         assertEquals(List.of(
-            STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
+    @Test
+    void testSimpleTokenExtractionStrategy() throws ParsingException {
+        File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[1]);
+        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+        List<Token> tokens = adapter.parse(Set.of(testFile));
+        List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
+        assertEquals(List.of(
+                STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION,
+                STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END,
+                ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
         ), tokenTypes);
-     }
+    }
 
     @AfterEach
     public void tearDown() {
