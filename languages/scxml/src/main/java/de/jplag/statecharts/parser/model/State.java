@@ -56,7 +56,6 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         if (this.transitions().isEmpty() || this.actions().isEmpty()) {
             return;
         }
-        int[] x = new int[]{1,2,3};
         Stream<ExecutableContent[]> onExitContents = this.onExits().map(Action::contents);
         List<Cancel> onExitCancellations = onExitContents.flatMap(Arrays::stream).filter(c -> c instanceof Cancel).map(c -> (Cancel) c).toList();
         if (onExitCancellations.isEmpty()) {

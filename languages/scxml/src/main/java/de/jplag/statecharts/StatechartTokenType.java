@@ -23,6 +23,7 @@ public enum StatechartTokenType implements TokenType {
     // Simple executable content
     RAISE("Raise"),
     IF("If"),
+    IF_END("If end"),
     ELSE_IF("Else if"),
     ELSE("Else"),
     FOREACH("For each"),

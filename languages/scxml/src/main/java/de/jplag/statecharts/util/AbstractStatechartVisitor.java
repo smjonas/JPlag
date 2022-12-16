@@ -1,8 +1,12 @@
 package de.jplag.statecharts.util;
 
-import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.State;
+import de.jplag.statecharts.parser.model.Statechart;
+import de.jplag.statecharts.parser.model.StatechartElement;
+import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.Action;
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+import de.jplag.statecharts.parser.model.executable_content.If;
 import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
 
 /**
@@ -49,6 +53,8 @@ public abstract class AbstractStatechartVisitor {
             visitState(state);
         } else if (element instanceof Action action) {
             visitAction(action);
+        } else if (element instanceof If if_) {
+            visitIf(if_);
         } else if (element instanceof SimpleExecutableContent simpleContent) {
             visitSimpleExecutableContent(simpleContent);
         } else if (element instanceof ExecutableContent content) {
@@ -61,6 +67,8 @@ public abstract class AbstractStatechartVisitor {
     protected abstract void visitState(State state);
 
     protected abstract void visitAction(Action action);
+
+    protected abstract void visitIf(If if_);
 
     protected abstract void visitExecutableContent(ExecutableContent content);
 

@@ -1,6 +1,5 @@
 package de.jplag.statecharts;
 
-import de.jplag.Language;
 import de.jplag.ParsingException;
 import de.jplag.Token;
 import de.jplag.TokenType;
@@ -11,6 +10,7 @@ import de.jplag.statecharts.parser.model.Statechart;
 import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.Assignment;
 import de.jplag.statecharts.parser.model.executable_content.Cancel;
+import de.jplag.statecharts.parser.model.executable_content.If;
 import de.jplag.statecharts.parser.model.executable_content.Send;
 import de.jplag.testutils.FileUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -41,7 +41,7 @@ class ScxmlParserTest {
 
     @BeforeEach
     public void setUp() {
-        language = new StatechartLanguage();
+        language = new Language();
         baseDirectory = BASE_PATH.toFile();
         FileUtil.assertDirectory(baseDirectory, TEST_SUBJECTS);
     }
@@ -68,7 +68,7 @@ class ScxmlParserTest {
 
         State light = State.builder("Light")
                 .addTransitions(new Transition("Dark"))
-                .addOnEntry(new Assignment()).build();
+                .addOnEntry(new If("true", new Assignment())).build();
 
         State dark = State.builder("Dark")
                 .addTransitions(
@@ -110,7 +110,7 @@ class ScxmlParserTest {
         List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
         assertEquals(List.of(
                 STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION,
-                STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END,
+                STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END,
                 ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
         ), tokenTypes);
     }

@@ -10,15 +10,15 @@ import static de.jplag.statecharts.parser.model.executable_content.SimpleExecuta
 
 public interface ExecutableContent extends StatechartElement {
 
-    Set<String> ALLOWED_ELEMENTS = Set.of(
+    final Set<String> ALLOWED_ELEMENTS = Set.of(
             "raise", "if", "elseif", "else", "foreach", "log", "assign", "script", "send", "cancel"
     );
 
     static ExecutableContent fromNode(Node node) {
         return switch (node.getNodeName()) {
             case "raise" -> new SimpleExecutableContent(Type.RAISE);
-            case "if" -> new SimpleExecutableContent(Type.IF);
-            case "elseif" -> new SimpleExecutableContent(Type.ELSEIF);
+            case "if" -> new If(node);
+            case "elseif" -> new ElseIf(node);
             case "else" -> new SimpleExecutableContent(Type.ELSE);
             case "foreach" -> new SimpleExecutableContent(Type.FOREACH);
             case "log" -> new SimpleExecutableContent(Type.LOG);

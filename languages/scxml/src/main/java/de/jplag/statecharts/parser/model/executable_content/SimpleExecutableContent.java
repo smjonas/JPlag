@@ -11,13 +11,11 @@ public record SimpleExecutableContent(Type type) implements ExecutableContent {
 
     @Override
     public String toString() {
-        return String.format("SimpleExecutableContent (type=%s)");
+        return String.format("SimpleExecutableContent (type=%s)", type);
     }
 
     public enum Type {
         RAISE,
-        IF,
-        ELSEIF,
         ELSE,
         FOREACH,
         LOG

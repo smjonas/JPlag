@@ -1,4 +1,8 @@
 package de.jplag.statecharts.parser.model.executable_content;
 
-public class Condition {
-}
+public record Condition() implements ExecutableContent {
+
+    enum Type {
+
+    }
+}package

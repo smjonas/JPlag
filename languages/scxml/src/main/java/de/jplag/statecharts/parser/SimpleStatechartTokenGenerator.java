@@ -73,7 +73,27 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     }
 
     @Override
+    public void visitIf(If if_) {
+        adapter.addToken(IF, if_);
+        for (ExecutableContent content : if_.contents()) {
+            visitExecutableContent(content);
+        }
+        for (ExecutableContent content : if_.elseIfs()) {
+            visitExecutableContent(content);
+        }
+        if (if_.else_() != null) {
+            adapter.addToken(ELSE, if_.else_());
+        }
+        adapter.addToken(IF_END, if_);
+    }
+
+    @Override
     public void visitExecutableContent(ExecutableContent content) {
+        if (content instanceof If if_) {
+            visitIf(if_);
+            return;
+        }
+
         StatechartTokenType type = null;
         if (content instanceof Assignment) {
             type = ASSIGNMENT;
@@ -91,12 +111,11 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     public void visitSimpleExecutableContent(SimpleExecutableContent content) {
         StatechartTokenType type = switch (content.type()) {
             case RAISE -> RAISE;
-            case IF -> IF;
-            case ELSEIF -> ELSE_IF;
             case ELSE -> ELSE;
             case FOREACH -> FOREACH;
             case LOG -> LOG;
         };
         adapter.addToken(type, content);
     }
+
 }
