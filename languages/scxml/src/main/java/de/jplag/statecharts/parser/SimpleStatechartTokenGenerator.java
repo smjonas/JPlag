@@ -36,11 +36,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitState(State state) {
-        if (state.id().equals("Blinking")) {
-        //    assert false : state;
-        }
         adapter.addToken(STATE, state);
-        // assert false : "visiting state " + state;
         for (Action action : state.actions()) {
             visitAction(action);
         }

@@ -72,8 +72,6 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
             actions.set(actions.indexOf(onExit), filteredOnExit);
         }
 
-        // Finally, replace the transition
-        transitions.set(transitions.indexOf(transition), Transition.makeTimed(transition));
     }
 
     /**
@@ -93,15 +91,21 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
                 String sendId = cancel.sendid();
                 // First check if there is a matching transition for the sendid
                 for (Transition transition : transitions) {
+                    boolean foundTimedTransition = false;
                     if (transition.event() != null && transition.event().equals(sendId)) {
                         // Then check if there is also a matching send element in <onentry>
                         for (Action onEntry : onEntries().toList()) {
                             for (Send send : onEntrySends) {
                                 if (send.event().equals(sendId)) {
+                                    foundTimedTransition = true;
+                                    // Finally, replace the transition
                                     removeTimedTransitionElements(onEntry, send, onExit, cancel, transition);
                                 }
                             }
                         }
+                    }
+                    if (foundTimedTransition) {
+                        transitions.set(transitions.indexOf(transition), Transition.makeTimed(transition));
                     }
                 }
             }

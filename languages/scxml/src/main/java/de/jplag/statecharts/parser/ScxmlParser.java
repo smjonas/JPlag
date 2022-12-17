@@ -51,19 +51,20 @@ public class ScxmlParser implements ScxmlElementVisitor {
         String name = NodeUtil.getAttribute(node, "name");
         assert name != null : "statechart element must have name attribute";
 
-        List<Node> stateNodes = NodeUtil.getChildNodes(node, "state");
+        List<Node> stateNodes = NodeUtil.getChildNodes(node, Set.of("state", "parallel"));
         List<State> states = stateNodes.stream().map(this::visitState).collect(Collectors.toList());
         return new Statechart(name, states);
     }
-// <[STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END]>
-// <[STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, STATE_END, STATE, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END]>
+
     @Override
     public State visitState(Node node) {
         String id = NodeUtil.getAttribute(node, "id");
         assert id != null : "state element must have id attribute";
 
         //assert initialStateTargets.isEmpty() : initialStateTargets.toString();
-        boolean initial = NodeUtil.getAttribute(node, "initial") != null || initialStateTargets.contains(id);
+        boolean initial = initialStateTargets.contains(id) || NodeUtil.getAttribute(node, "initial") != null;
+        boolean parallel = NodeUtil.getAttribute(node, "parallel") != null;
+        assert !(initial && parallel) : "parallel state must not have initial attribute";
 
         // Store all encountered initial states for later
         Node child = NodeUtil.getFirstChild(node, "initial");
@@ -73,8 +74,8 @@ public class ScxmlParser implements ScxmlElementVisitor {
 
         ArrayList<Action> actions = new ArrayList<>(NodeUtil.getChildNodes(node, Set.of("onentry", "onexit")).stream().map(this::visitAction).toList());
         ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList());
-        List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
-        return new State(id, transitions, states, actions, initial, false);
+        List<State> states = NodeUtil.getChildNodes(node, Set.of("state", "parallel")).stream().map(this::visitState).toList();
+        return new State(id, transitions, states, actions, initial, parallel);
     }
 
     private List<ExecutableContent> parseExecutableContents(Node node) {
