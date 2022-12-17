@@ -47,36 +47,61 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         return actions.stream().filter(a -> a.type() == ON_EXIT);
     }
 
+    private List<Send> getOnEntrySends() {
+        Stream<List<ExecutableContent>> onEntryContents = this.onEntries().map(Action::contents);
+        return onEntryContents.flatMap(List::stream).filter(c -> c instanceof Send).map(s -> (Send) s).toList();
+    }
+
+    private void removeTimedTransitionElements(Action onEntry, Send send, Action onExit, Cancel cancel, Transition transition) {
+        List<ExecutableContent> filteredContents = onEntry.contents().stream().filter(c -> !(c instanceof Send && c.equals(send))).toList();
+        if (filteredContents.isEmpty()) {
+            // Remove onEntry entirely if it is now empty
+            actions.remove(onEntry);
+        } else {
+            // Only remove the matching onEntry.send
+            Action filteredOnEntry = new Action(ON_ENTRY, filteredContents);
+            actions.set(actions.indexOf(onEntry), filteredOnEntry);
+        }
+
+        // Do something similar for onExit
+        filteredContents = onExit.contents().stream().filter(c -> !(c instanceof Cancel && c.equals(cancel))).toList();
+        if (filteredContents.isEmpty()) {
+            actions.remove(onExit);
+        } else {
+            Action filteredOnExit = new Action(ON_EXIT, filteredContents);
+            actions.set(actions.indexOf(onExit), filteredOnExit);
+        }
+
+        // Finally, replace the transition
+        transitions.set(transitions.indexOf(transition), Transition.makeTimed(transition));
+    }
+
     /**
      * Sets the timed attribute of each transition of this state that is timed.
      * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
      * and transition elements with matching IDs.
+     * These elements will be removed if they are part of a timed transition.
      **/
     private void updateTimedTransitions() {
         if (this.transitions().isEmpty() || this.actions().isEmpty()) {
             return;
         }
-        Stream<ExecutableContent[]> onExitContents = this.onExits().map(Action::contents);
-        List<Cancel> onExitCancellations = onExitContents.flatMap(Arrays::stream).filter(c -> c instanceof Cancel).map(c -> (Cancel) c).toList();
-        if (onExitCancellations.isEmpty()) {
-            return;
-        }
+        List<Send> onEntrySends = getOnEntrySends();
 
-//STATECHART, STATE, INITIAL_STATE, TRANSITION, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END
-//xxxxxxxxxx, xxxxx, xxxxxxxxxxxxx, xxxxxxxxxx, xxxxx, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END , STATE, INITIAL_STATE, TRANSITION, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, ASSIGNMENT, STATE, TRANSITION, TRANSITION, SEND, CANCEL, FILE_END
-//xxxxxxxxxx, xxxxx, xxxxxxxxxxxxx, xxxxxxxxxx, xxxxx, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, ASSIGNMENT, TRANSITION, STATE, ON_ENTRY, SEND, ON_EXIT, CANCEL, TRANSITION, TRANSITION, FILE_END>
-
-        Stream<String> cancelSendIds = onExitCancellations.stream().map(Cancel::sendid);
-        for (String id : cancelSendIds.toList()) {
-            // First check if there is a matching transition for the sendid
-            for (int i = 0; i < transitions.size(); i++) {
-                Transition transition = transitions.get(i);
-                if (transition.event() != null && transition.event().equals(id)) {
-                    // Then check if there is also a matching send element in onentry
-                    Stream<ExecutableContent[]> onEntryContents = this.onEntries().map(Action::contents);
-                    Stream<String> onEntrySendEvents = onEntryContents.flatMap(Arrays::stream).filter(c -> c instanceof Send).map(s -> ((Send) s).event());
-                    if (onEntrySendEvents.anyMatch(s -> s.equals(id))) {
-                        transitions.set(i, Transition.makeTimed(transition));
+        for (Action onExit : onExits().toList()) {
+            for (Cancel cancel : onExit.contents().stream().filter(c -> c instanceof Cancel).map(c -> (Cancel) c).toList()) {
+                String sendId = cancel.sendid();
+                // First check if there is a matching transition for the sendid
+                for (Transition transition : transitions) {
+                    if (transition.event() != null && transition.event().equals(sendId)) {
+                        // Then check if there is also a matching send element in <onentry>
+                        for (Action onEntry : onEntries().toList()) {
+                            for (Send send : onEntrySends) {
+                                if (send.event().equals(sendId)) {
+                                    removeTimedTransitionElements(onEntry, send, onExit, cancel, transition);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -113,7 +138,7 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         private final String id;
         private ArrayList<Transition> transitions = new ArrayList<>();
         private List<State> substates = new ArrayList<>();
-        private List<Action> actions = new ArrayList<>();
+        private final List<Action> actions = new ArrayList<>();
         private boolean initial;
         private boolean parallel;
 
@@ -142,12 +167,12 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
 
         public Builder addOnEntry(ExecutableContent... contents) {
-            this.actions.add(new Action(ON_ENTRY, contents));
+            this.actions.add(new Action(ON_ENTRY, List.of(contents)));
             return this;
         }
 
         public Builder addOnExit(ExecutableContent... contents) {
-            this.actions.add(new Action(ON_EXIT, contents));
+            this.actions.add(new Action(ON_EXIT, List.of(contents)));
             return this;
         }
 

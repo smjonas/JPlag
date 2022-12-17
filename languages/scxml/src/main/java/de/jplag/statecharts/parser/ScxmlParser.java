@@ -55,7 +55,8 @@ public class ScxmlParser implements ScxmlElementVisitor {
         List<State> states = stateNodes.stream().map(this::visitState).collect(Collectors.toList());
         return new Statechart(name, states);
     }
-
+// <[STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END]>
+// <[STATECHART, STATE, STATE, TRANSITION, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, STATE_END, STATE, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END]>
     @Override
     public State visitState(Node node) {
         String id = NodeUtil.getAttribute(node, "id");
@@ -70,15 +71,15 @@ public class ScxmlParser implements ScxmlElementVisitor {
             initialStateTargets.add(visitInitialTransition(child).target());
         }
 
-        List<Action> actions = NodeUtil.getChildNodes(node, Set.of("onentry", "onexit")).stream().map(this::visitAction).toList();
+        ArrayList<Action> actions = new ArrayList<>(NodeUtil.getChildNodes(node, Set.of("onentry", "onexit")).stream().map(this::visitAction).toList());
         ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, "transition").stream().map(this::visitTransition).toList());
         List<State> states = NodeUtil.getChildNodes(node, "state").stream().map(this::visitState).toList();
         return new State(id, transitions, states, actions, initial, false);
     }
 
-    private ExecutableContent[] parseExecutableContents(Node node) {
+    private List<ExecutableContent> parseExecutableContents(Node node) {
         List<Node> children = NodeUtil.getChildNodes(node, ExecutableContent.ALLOWED_ELEMENTS);
-        return children.stream().map(ExecutableContent::fromNode).toArray(ExecutableContent[]::new);
+        return children.stream().map(ExecutableContent::fromNode).toList();
     }
 
     @Override
@@ -105,6 +106,7 @@ public class ScxmlParser implements ScxmlElementVisitor {
                 NodeUtil.getAttribute(node, "target"),
                 NodeUtil.getAttribute(node, "event"),
                 NodeUtil.getAttribute(node, "cond"),
+                parseExecutableContents(node),
                 // Set timed attribute to false initially, may be updated later in the State class
                 false
         );

@@ -1,13 +1,23 @@
 package de.jplag.statecharts.parser.model;
 
-public record Transition(String target, String event, String cond, boolean timed) implements StatechartElement {
+import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public record Transition(String target, String event, String cond, List<ExecutableContent> contents, boolean timed) implements StatechartElement {
 
     public static Transition makeTimed(Transition transition) {
-        return new Transition(transition.target, transition.event, transition.cond, true);
+        return new Transition(transition.target, null, transition.cond, transition.contents, true);
+    }
+
+    public Transition(String target, List<ExecutableContent> contents) {
+        this(target, null, null, contents, false);
     }
 
     public Transition(String target, String event, String cond) {
-        this(target, event, cond, false);
+        this(target, event, cond, new ArrayList<>(), false);
     }
 
     public Transition(String target, String event) {
@@ -15,7 +25,7 @@ public record Transition(String target, String event, String cond, boolean timed
     }
 
     public Transition(String target) {
-        this(target, null);
+        this(target, (String) null);
     }
 
     public boolean isInitial() {
@@ -31,9 +41,14 @@ public record Transition(String target, String event, String cond, boolean timed
         // assert !isInitial();
         String prefix = isTimed() ? "Timed t" : "T";
         return String.format(
-            "%sransition (-> %s) (event='%s', cond='%s')",
+            "%sransition (-> %s) (event='%s', cond='%s'), %s",
             prefix, target, event != null ? (cond != null ? event : "") : "",
-            cond != null ? cond : ""
+            cond != null ? cond : "", contents
         );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(target, event, cond, contents, timed);
     }
 }
