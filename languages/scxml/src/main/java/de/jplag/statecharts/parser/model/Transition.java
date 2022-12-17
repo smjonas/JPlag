@@ -12,8 +12,12 @@ public record Transition(String target, String event, String cond, List<Executab
         return new Transition(transition.target, null, transition.cond, transition.contents, true);
     }
 
+    public Transition(String target, String event, List<ExecutableContent> contents) {
+        this(target, event, null, contents, false);
+    }
+
     public Transition(String target, List<ExecutableContent> contents) {
-        this(target, null, null, contents, false);
+        this(target, null, contents);
     }
 
     public Transition(String target, String event, String cond) {
@@ -21,7 +25,7 @@ public record Transition(String target, String event, String cond, List<Executab
     }
 
     public Transition(String target, String event) {
-        this(target, event, null);
+        this(target, event, new ArrayList<>());
     }
 
     public Transition(String target) {
