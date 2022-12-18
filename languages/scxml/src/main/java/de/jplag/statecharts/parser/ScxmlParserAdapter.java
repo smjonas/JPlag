@@ -81,6 +81,6 @@ public class ScxmlParserAdapter extends AbstractParser {
      * @return a token generating statechart visitor.
      */
     protected AbstractStatechartVisitor createStatechartVisitor() {
-        return new SimpleStatechartTokenGenerator(this);
+        return new ImprovedStatechartTokenGenerator(this);
     }
 }

@@ -9,6 +9,8 @@ import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.model.executable_content.If;
 import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
 
+import java.util.List;
+
 /**
  * Visitor for the containment tree of an EMF Metamodel.
  *
@@ -51,10 +53,6 @@ public abstract class AbstractStatechartVisitor {
             visitStatechart(statechart);
         } else if (element instanceof State state) {
             visitState(state);
-        } else if (element instanceof Action action) {
-            visitAction(action);
-        } else if (element instanceof If if_) {
-            visitIf(if_);
         } else if (element instanceof SimpleExecutableContent simpleContent) {
             visitSimpleExecutableContent(simpleContent);
         } else if (element instanceof ExecutableContent content) {
@@ -66,7 +64,7 @@ public abstract class AbstractStatechartVisitor {
 
     protected abstract void visitState(State state);
 
-    protected abstract void visitAction(Action action);
+    protected abstract void visitActions(List<Action> actions);
 
     protected abstract void visitIf(If if_);
 

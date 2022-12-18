@@ -112,10 +112,6 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
     }
 
-    public List<Transition> getTimedTransitions() {
-        return transitions().stream().filter(Transition::isTimed).toList();
-    }
-
     @Override
     public String toString() {
         return ("State{" +

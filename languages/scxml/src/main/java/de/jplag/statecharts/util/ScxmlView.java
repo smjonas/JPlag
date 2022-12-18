@@ -1,10 +1,15 @@
 package de.jplag.statecharts.util;
 
-import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.State;
+import de.jplag.statecharts.parser.model.Statechart;
+import de.jplag.statecharts.parser.model.StatechartElement;
+import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.Action;
 import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.model.executable_content.If;
 import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
+
+import java.util.List;
 
 public class ScxmlView extends AbstractStatechartVisitor {
 
@@ -50,8 +55,10 @@ public class ScxmlView extends AbstractStatechartVisitor {
     }
 
     @Override
-    public void visitAction(Action action) {
-        addElement(action);
+    public void visitActions(List<Action> actions) {
+        for (Action action : actions) {
+            addElement(action);
+        }
     }
 
     @Override

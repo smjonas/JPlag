@@ -63,11 +63,11 @@ public class ScxmlParser implements ScxmlElementVisitor {
 
         //assert initialStateTargets.isEmpty() : initialStateTargets.toString();
         boolean initial = initialStateTargets.contains(id) || NodeUtil.getAttribute(node, "initial") != null;
-        boolean parallel = NodeUtil.getAttribute(node, "parallel") != null;
-        assert !(initial && parallel) : "parallel state must not have initial attribute";
+        boolean parallel = node.getNodeName().equals("parallel");
 
         // Store all encountered initial states for later
         Node child = NodeUtil.getFirstChild(node, "initial");
+        assert !(parallel && child != null) : "parallel state " + id + " must not have initial element";
         if (child != null) {
             initialStateTargets.add(visitInitialTransition(child).target());
         }

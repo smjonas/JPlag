@@ -115,14 +115,14 @@ class ScxmlParserTest {
         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
         List<Token> tokens = adapter.parse(Set.of(testFile));
         List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
-        assertEquals(List.of(
-                STATECHART, STATE, STATE, TRANSITION, ASSIGNMENT, TRANSITION_END, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION,
-                TRANSITION_END, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, TRANSITION_END, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END,
-                ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION_END, TRANSITION, TRANSITION_END, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
-        ), tokenTypes);
+//        assertEquals(List.of(
+//                STATECHART, STATE, STATE, TRANSITION, ASSIGNMENT, TRANSITION_END, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION,
+//                TRANSITION_END, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, TRANSITION_END, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END,
+//                ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION_END, TRANSITION, TRANSITION_END, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END
+//        ), tokenTypes);
 
-        List<Token> tokens1 = adapter.parse(Set.of(new File(BASE_PATH.toFile(), "Nil.scxml")));
-        List<Token> tokens2 = adapter.parse(Set.of(new File(BASE_PATH.toFile(), "Max.scxml")));
+        List<Token> tokens1 = adapter.parse(Set.of(new File(BASE_PATH.toFile(), "Bjo.scxml")));
+        List<Token> tokens2 = adapter.parse(Set.of(new File(BASE_PATH.toFile(), "Kat.scxml")));
         List<TokenType> tokenTypes1 = tokens1.stream().map(Token::getType).toList();
         List<TokenType> tokenTypes2 = tokens2.stream().map(Token::getType).toList();
         System.out.println(tokenTypes1);

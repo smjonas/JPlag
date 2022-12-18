@@ -1,7 +1,11 @@
 package de.jplag.statecharts.parser;
 
-import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.State;
+import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.Action;
+import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+
+import java.util.List;
 
 import static de.jplag.statecharts.StatechartTokenType.*;
 
@@ -21,14 +25,6 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
         super(adapter);
     }
 
-    @Override
-    public void visitStatechart(Statechart statechart) {
-        adapter.addToken(STATECHART, statechart);
-        for (State state : statechart.states()) {
-            visitState(state);
-        }
-    }
-
     protected void visitStateAttributes(State state) {
         if (state.initial()) {
             adapter.addToken(INITIAL_STATE, state);
@@ -42,24 +38,54 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
     public void visitState(State state) {
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
         visitStateAttributes(state);
+        visitActions(state.actions());
 
-        int timedTransitionsCount = state.getTimedTransitions().size();
-        for (int i = 0; i < timedTransitionsCount; i++) {
-            adapter.addToken(TIMED_TRANSITION, state);
+        for (Transition transition : state.transitions()) {
+            visitTransition(transition);
         }
 
-        int totalTransitionsCount = state.transitions().size();
-        for (int i = 0; i < totalTransitionsCount - timedTransitionsCount; i++) {
-            adapter.addToken(TRANSITION, state);
+        for (State substate : state.substates()) {
+            visitState(substate);
+        }
+        adapter.addToken(STATE_END, state);
+    }
+
+    @Override
+    public void visitActions(List<Action> actions) {
+        List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
+        List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
+        if (!onEntries.isEmpty()) {
+            // Only extract a single ON_ENTRY token even if the state contains multiple.
+            // Functionally, this makes no difference.
+            adapter.addToken(ON_ENTRY, null);
+            List<ExecutableContent> onEntryContents = onEntries.stream().flatMap(a -> a.contents().stream()).toList();
+            for (ExecutableContent content : onEntryContents) {
+                visitExecutableContent(content);
+            }
+            adapter.addToken(ACTION_END, null);
         }
 
-        for (Action action : state.actions()) {
-            visitAction(action);
+        if (!onExits.isEmpty()) {
+            adapter.addToken(ON_EXIT, null);
+            List<ExecutableContent> onExitContents = onExits.stream().flatMap(a -> a.contents().stream()).toList();
+            for (ExecutableContent content : onExitContents) {
+                visitExecutableContent(content);
+            }
+            adapter.addToken(ACTION_END, null);
         }
     }
 
     @Override
     public void visitTransition(Transition transition) {
-        // Transition tokens are already extracted in visitState
+        if (transition.isTimed()) {
+            adapter.addToken(TIMED_TRANSITION, transition);
+        } else {
+            adapter.addToken(TRANSITION, transition);
+        }
+
+        for (ExecutableContent content : transition.contents()) {
+            visitExecutableContent(content);
+        }
+        adapter.addToken(TRANSITION_END, transition);
     }
 }

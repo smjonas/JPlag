@@ -1,9 +1,13 @@
 package de.jplag.statecharts.parser;
 
 import de.jplag.statecharts.StatechartTokenType;
-import de.jplag.statecharts.parser.model.*;
+import de.jplag.statecharts.parser.model.State;
+import de.jplag.statecharts.parser.model.Statechart;
+import de.jplag.statecharts.parser.model.Transition;
 import de.jplag.statecharts.parser.model.executable_content.*;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
+
+import java.util.List;
 
 import static de.jplag.statecharts.StatechartTokenType.*;
 
@@ -37,9 +41,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     @Override
     public void visitState(State state) {
         adapter.addToken(STATE, state);
-        for (Action action : state.actions()) {
-            visitAction(action);
-        }
+        visitActions(state.actions());
 
         for (Transition transition : state.transitions()) {
             visitTransition(transition);
@@ -52,15 +54,14 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     }
 
     @Override
-    public void visitAction(Action action) {
-        if (action == null) {
-            return;
+    public void visitActions(List<Action> actions) {
+        for (Action action : actions) {
+            adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
+            for (ExecutableContent content : action.contents()) {
+                visitExecutableContent(content);
+            }
+            adapter.addToken(ACTION_END, action);
         }
-        adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
-        for (ExecutableContent content : action.contents()) {
-            visitExecutableContent(content);
-        }
-        adapter.addToken(ACTION_END, action);
     }
 
     @Override
@@ -68,9 +69,6 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         adapter.addToken(TRANSITION, transition);
         for (ExecutableContent content : transition.contents()) {
             visitExecutableContent(content);
-// <STATECHART, STATE, STATE, TRANSITION, TRANSITION_END, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, ASSIGNMENT, TRANSITION_END, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, TRANSITION_END, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION_END, TRANSITION, TRANSITION_END, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END>
-// <[STATECHART, STATE, STATE, TRANSITION, ASSIGNMENT, TRANSITION_END, STATE_END, STATE, ON_ENTRY, ASSIGNMENT, ACTION_END, TRANSITION, TRANSITION_END, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION, TRANSITION_END, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION, TRANSITION_END, TRANSITION, TRANSITION_END, STATE_END, STATE_END, STATE_END, STATECHART_END, FILE_END]>
-
         }
         adapter.addToken(TRANSITION_END, transition);
     }
