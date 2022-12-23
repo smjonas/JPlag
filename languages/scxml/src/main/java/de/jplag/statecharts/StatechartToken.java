@@ -1,6 +1,7 @@
 package de.jplag.statecharts;
 
 import de.jplag.Token;
+import de.jplag.TokenType;
 import de.jplag.statecharts.parser.model.StatechartElement;
 
 import java.io.File;
@@ -21,8 +22,13 @@ public class StatechartToken extends Token {
      * @param file    is the source model file.
      * @param element is the corresponding eObject in the model from which this token was extracted.
      */
-    public StatechartToken(StatechartTokenType type, File file, StatechartElement element) {
+    public StatechartToken(TokenType type, File file, StatechartElement element) {
         super(type, file, NO_VALUE, NO_VALUE, NO_VALUE);
+        this.element = element;
+    }
+
+    public StatechartToken(TokenType type, File file, int line, int column, int length, StatechartElement element) {
+        super(type, file, line, column, length);
         this.element = element;
     }
 

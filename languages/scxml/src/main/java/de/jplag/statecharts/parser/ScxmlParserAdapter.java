@@ -3,12 +3,13 @@ package de.jplag.statecharts.parser;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
+import de.jplag.statecharts.Language;
 import de.jplag.statecharts.StatechartToken;
 import de.jplag.statecharts.StatechartTokenType;
 import de.jplag.statecharts.parser.model.Statechart;
 import de.jplag.statecharts.parser.model.StatechartElement;
 import de.jplag.statecharts.util.AbstractStatechartVisitor;
-import de.jplag.statecharts.util.ScxmlView;
+import de.jplag.statecharts.util.StatechartView;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,6 +28,7 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected List<Token> tokens;
     protected File currentFile;
     protected AbstractStatechartVisitor visitor;
+    protected StatechartView view;
 
     /**
      * Creates the parser.
@@ -57,7 +59,7 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
         Statechart statechart;
-        ScxmlView view = new ScxmlView();
+        view = new StatechartView(file);
 
         try {
             statechart = new ScxmlParser().parse(file);
@@ -65,14 +67,16 @@ public class ScxmlParserAdapter extends AbstractParser {
             throw new ParsingException(file, "failed to parse statechart");
         }
 
-        AbstractStatechartVisitor visitor = createStatechartVisitor();
+        visitor = createStatechartVisitor();
         visitor.visit(statechart);
         tokens.add(Token.fileEnd(currentFile));
-        //view.writeToFile(StatechartLanguage.VIEW_FILE_SUFFIX);
+        view.writeToFile(Language.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(StatechartTokenType type, StatechartElement source) {
-        tokens.add(new StatechartToken(type, currentFile, source));
+        StatechartToken token = new StatechartToken(type, currentFile, source);
+        StatechartToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
+        tokens.add(enhancedToken);
     }
 
     /**

@@ -79,6 +79,8 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
     public void visitTransition(Transition transition) {
         if (transition.isTimed()) {
             adapter.addToken(TIMED_TRANSITION, transition);
+        } else if (transition.isGuarded()) {
+            adapter.addToken(GUARDED_TRANSITION, transition);
         } else {
             adapter.addToken(TRANSITION, transition);
         }

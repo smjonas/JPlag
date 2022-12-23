@@ -18,7 +18,7 @@ import java.util.List;
  */
 public abstract class AbstractStatechartVisitor {
 
-    private int currentTreeDepth;
+    protected int depth;
 
     protected AbstractStatechartVisitor() {
     }
@@ -29,7 +29,7 @@ public abstract class AbstractStatechartVisitor {
      * @return the depth in tree node levels.
      */
     public int getCurrentTreeDepth() {
-        return currentTreeDepth;
+        return depth;
     }
 
     /**

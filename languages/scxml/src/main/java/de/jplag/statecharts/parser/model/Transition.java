@@ -36,6 +36,10 @@ public record Transition(String target, String event, String cond, List<Executab
         return target != null && event == null && cond == null;
     }
 
+    public boolean isGuarded() {
+        return cond != null;
+    }
+
     public boolean isTimed() {
         return timed;
     }

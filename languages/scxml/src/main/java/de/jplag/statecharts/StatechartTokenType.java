@@ -7,23 +7,23 @@ import de.jplag.TokenType;
  */
 public enum StatechartTokenType implements TokenType {
 
-    STATECHART("Statechart"),
-    STATECHART_END("Statechart end"),
+
     TRANSITION("Transition"),
-    TRANSITION_END("Transition end"),
+    TRANSITION_END("Transition end", true),
+    GUARDED_TRANSITION("Guarded transition"),
     TIMED_TRANSITION("Timed transition"),
     STATE("State begin"),
-    STATE_END("State end"),
+    STATE_END("State end", true),
     REGION("Region"),
     INITIAL_STATE("Initial state"),
     PARALLEL_STATE("Parallel state"),
     ON_ENTRY("OnEntry"),
     ON_EXIT("OnExit"),
-    ACTION_END("Action end"),
+    ACTION_END("Action end", true),
     // Simple executable content
     RAISE("Raise"),
     IF("If"),
-    IF_END("If end"),
+    IF_END("If end", true),
     ELSE_IF("Else if"),
     ELSE("Else"),
     FOREACH("For each"),
@@ -34,13 +34,29 @@ public enum StatechartTokenType implements TokenType {
     SCRIPT("Script"),
     SEND("Send");
 
+    private static final String END_TOKEN_SUFFIX = " (End)";
     private final String description;
+    private boolean isEndToken = false;
 
     StatechartTokenType(String description) {
         this.description = description;
     }
 
+    /**
+     * Creates a statechart token type that may be an end token.
+     * @param isEndToken indicates that the token is an end token
+     */
+    StatechartTokenType(String description, boolean isEndToken) {
+        this(description);
+        this.isEndToken = isEndToken;
+    }
+
     public String getDescription() {
         return description;
     }
+
+    public boolean isEndToken() {
+        return isEndToken;
+    }
+
 }

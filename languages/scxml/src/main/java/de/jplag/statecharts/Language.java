@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @MetaInfServices(de.jplag.Language.class)
 public class Language implements de.jplag.Language {
-    public static final String VIEW_FILE_SUFFIX = ".TreeView";
+    public static final String VIEW_FILE_SUFFIX = ".scxmlview";
     public static final String FILE_ENDING = ".scxml";
 
     private static final String NAME = "SCXML (Statechart XML)";

@@ -41,6 +41,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         adapter.addToken(STATE, state);
         visitActions(state.actions());
 
+        depth++;
         for (Transition transition : state.transitions()) {
             visitTransition(transition);
         }
@@ -49,6 +50,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             visitState(substate);
         }
         adapter.addToken(STATE_END, state);
+        depth--;
     }
 
     @Override
@@ -65,9 +67,11 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     @Override
     public void visitTransition(Transition transition) {
         adapter.addToken(TRANSITION, transition);
+        depth++;
         for (ExecutableContent content : transition.contents()) {
             visitExecutableContent(content);
         }
+        depth--;
         adapter.addToken(TRANSITION_END, transition);
     }
 

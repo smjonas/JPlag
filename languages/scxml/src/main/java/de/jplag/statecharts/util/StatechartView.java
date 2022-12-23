@@ -1,92 +1,43 @@
 package de.jplag.statecharts.util;
 
-import de.jplag.statecharts.parser.model.State;
-import de.jplag.statecharts.parser.model.Statechart;
-import de.jplag.statecharts.parser.model.StatechartElement;
-import de.jplag.statecharts.parser.model.Transition;
-import de.jplag.statecharts.parser.model.executable_content.Action;
-import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
-import de.jplag.statecharts.parser.model.executable_content.If;
-import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
+import de.jplag.statecharts.StatechartToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
-public class ScxmlView extends AbstractStatechartVisitor {
+public class StatechartView {
 
-    private File file;
+    private final File file;
     private final StringBuilder builder = new StringBuilder();
-    private int depth = 0;
+    private final Logger logger;
+    private int line;
 
-    public ScxmlView(File file) {
+    public StatechartView(File file) {
         this.file = file;
+        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.line = 1;
     }
 
     public void writeToFile(String suffix) {
-        File treeViewFile = new File(file + suffix);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(treeViewFile));) {
-            if (!treeViewFile.createNewFile()) {
-                logger.warn("Overwriting tree view file: {}", treeViewFile);
+        File viewFile = new File(file + suffix);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(viewFile));) {
+            if (!viewFile.createNewFile()) {
+                logger.warn("Overwriting statechart view file: {}", viewFile);
             }
             writer.append(builder.toString());
         } catch (IOException exception) {
-            logger.error("Could not write tree view file!", exception);
+            logger.error("Could not write statechart view file!", exception);
         }
     }
 
-    private void addElement(StatechartElement element) {
-        builder.append("  ".repeat(depth)).append(element.toString()).append("\n");
-    }
-
-    @Override
-    public void visitStatechart(Statechart statechart) {
-        addElement(statechart);
-        depth++;
-        for (State state : statechart.states()) {
-            visitState(state);
-        }
-        depth--;
-    }
-
-    @Override
-    public void visitState(State state) {
-        addElement(state);
-        if (state.isRegion()) {
-            depth++;
-            for (State substate : state.substates()) {
-                visitState(substate);
-            }
-            depth--;
-        }
-    }
-
-    @Override
-    public void visitActions(List<Action> actions) {
-        for (Action action : actions) {
-            addElement(action);
-        }
-    }
-
-    @Override
-    protected void visitIf(If if_) {
-        addElement(if_);
-    }
-
-    @Override
-    public void visitTransition(Transition transition) {
-        addElement(transition);
-    }
-
-    @Override
-    public void visitExecutableContent(ExecutableContent content) {
-        addElement(content);
-    }
-
-    @Override
-    public void visitSimpleExecutableContent(SimpleExecutableContent content) {
-        addElement(content);
+    public StatechartToken enhanceToken(StatechartToken token, int depth) {
+        String prefix = "  ".repeat(depth);
+        String content = token.getStatechartElement().toString();
+        builder.append(prefix).append(content).append("\n");
+        return new StatechartToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
     }
 }
