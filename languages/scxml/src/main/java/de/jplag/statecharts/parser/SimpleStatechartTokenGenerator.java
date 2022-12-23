@@ -31,11 +31,9 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        adapter.addToken(STATECHART, statechart);
         for (State state : statechart.states()) {
             visitState(state);
         }
-        adapter.addToken(STATECHART_END, statechart);
     }
 
     @Override

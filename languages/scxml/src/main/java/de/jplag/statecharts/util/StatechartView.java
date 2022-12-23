@@ -9,24 +9,33 @@ import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
 import de.jplag.statecharts.parser.model.executable_content.If;
 import de.jplag.statecharts.parser.model.executable_content.SimpleExecutableContent;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class ScxmlView extends AbstractStatechartVisitor {
 
+    private File file;
     private final StringBuilder builder = new StringBuilder();
     private int depth = 0;
 
-//    public void writeToFile(String suffix) {
-//        File treeViewFile = new File(file + suffix);
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(treeViewFile));) {
-//            if (!treeViewFile.createNewFile()) {
-//                logger.warn("Overwriting tree view file: {}", treeViewFile);
-//            }
-//            writer.append(builder.toString());
-//        } catch (IOException exception) {
-//            logger.error("Could not write tree view file!", exception);
-//        }
-//    }
+    public ScxmlView(File file) {
+        this.file = file;
+    }
+
+    public void writeToFile(String suffix) {
+        File treeViewFile = new File(file + suffix);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(treeViewFile));) {
+            if (!treeViewFile.createNewFile()) {
+                logger.warn("Overwriting tree view file: {}", treeViewFile);
+            }
+            writer.append(builder.toString());
+        } catch (IOException exception) {
+            logger.error("Could not write tree view file!", exception);
+        }
+    }
 
     private void addElement(StatechartElement element) {
         builder.append("  ".repeat(depth)).append(element.toString()).append("\n");
