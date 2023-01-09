@@ -1,6 +1,7 @@
 package de.jplag.statecharts.util;
 
 import de.jplag.statecharts.StatechartToken;
+import de.jplag.statecharts.StatechartTokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,8 @@ public class StatechartView {
 
     public StatechartToken enhanceToken(StatechartToken token, int depth) {
         String prefix = "  ".repeat(depth);
-        String content = token.getStatechartElement().toString();
+        StatechartTokenType type = (StatechartTokenType) token.getType();
+        String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
         return new StatechartToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
     }

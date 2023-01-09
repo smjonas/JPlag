@@ -79,6 +79,10 @@ public class ScxmlParserAdapter extends AbstractParser {
         tokens.add(enhancedToken);
     }
 
+    public void addToken(StatechartTokenType type) {
+        addToken(type, null);
+    }
+
     /**
      * Extension point for subclasses to employ different token generators.
      *

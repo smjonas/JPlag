@@ -6,13 +6,6 @@ public record Statechart(String name, List<State> states) implements StatechartE
 
      @Override
      public String toString() {
-         return "\nStatechart{" +
-                 "states=" + states.toString().replace("], ", "],\n") +
-                 "}\n";
+         return String.format("%s: Statechart {");
      }
-
-//    @Override
-//    public String toString() {
-//        return name + ": Statechart";
-//    }
 }

@@ -49,18 +49,20 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         for (State substate : state.substates()) {
             visitState(substate);
         }
-        adapter.addToken(STATE_END, state);
         depth--;
+        adapter.addToken(STATE_END, state);
     }
 
     @Override
     public void visitActions(List<Action> actions) {
         for (Action action : actions) {
             adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
+            depth++;
             for (ExecutableContent content : action.contents()) {
                 visitExecutableContent(content);
             }
-            adapter.addToken(ACTION_END, action);
+            depth--;
+            adapter.addToken(ACTION_END);
         }
     }
 
@@ -72,7 +74,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             visitExecutableContent(content);
         }
         depth--;
-        adapter.addToken(TRANSITION_END, transition);
+        adapter.addToken(TRANSITION_END);
     }
 
     @Override

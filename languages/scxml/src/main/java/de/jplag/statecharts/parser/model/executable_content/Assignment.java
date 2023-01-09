@@ -6,5 +6,4 @@ public record Assignment() implements ExecutableContent {
     public String toString() {
         return "Assignment";
     }
-
 }

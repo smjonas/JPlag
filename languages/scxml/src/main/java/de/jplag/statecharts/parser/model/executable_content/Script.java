@@ -6,5 +6,4 @@ public record Script(String code) implements ExecutableContent {
     public String toString() {
         return "Script";
     }
-
 }

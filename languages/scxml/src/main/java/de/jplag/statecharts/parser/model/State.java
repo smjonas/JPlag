@@ -112,23 +112,23 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
     }
 
-    @Override
-    public String toString() {
-        return ("State{" +
-                "id='" + id + '\'' +
-                ", transitions=" + transitions +
-                ", substates=" + substates +
-                ", onEntries=" + onEntries() +
-                ", onExits=" + onExits() +
-                ", initial=" + initial +
-                ", parallel=" + parallel +
-                "}").replace("], ", "],\n");
-    }
-
     // @Override
     // public String toString() {
-    //     return String.format("%s: %s", id, isRegion() ? "Region" : "State");
+    //     return ("State{" +
+    //             "id='" + id + '\'' +
+    //             ", transitions=" + transitions +
+    //             ", substates=" + substates +
+    //             ", onEntries=" + onEntries() +
+    //             ", onExits=" + onExits() +
+    //             ", initial=" + initial +
+    //             ", parallel=" + parallel +
+    //             "}").replace("], ", "],\n");
     // }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s {", id, isRegion() ? "Region" : "State");
+    }
 
     public static Builder builder(String id) {
         return new Builder(id);

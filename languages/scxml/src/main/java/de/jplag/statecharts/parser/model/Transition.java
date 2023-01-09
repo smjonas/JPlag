@@ -48,11 +48,17 @@ public record Transition(String target, String event, String cond, List<Executab
     public String toString() {
         // assert !isInitial();
         String prefix = isTimed() ? "Timed t" : "T";
-        return String.format(
-            "%sransition (-> %s) (event='%s', cond='%s'), %s",
-            prefix, target, event != null ? (cond != null ? event : "") : "",
-            cond != null ? cond : "", contents
-        );
+        String suffix;
+        if (event == null && cond == null) {
+            suffix = "";
+        } else if (event != null && cond != null) {
+            suffix = String.format("(event='%s', cond='%s')", event, cond);
+        } else if (event != null) {
+            suffix = String.format("(event='%s')", event);
+        } else {
+            suffix = String.format("(cond='%s')", cond);
+        }
+        return String.format("%sransition (-> %s) %s {", prefix, target, suffix);
     }
 
     @Override

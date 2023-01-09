@@ -34,7 +34,6 @@ public enum StatechartTokenType implements TokenType {
     SCRIPT("Script"),
     SEND("Send");
 
-    private static final String END_TOKEN_SUFFIX = " (End)";
     private final String description;
     private boolean isEndToken = false;
 

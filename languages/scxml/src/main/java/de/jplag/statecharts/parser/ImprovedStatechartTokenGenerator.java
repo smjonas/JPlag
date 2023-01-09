@@ -37,6 +37,7 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
     @Override
     public void visitState(State state) {
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
+        depth++;
         visitStateAttributes(state);
         visitActions(state.actions());
 
@@ -47,6 +48,7 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
         for (State substate : state.substates()) {
             visitState(substate);
         }
+        depth--;
         adapter.addToken(STATE_END, state);
     }
 
@@ -59,18 +61,22 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
             // Functionally, this makes no difference.
             adapter.addToken(ON_ENTRY, null);
             List<ExecutableContent> onEntryContents = onEntries.stream().flatMap(a -> a.contents().stream()).toList();
+            depth++;
             for (ExecutableContent content : onEntryContents) {
                 visitExecutableContent(content);
             }
+            depth--;
             adapter.addToken(ACTION_END, null);
         }
 
         if (!onExits.isEmpty()) {
             adapter.addToken(ON_EXIT, null);
             List<ExecutableContent> onExitContents = onExits.stream().flatMap(a -> a.contents().stream()).toList();
+            depth++;
             for (ExecutableContent content : onExitContents) {
                 visitExecutableContent(content);
             }
+            depth--;
             adapter.addToken(ACTION_END, null);
         }
     }
@@ -85,9 +91,11 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
             adapter.addToken(TRANSITION, transition);
         }
 
+        depth++;
         for (ExecutableContent content : transition.contents()) {
             visitExecutableContent(content);
         }
+        depth--;
         adapter.addToken(TRANSITION_END, transition);
     }
 }
