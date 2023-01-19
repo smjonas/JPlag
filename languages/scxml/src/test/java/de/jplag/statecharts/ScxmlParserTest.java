@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.yakindu.base.SGraphPackage;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
@@ -28,6 +29,7 @@ import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.statecharts.StatechartTokenType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.yakindu.sct.model.sgraph.resource.ResourceUtil.loadResource;
 
 class ScxmlParserTest {
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "statecharts");
@@ -111,7 +113,9 @@ class ScxmlParserTest {
 
     @Test
     void testSimpleTokenExtractionStrategy() throws ParsingException {
+
         File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[2]);
+        System.out.println(testFile);
         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
         List<Token> tokens = adapter.parse(Set.of(testFile));
         List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();

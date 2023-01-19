@@ -12,6 +12,7 @@ package org.yakindu.sct.model.sgraph.resource;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -19,6 +20,7 @@ import org.eclipse.emf.ecore.resource.Resource.Factory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.yakindu.base.SGraphPackage;
 import org.yakindu.sct.model.sgraph.Statechart;
@@ -29,6 +31,12 @@ import org.yakindu.sct.model.sgraph.Statechart;
  * 
  */
 public class ResourceUtil {
+
+	public static void registerModelExtension(String extension) {
+		final Resource.Factory.Registry registry = Resource.Factory.Registry.INSTANCE;
+		final Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
+		extensionMap.put(extension, new XMIResourceFactoryImpl());
+	}
 
 	public static Resource loadResource(String filename) {
 		URI uri = URI.createPlatformResourceURI(filename, true);
