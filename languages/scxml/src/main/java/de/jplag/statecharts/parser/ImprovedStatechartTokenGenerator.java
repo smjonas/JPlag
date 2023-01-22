@@ -39,17 +39,7 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
         depth++;
         visitStateAttributes(state);
-        visitActions(state.actions());
-
-        for (Transition transition : state.transitions()) {
-            visitTransition(transition);
-        }
-
-        for (State substate : state.substates()) {
-            visitState(substate);
-        }
-        depth--;
-        adapter.addToken(STATE_END, state);
+        visitStateContents(state);
     }
 
     @Override
