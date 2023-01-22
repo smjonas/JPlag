@@ -10,20 +10,19 @@
 */
 package org.yakindu.sct.model.sgraph.resource;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.yakindu.base.SGraphPackage;
+import org.yakindu.sct.model.sgraph.Statechart;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.Resource.Factory;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.yakindu.base.SGraphPackage;
-import org.yakindu.sct.model.sgraph.Statechart;
 
 /**
  * 
@@ -33,16 +32,17 @@ import org.yakindu.sct.model.sgraph.Statechart;
 public class ResourceUtil {
 
 	public static void registerModelExtension(String extension) {
-		final Resource.Factory.Registry registry = Resource.Factory.Registry.INSTANCE;
+		final Registry registry = Registry.INSTANCE;
 		final Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
 		extensionMap.put(extension, new XMIResourceFactoryImpl());
 	}
 
 	public static Resource loadResource(String filename) {
 		URI uri = URI.createPlatformResourceURI(filename, true);
-		Factory factory = ResourceFactoryRegistryImpl.INSTANCE.getFactory(uri);
-		Resource resource = factory.createResource(uri);
 		ResourceSet resourceSet = new ResourceSetImpl();
+		Resource resource = resourceSet.createResource(uri, "sct");
+		resourceSet.getResource(uri, true);
+		assert resource != null;
 		resourceSet.getResources().add(resource);
 		try {
 			resource.load(Collections.EMPTY_MAP);
@@ -54,9 +54,8 @@ public class ResourceUtil {
 
 	public static Statechart loadStatechart(String filename) {
 		Resource resource = loadResource(filename);
-		Statechart statechart = (Statechart) EcoreUtil.getObjectByType(
+		return (Statechart) EcoreUtil.getObjectByType(
 				resource.getContents(), SGraphPackage.Literals.STATECHART);
-		return statechart;
 	}
 
 }

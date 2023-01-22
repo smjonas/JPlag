@@ -23,7 +23,7 @@ class YakinduParserTest {
     @Test
     public void test() {
         File testFile = new File(BASE_PATH.toFile(), TEST_SUBJECTS[0]);
-        Statechart statechart = ResourceUtil.loadStatechart(testFile.getPath());
+        Statechart statechart = ResourceUtil.loadStatechart("/home/jonas/Desktop/JPlag/languages/scxml/src/test/resources/org/yakindu/simple.sct");
         System.out.println(statechart.toString());
     }
 }
