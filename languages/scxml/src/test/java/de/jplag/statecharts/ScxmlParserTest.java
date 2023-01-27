@@ -29,7 +29,6 @@ import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.statecharts.StatechartTokenType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.yakindu.sct.model.sgraph.resource.ResourceUtil.loadResource;
 
 class ScxmlParserTest {
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "statecharts");

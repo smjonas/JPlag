@@ -11,17 +11,21 @@
 package org.yakindu.sct.model.sgraph.resource;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yakindu.base.SGraphPackage;
 import org.yakindu.sct.model.sgraph.Statechart;
 
-import java.io.IOException;
-import java.util.Collections;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -31,31 +35,25 @@ import java.util.Map;
  */
 public class ResourceUtil {
 
+	private static final Logger logger = LoggerFactory.getLogger(ResourceUtil.class);
+
 	public static void registerModelExtension(String extension) {
 		final Registry registry = Registry.INSTANCE;
 		final Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
 		extensionMap.put(extension, new XMIResourceFactoryImpl());
 	}
 
-	public static Resource loadResource(String filename) {
-		URI uri = URI.createPlatformResourceURI(filename, true);
-		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource resource = resourceSet.createResource(uri, "sct");
-		resourceSet.getResource(uri, true);
-		assert resource != null;
-		resourceSet.getResources().add(resource);
+	public static Statechart loadStatechart(File file) {
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		EPackage.Registry.INSTANCE.put("http://www.yakindu.org/sct/sgraph/2.0.0", SGraphPackage.eINSTANCE);
+		EPackage.Registry.INSTANCE.put("http://www.eclipse.org/gmf/runtime/1.0.2/notation", NotationPackage.eINSTANCE);
+
 		try {
-			resource.load(Collections.EMPTY_MAP);
-			return resource;
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading resource", e);
+			Resource resource = resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
+			return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
+		} catch (WrappedException exception) {
+			logger.error("Could not load {}: {}", file, exception.getCause().getMessage());
 		}
+		return null;
 	}
-
-	public static Statechart loadStatechart(String filename) {
-		Resource resource = loadResource(filename);
-		return (Statechart) EcoreUtil.getObjectByType(
-				resource.getContents(), SGraphPackage.Literals.STATECHART);
-	}
-
 }
