@@ -1,5 +1,7 @@
 package de.jplag.statecharts.parser;
 
+import org.yakindu.sct.model.sgraph.Statechart;
+import org.yakindu.sct.model.sgraph.resource.ResourceUtil;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
@@ -25,6 +27,9 @@ import java.util.Set;
  * @author Jonas Strittmatter
  */
 public class ScxmlParserAdapter extends AbstractParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(ResourceUtil.class);
+
     protected List<Token> tokens;
     protected File currentFile;
     protected AbstractStatechartVisitor visitor;
@@ -34,7 +39,9 @@ public class ScxmlParserAdapter extends AbstractParser {
      * Creates the parser.
      */
     public ScxmlParserAdapter() {
-
+      // Register model URIs
+	  EPackage.Registry.INSTANCE.put("http://www.yakindu.org/sct/sgraph/2.0.0", SGraphPackage.eINSTANCE);
+	  EPackage.Registry.INSTANCE.put("http://www.eclipse.org/gmf/runtime/1.0.2/notation", NotationPackage.eINSTANCE);
     }
 
     /**
@@ -51,8 +58,19 @@ public class ScxmlParserAdapter extends AbstractParser {
         return tokens;
     }
 
+    private Statechart loadStatechart(File file) {
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		try {
+			Resource resource = resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
+			return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
+		} catch (WrappedException exception) {
+			logger.error("Could not load {}: {}", file, exception.getCause().getMessage());
+		}
+		return null;
+    }
+
     /**
-     * Loads a statechart from a file, parses it and extracts tokens from it.
+     * Loads a Yakindu statechart from a file, parses it and extracts tokens from it.
      *
      * @param file is the statechart file.
      */
@@ -61,10 +79,9 @@ public class ScxmlParserAdapter extends AbstractParser {
         Statechart statechart;
         view = new StatechartView(file);
 
-        try {
-            statechart = new ScxmlParser().parse(file);
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new ParsingException(file, "failed to parse statechart");
+        statechart = loadStatechart(file);
+        if (statechart == null) {
+          throw new ParsingException(file, "failed to load statechart");
         }
 
         visitor = createStatechartVisitor();
