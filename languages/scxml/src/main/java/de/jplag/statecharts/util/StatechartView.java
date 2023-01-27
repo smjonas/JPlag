@@ -40,6 +40,6 @@ public class StatechartView {
         StatechartTokenType type = (StatechartTokenType) token.getType();
         String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
-        return new StatechartToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
+        return new StatechartToken(token.getType(), token.getFile(), line, prefix.length() + 1, content.length(), token.getStatechartElement());
     }
 }
