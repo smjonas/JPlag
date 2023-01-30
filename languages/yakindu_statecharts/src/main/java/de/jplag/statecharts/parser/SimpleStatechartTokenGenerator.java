@@ -20,6 +20,9 @@ import static de.jplag.statecharts.StatechartTokenType.*;
 public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     protected final ScxmlParserAdapter adapter;
 
+    // TODO: read documentation (e.g. about Reactions)
+
+
     /**
      * Creates the visitor.
      *
@@ -31,96 +34,67 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (State state : statechart.states()) {
-            visitState(state);
+        for (Region region : statechart.regions) {
+            visitRegion(region);
         }
     }
 
     @Override
-    public void visitState(State state) {
-        adapter.addToken(STATE, state);
-        visitActions(state.actions());
-
+    public void visitRegion(Region region) {
+        adapter.addToken(REGION);
         depth++;
-        for (Transition transition : state.transitions()) {
-            visitTransition(transition);
-        }
-
-        for (State substate : state.substates()) {
-            visitState(substate);
+        for (Vertex vertex : region.vertices) {
+            visitVertex(vertex);
         }
         depth--;
-        adapter.addToken(STATE_END, state);
+        adapter.addToken(END_REGION);
     }
 
     @Override
-    public void visitActions(List<Action> actions) {
-        for (Action action : actions) {
-            adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
-            depth++;
-            for (ExecutableContent content : action.contents()) {
-                visitExecutableContent(content);
-            }
-            depth--;
-            adapter.addToken(ACTION_END);
+    public void visitVertex(Vertex vertex) {
+        if (vertex instanceof Choice) {
+           visitChoice((Choice) vertex);
+        } else if (vertex instanceof Entry) {
+            visitEntry((Entry) vertex);
+        } else if (vertex instanceof Exit) {
+            visitExit((Exit) vertex);
+        } else if (vertex instanceof Synchronization) {
+            visitSynchronization((Synchronization) vertex);
         }
+
+        depth++;
+        if (vertex.outgoingTransitions != null) {
+            for (Transition transition : vertex.outgoingTransitions) {
+                visitTransition(transition);
+            }
+        }
+        depth--;
+        adapter.addToken(VERTEX_END);
     }
 
     @Override
     public void visitTransition(Transition transition) {
-        adapter.addToken(TRANSITION, transition);
-        depth++;
-        for (ExecutableContent content : transition.contents()) {
-            visitExecutableContent(content);
-        }
-        depth--;
-        adapter.addToken(TRANSITION_END);
+        adapter.addToken(TRANSITION);
+    }
+
+    // TODO: sub tokens based on ChoiceKind in ImprovedTokenGenerator
+    @Override
+    public void visitChoice(Choice choice) {
+        adapter.addToken(CHOICE);
     }
 
     @Override
-    public void visitIf(If if_) {
-        adapter.addToken(IF, if_);
-        for (ExecutableContent content : if_.contents()) {
-            visitExecutableContent(content);
-        }
-        for (ExecutableContent content : if_.elseIfs()) {
-            visitExecutableContent(content);
-        }
-        if (if_.else_() != null) {
-            adapter.addToken(ELSE, if_.else_());
-        }
-        adapter.addToken(IF_END, if_);
+    public void visitEntry(Entry entry) {
+        adapter.addToken(ENTRY);
     }
 
     @Override
-    public void visitExecutableContent(ExecutableContent content) {
-        if (content instanceof If if_) {
-            visitIf(if_);
-            return;
-        }
-
-        StatechartTokenType type = null;
-        if (content instanceof Assignment) {
-            type = ASSIGNMENT;
-        } else if (content instanceof Script) {
-            type = SCRIPT;
-        } else if (content instanceof Send) {
-            type = SEND;
-        } else if (content instanceof Cancel) {
-            type = CANCEL;
-        }
-        adapter.addToken(type, content);
+    public void visitExit(Exit exit) {
+        adapter.addToken(EXIT);
     }
 
     @Override
-    public void visitSimpleExecutableContent(SimpleExecutableContent content) {
-        StatechartTokenType type = switch (content.type()) {
-            case RAISE -> RAISE;
-            case ELSE -> ELSE;
-            case FOREACH -> FOREACH;
-            case LOG -> LOG;
-        };
-        adapter.addToken(type, content);
+    public void visitSynchronization(Synchronization synchronization) {
+        adapter.addToken(SYNCHRONIZATION);
     }
-
 }

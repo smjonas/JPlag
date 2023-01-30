@@ -7,6 +7,16 @@ import de.jplag.TokenType;
  */
 public enum StatechartTokenType implements TokenType {
 
+    REGION("Region"),
+    END_REGION("Region end", true),
+    VERTEX_END("Vertex end", true),
+    TRANSITION("Transition"),
+    CHOICE("Choice"),
+    ENTRY("Entry"),
+    EXIT("Exit"),
+    SYNCHRONIZATION("Synchronization"),
+    // End new tokens
+
     TRANSITION("Transition"),
     TRANSITION_END("Transition end", true),
     GUARDED_TRANSITION("Guarded transition"),
