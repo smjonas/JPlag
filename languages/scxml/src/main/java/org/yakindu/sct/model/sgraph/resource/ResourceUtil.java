@@ -1,9 +1,9 @@
-/** 
- * Copyright (c) 2015 committers of YAKINDU and others. 
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution, and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+/**
+ * Copyright (c) 2015 committers of YAKINDU and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * committers of YAKINDU - initial API and implementation
  *
@@ -29,19 +29,13 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * 
+ *
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public class ResourceUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResourceUtil.class);
-
-	public static void registerModelExtension(String extension) {
-		final Registry registry = Registry.INSTANCE;
-		final Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
-		extensionMap.put(extension, new XMIResourceFactoryImpl());
-	}
 
 	public static Statechart loadStatechart(File file) {
 		final ResourceSet resourceSet = new ResourceSetImpl();

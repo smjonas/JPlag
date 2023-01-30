@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Parser adapter for SCXML statecharts.
+ * Parser adapter for Yakindu statecharts.
  *
  * @author Jonas Strittmatter
  */
-public class ScxmlParserAdapter extends AbstractParser {
+public class YakinduParserAdapter extends AbstractParser {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceUtil.class);
 
@@ -38,10 +38,16 @@ public class ScxmlParserAdapter extends AbstractParser {
     /**
      * Creates the parser.
      */
-    public ScxmlParserAdapter() {
+    public YakinduParserAdapter() {
       // Register model URIs
 	  EPackage.Registry.INSTANCE.put("http://www.yakindu.org/sct/sgraph/2.0.0", SGraphPackage.eINSTANCE);
 	  EPackage.Registry.INSTANCE.put("http://www.eclipse.org/gmf/runtime/1.0.2/notation", NotationPackage.eINSTANCE);
+
+      // Register .ysc extension
+      Registry registry = Registry.INSTANCE;
+      Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
+      String extension = Language.FILE_ENDING.substring(1);
+      extensionMap.put(extension, new XMIResourceFactoryImpl());
     }
 
     /**
@@ -76,10 +82,9 @@ public class ScxmlParserAdapter extends AbstractParser {
      */
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
-        Statechart statechart;
         view = new StatechartView(file);
 
-        statechart = loadStatechart(file);
+        Statechart statechart = loadStatechart(file);
         if (statechart == null) {
           throw new ParsingException(file, "failed to load statechart");
         }
