@@ -1,15 +1,6 @@
 package de.jplag.yakindu.util;
 
-import de.jplag.scxml.parser.model.State;
-import de.jplag.scxml.parser.model.Statechart;
-import de.jplag.scxml.parser.model.StatechartElement;
-import de.jplag.scxml.parser.model.Transition;
-import de.jplag.scxml.parser.model.executable_content.Action;
-import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
-import de.jplag.scxml.parser.model.executable_content.If;
-import de.jplag.scxml.parser.model.executable_content.SimpleExecutableContent;
-
-import java.util.List;
+import org.yakindu.sct.model.sgraph.*;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
@@ -20,9 +11,6 @@ public abstract class AbstractStatechartVisitor {
 
     protected int depth;
 
-    protected AbstractStatechartVisitor() {
-    }
-
     /**
      * Returns the current depth in the containment tree from the starting point.
      *
@@ -32,46 +20,20 @@ public abstract class AbstractStatechartVisitor {
         return depth;
     }
 
-    /**
-     * Visits a StatechartElement and all nodes in the containment tree below. Note that multiple visitor method may be called for a
-     * single element. For example <code>visitEClass()</code> and <code>visitEObject()</code>.
-     */
-    public final void visit(StatechartElement element) {
-        // Map<Class<?>, Consumer<>> visitByType = Map.ofEntries(
-        //     entry(OnEntry.class, this::visitOnEntry),
-        //     entry(OnExit.class, this::visitOnExit),
-        //     entry(SimpleExecutableContent.class, this::visitSimpleExecutableContent),
-        //     entry(Transition.class, this::visitTransition),
-        //     entry(Assign.class, this::visitAssign),
-        //     entry(Cancel.class, this::visitCancel),
-        //     entry(Script.class, this::visitScript),
-        //     entry(Send.class, this::visitSend)
-        // );
-        // visitByType.get(element.getClass()).accept(element);
+    public abstract void visitStatechart(Statechart statechart);
 
-        if (element instanceof Statechart statechart) {
-            visitStatechart(statechart);
-        } else if (element instanceof State state) {
-            visitState(state);
-        } else if (element instanceof SimpleExecutableContent simpleContent) {
-            visitSimpleExecutableContent(simpleContent);
-        } else if (element instanceof ExecutableContent content) {
-            visitExecutableContent(content);
-        }
-    }
+    public abstract void visitRegion(Region region);
 
-    protected abstract void visitStatechart(Statechart statechart);
+    public abstract void visitVertex(Vertex vertex);
 
-    protected abstract void visitState(State state);
+    public abstract void visitTransition(Transition transition);
 
-    protected abstract void visitActions(List<Action> actions);
+    // TODO: sub tokens based on ChoiceKind in ImprovedTokenGenerator
+    public abstract void visitChoice(Choice choice);
 
-    protected abstract void visitIf(If if_);
+    public abstract void visitEntry(Entry entry);
 
-    protected abstract void visitExecutableContent(ExecutableContent content);
+    public abstract void visitExit(Exit exit);
 
-    protected abstract void visitSimpleExecutableContent(SimpleExecutableContent content);
-
-    protected abstract void visitTransition(Transition transition);
-
+    public abstract void visitSynchronization(Synchronization synchronization);
 }

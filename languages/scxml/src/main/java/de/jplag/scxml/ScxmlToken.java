@@ -1,4 +1,4 @@
-package de.jplag.yakindu;
+package de.jplag.scxml;
 
 import de.jplag.Token;
 import de.jplag.TokenType;
@@ -11,7 +11,7 @@ import java.io.File;
  *
  * @author Timur Saglam
  */
-public class StatechartToken extends Token {
+public class ScxmlToken extends Token {
 
     private final StatechartElement element;
 
@@ -22,12 +22,12 @@ public class StatechartToken extends Token {
      * @param file    is the source model file.
      * @param element is the corresponding eObject in the model from which this token was extracted.
      */
-    public StatechartToken(TokenType type, File file, StatechartElement element) {
+    public ScxmlToken(TokenType type, File file, StatechartElement element) {
         super(type, file, NO_VALUE, NO_VALUE, NO_VALUE);
         this.element = element;
     }
 
-    public StatechartToken(TokenType type, File file, int line, int column, int length, StatechartElement element) {
+    public ScxmlToken(TokenType type, File file, int line, int column, int length, StatechartElement element) {
         super(type, file, line, column, length);
         this.element = element;
     }

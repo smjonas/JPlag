@@ -1,11 +1,10 @@
 package de.jplag.yakindu.parser;
 
-import de.jplag.yakindu.StatechartTokenType;
-import de.jplag.scxml.parser.ScxmlParserAdapter;
-import de.jplag.scxml.parser.model.Statechart;
-import de.jplag.scxml.parser.model.Transition;
+import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.util.AbstractStatechartVisitor;
-import de.jplag.statecharts.parser.model.executable_content.*;
+import org.yakindu.sct.model.sgraph.*;
+
+import static de.jplag.yakindu.YakinduTokenType.*;
 
 
 /**
@@ -14,7 +13,7 @@ import de.jplag.statecharts.parser.model.executable_content.*;
  * @author Timur Saglam
  */
 public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
-    protected final ScxmlParserAdapter adapter;
+    protected final YakinduParserAdapter adapter;
 
     // TODO: read documentation (e.g. about Reactions)
 
@@ -24,22 +23,22 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public SimpleStatechartTokenGenerator(ScxmlParserAdapter adapter) {
+    public SimpleStatechartTokenGenerator(YakinduParserAdapter adapter) {
         this.adapter = adapter;
     }
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (Region region : statechart.regions) {
+        for (Region region : statechart.getRegions()) {
             visitRegion(region);
         }
     }
 
     @Override
     public void visitRegion(Region region) {
-        adapter.addToken(StatechartTokenType.REGION);
+        adapter.addToken(YakinduTokenType.REGION);
         depth++;
-        for (Vertex vertex : region.vertices) {
+        for (Vertex vertex : region.getVertices()) {
             visitVertex(vertex);
         }
         depth--;
@@ -59,8 +58,8 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         }
 
         depth++;
-        if (vertex.outgoingTransitions != null) {
-            for (Transition transition : vertex.outgoingTransitions) {
+        if (vertex.getOutgoingTransitions() != null) {
+            for (Transition transition : vertex.getOutgoingTransitions()) {
                 visitTransition(transition);
             }
         }
@@ -70,7 +69,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitTransition(Transition transition) {
-        adapter.addToken(StatechartTokenType.TRANSITION);
+        adapter.addToken(YakinduTokenType.TRANSITION);
     }
 
     // TODO: sub tokens based on ChoiceKind in ImprovedTokenGenerator

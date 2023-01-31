@@ -1,7 +1,7 @@
 package de.jplag.yakindu.util;
 
-import de.jplag.yakindu.StatechartToken;
-import de.jplag.yakindu.StatechartTokenType;
+import de.jplag.yakindu.YakinduToken;
+import de.jplag.yakindu.YakinduTokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +35,11 @@ public class StatechartView {
         }
     }
 
-    public StatechartToken enhanceToken(StatechartToken token, int depth) {
+    public YakinduToken enhanceToken(YakinduToken token, int depth) {
         String prefix = "  ".repeat(depth);
-        StatechartTokenType type = (StatechartTokenType) token.getType();
+        YakinduTokenType type = (YakinduTokenType) token.getType();
         String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
-        return new StatechartToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
+        return new YakinduToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
     }
 }

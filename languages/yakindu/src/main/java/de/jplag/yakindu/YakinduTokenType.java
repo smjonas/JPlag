@@ -1,20 +1,27 @@
-package de.jplag.scxml;
+package de.jplag.yakindu;
 
 import de.jplag.TokenType;
 
 /**
  * Ecore meta-metamodel token type. Defines which tokens can be extracted from a metamodel.
  */
-public enum StatechartTokenType implements TokenType {
+public enum YakinduTokenType implements TokenType {
 
-
+    REGION("Region"),
+    END_REGION("Region end", true),
+    VERTEX_END("Vertex end", true),
     TRANSITION("Transition"),
+    CHOICE("Choice"),
+    ENTRY("Entry"),
+    EXIT("Exit"),
+    SYNCHRONIZATION("Synchronization"),
+    // End new tokens
+
     TRANSITION_END("Transition end", true),
     GUARDED_TRANSITION("Guarded transition"),
     TIMED_TRANSITION("Timed transition"),
     STATE("State begin"),
     STATE_END("State end", true),
-    REGION("Region"),
     INITIAL_STATE("Initial state"),
     PARALLEL_STATE("Parallel state"),
     ON_ENTRY("OnEntry"),
@@ -37,7 +44,7 @@ public enum StatechartTokenType implements TokenType {
     private final String description;
     private boolean isEndToken = false;
 
-    StatechartTokenType(String description) {
+    YakinduTokenType(String description) {
         this.description = description;
     }
 
@@ -45,7 +52,7 @@ public enum StatechartTokenType implements TokenType {
      * Creates a statechart token type that may be an end token.
      * @param isEndToken indicates that the token is an end token
      */
-    StatechartTokenType(String description, boolean isEndToken) {
+    YakinduTokenType(String description, boolean isEndToken) {
         this(description);
         this.isEndToken = isEndToken;
     }

@@ -1,12 +1,11 @@
-package de.jplag.statecharts;
+package de.jplag.scxml;
 
 import de.jplag.TokenType;
 
 /**
  * Ecore meta-metamodel token type. Defines which tokens can be extracted from a metamodel.
  */
-public enum StatechartTokenType implements TokenType {
-
+public enum ScxmlTokenType implements TokenType {
 
     TRANSITION("Transition"),
     TRANSITION_END("Transition end", true),
@@ -37,7 +36,7 @@ public enum StatechartTokenType implements TokenType {
     private final String description;
     private boolean isEndToken = false;
 
-    StatechartTokenType(String description) {
+    ScxmlTokenType(String description) {
         this.description = description;
     }
 
@@ -45,7 +44,7 @@ public enum StatechartTokenType implements TokenType {
      * Creates a statechart token type that may be an end token.
      * @param isEndToken indicates that the token is an end token
      */
-    StatechartTokenType(String description, boolean isEndToken) {
+    ScxmlTokenType(String description, boolean isEndToken) {
         this(description);
         this.isEndToken = isEndToken;
     }

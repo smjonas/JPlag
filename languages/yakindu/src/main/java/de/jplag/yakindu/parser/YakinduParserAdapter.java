@@ -1,20 +1,25 @@
 package de.jplag.yakindu.parser;
 
-import de.jplag.yakindu.Language;
-import de.jplag.yakindu.StatechartToken;
-import de.jplag.yakindu.StatechartTokenType;
-import de.jplag.scxml.parser.model.StatechartElement;
-import org.yakindu.sct.model.sgraph.Statechart;
-import org.yakindu.sct.model.sgraph.resource.ResourceUtil;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
+import de.jplag.scxml.parser.model.StatechartElement;
+import de.jplag.yakindu.Language;
+import de.jplag.yakindu.YakinduToken;
+import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.util.AbstractStatechartVisitor;
 import de.jplag.yakindu.util.StatechartView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yakindu.base.SGraphPackage;
+import org.yakindu.sct.model.sgraph.Statechart;
+import org.yakindu.sct.model.sgraph.resource.ResourceUtil;
 
 import java.io.File;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -91,13 +96,13 @@ public class YakinduParserAdapter extends AbstractParser {
         view.writeToFile(Language.VIEW_FILE_SUFFIX);
     }
 
-    public void addToken(StatechartTokenType type, StatechartElement source) {
-        StatechartToken token = new StatechartToken(type, currentFile, source);
-        StatechartToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
+    public void addToken(YakinduTokenType type, StatechartElement source) {
+        YakinduToken token = new YakinduToken(type, currentFile, source);
+        YakinduToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
         tokens.add(enhancedToken);
     }
 
-    public void addToken(StatechartTokenType type) {
+    public void addToken(YakinduTokenType type) {
         addToken(type, null);
     }
 

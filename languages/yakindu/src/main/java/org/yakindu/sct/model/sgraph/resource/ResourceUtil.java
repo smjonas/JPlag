@@ -33,16 +33,11 @@ import java.util.Map;
  */
 public class ResourceUtil {
 
-	public static void registerModelExtension(String extension) {
-		final Registry registry = Registry.INSTANCE;
-		final Map<String, Object> extensionMap = registry.getExtensionToFactoryMap();
-		extensionMap.put(extension, new XMIResourceFactoryImpl());
-	}
-
 	public static Resource loadResource(String filename) {
 		URI uri = URI.createPlatformResourceURI(filename, true);
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource resource = resourceSet.createResource(uri, Language.FILE_ENDING);
+		String extension = Language.FILE_ENDING.substring(1);
+		Resource resource = resourceSet.createResource(uri, extension);
 		resourceSet.getResource(uri, true);
 		assert resource != null;
 		resourceSet.getResources().add(resource);

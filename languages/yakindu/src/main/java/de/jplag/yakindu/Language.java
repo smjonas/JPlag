@@ -2,7 +2,7 @@ package de.jplag.yakindu;
 
 import de.jplag.ParsingException;
 import de.jplag.Token;
-import de.jplag.scxml.parser.ScxmlParserAdapter;
+import de.jplag.yakindu.parser.YakinduParserAdapter;
 import org.kohsuke.MetaInfServices;
 
 import java.io.File;
@@ -23,10 +23,10 @@ public class Language implements de.jplag.Language {
     private static final String IDENTIFIER = "ysc";
     private static final int DEFAULT_MIN_TOKEN_MATCH = 6;
 
-    protected final ScxmlParserAdapter parser;
+    protected final YakinduParserAdapter parser;
 
     public Language() {
-        this.parser = new ScxmlParserAdapter();
+        this.parser = new YakinduParserAdapter();
     }
 
     @Override
