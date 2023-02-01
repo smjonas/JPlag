@@ -40,7 +40,7 @@ public class YakinduView {
     public YakinduToken enhanceToken(YakinduToken token, int depth) {
         String prefix = "  ".repeat(depth);
         YakinduTokenType type = (YakinduTokenType) token.getType();
-        String content = type.isEndToken() ? "}" : token.getEObject().toString();
+        String content = type.isEndToken() ? "}" : type.getDescription() + " {";
         builder.append(prefix).append(content).append("\n");
         return new YakinduToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getEObject());
     }

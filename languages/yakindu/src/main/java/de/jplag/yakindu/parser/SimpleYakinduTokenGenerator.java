@@ -1,6 +1,7 @@
 package de.jplag.yakindu.parser;
 
 import de.jplag.yakindu.util.AbstractYakinduVisitor;
+import org.yakindu.base.types.Declaration;
 import org.yakindu.base.types.Event;
 import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
@@ -29,12 +30,9 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     }
 
     @Override
-    protected void visitScope(Scope scope) {
-        for (Event event : scope.getEvents()) {
-            adapter.addToken(EVENT, scope);
-        }
-        for (Property variable : scope.getVariables()) {
-            adapter.addToken(VARIABLE, scope);
+    protected void visitDeclaration(Declaration declaration) {
+        if (declaration instanceof Property) {
+            adapter.addToken(PROPERTY, declaration);
         }
     }
 
@@ -50,8 +48,20 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     }
 
     @Override
+    public void visitState(State state) {
+        adapter.addToken(STATE, state);
+        depth++;
+        for (Region region : state.getRegions()) {
+            visitRegion(region);
+        }
+        depth--;
+    }
+
+    @Override
     public void visitVertex(Vertex vertex) {
-        if (vertex instanceof FinalState) {
+        if (vertex instanceof State) {
+            visitState((State) vertex);
+        } else if (vertex instanceof FinalState) {
             adapter.addToken(FINAL_STATE, vertex);
         } else if (vertex instanceof RegularState) {
             adapter.addToken(REGULAR_STATE, vertex);

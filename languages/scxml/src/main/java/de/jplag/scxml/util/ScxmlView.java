@@ -10,14 +10,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class StatechartView {
+public class ScxmlView {
 
     private final File file;
     private final StringBuilder builder = new StringBuilder();
     private final Logger logger;
     private int line;
 
-    public StatechartView(File file) {
+    public ScxmlView(File file) {
         this.file = file;
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.line = 1;

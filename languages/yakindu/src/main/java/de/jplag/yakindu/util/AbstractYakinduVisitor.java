@@ -1,7 +1,11 @@
 package de.jplag.yakindu.util;
 
 import org.eclipse.emf.common.util.EList;
+import org.yakindu.base.types.Declaration;
+import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
+
+import java.net.ProtocolException;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
@@ -30,9 +34,25 @@ public abstract class AbstractYakinduVisitor {
         }
     }
 
-    protected abstract void visitScope(Scope scope);
+    protected void visitScope(Scope scope) {
+        for (Declaration declaration : scope.getDeclarations()) {
+            visitDeclaration(declaration);
+        }
+    }
+
+    protected void visitCompositeElement(CompositeElement compositeElement) {
+        if (compositeElement instanceof Statechart) {
+            visit((Statechart) compositeElement);
+        } else if (compositeElement instanceof State) {
+            visitState((State) compositeElement);
+        }
+    }
+
+    protected abstract void visitDeclaration(Declaration declaration);
 
     protected abstract void visitRegion(Region region);
+
+    public abstract void visitState(State state);
 
     protected abstract void visitVertex(Vertex vertex);
 
