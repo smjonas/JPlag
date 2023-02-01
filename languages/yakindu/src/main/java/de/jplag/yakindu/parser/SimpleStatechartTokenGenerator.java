@@ -35,7 +35,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             visitVertex(vertex);
         }
         depth--;
-        adapter.addToken(END_REGION);
+        adapter.addToken(REGION_END);
     }
 
     @Override

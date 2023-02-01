@@ -17,7 +17,7 @@ import java.util.Set;
 class YakinduParserTest {
 
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag");
-    private static final String[] TEST_SUBJECTS = { "from_proposal.yst"  /*"simple.sct"*/};
+    private static final String[] TEST_SUBJECTS = { "from_proposal.ysc"  /*"simple.sct"*/};
     private File baseDirectory;
 
     @BeforeEach

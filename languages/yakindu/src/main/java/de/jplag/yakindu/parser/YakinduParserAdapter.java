@@ -88,14 +88,13 @@ public class YakinduParserAdapter extends AbstractParser {
         Resource resource;
 		try {
             resource = resourceSet.getResource(uri, true);
-        } catch (Exception e) {
-            logger.trace("{}: failed to load (parts of) statechart model:\n {}", file, e.getCause().getMessage());
+        } catch (WrappedException e) {
+            logger.trace("{}: failed to load (parts of) statechart model:\n {}", file, e.getMessage());
             resource = resourceSet.getResource(uri, false);
+        } catch (RuntimeException e) {
+            throw new ParsingException(file, "failed to load statechart:\n" + e.getMessage());
         }
 
-//		} catch (WrappedException exception) {
-//            throw new ParsingException(file, "failed to load statechart:\n" +  exception.getCause().getMessage());
-        //}
         return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
     }
 
