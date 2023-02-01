@@ -32,23 +32,7 @@ public abstract class AbstractStatechartVisitor {
         return depth;
     }
 
-    /**
-     * Visits a StatechartElement and all nodes in the containment tree below. Note that multiple visitor method may be called for a
-     * single element. For example <code>visitEClass()</code> and <code>visitEObject()</code>.
-     */
     public final void visit(StatechartElement element) {
-        // Map<Class<?>, Consumer<>> visitByType = Map.ofEntries(
-        //     entry(OnEntry.class, this::visitOnEntry),
-        //     entry(OnExit.class, this::visitOnExit),
-        //     entry(SimpleExecutableContent.class, this::visitSimpleExecutableContent),
-        //     entry(Transition.class, this::visitTransition),
-        //     entry(Assign.class, this::visitAssign),
-        //     entry(Cancel.class, this::visitCancel),
-        //     entry(Script.class, this::visitScript),
-        //     entry(Send.class, this::visitSend)
-        // );
-        // visitByType.get(element.getClass()).accept(element);
-
         if (element instanceof Statechart statechart) {
             visitStatechart(statechart);
         } else if (element instanceof State state) {

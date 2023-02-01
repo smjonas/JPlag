@@ -9,37 +9,23 @@ public enum YakinduTokenType implements TokenType {
 
     REGION("Region"),
     REGION_END("Region end", true),
+    REGULAR_STATE("Regular state"),
+    FINAL_STATE("Final state"),
     VERTEX_END("Vertex end", true),
+    EVENT("Event"),
+    VARIABLE("Variable"),
     TRANSITION("Transition"),
+    TRIGGER("Trigger"),
+    EFFECT("Effect"),
     CHOICE("Choice"),
+    DYNAMIC_CHOICE("Dynamic choice"),
+    STATIC_CHOICE("Static choice"),
     ENTRY("Entry"),
+    INITIAL_ENTRY("Initial entry"),
+    SHALLOW_HISTORY_ENTRY("Shallow history entry"),
+    DEEP_HISTORY_ENTRY("Deep history entry"),
     EXIT("Exit"),
-    SYNCHRONIZATION("Synchronization"),
-    // End new tokens
-
-    TRANSITION_END("Transition end", true),
-    GUARDED_TRANSITION("Guarded transition"),
-    TIMED_TRANSITION("Timed transition"),
-    STATE("State begin"),
-    STATE_END("State end", true),
-    INITIAL_STATE("Initial state"),
-    PARALLEL_STATE("Parallel state"),
-    ON_ENTRY("OnEntry"),
-    ON_EXIT("OnExit"),
-    ACTION_END("Action end", true),
-    // Simple executable content
-    RAISE("Raise"),
-    IF("If"),
-    IF_END("If end", true),
-    ELSE_IF("Else if"),
-    ELSE("Else"),
-    FOREACH("For each"),
-    LOG("Log"),
-    // Other executable content
-    ASSIGNMENT("Assignment"),
-    CANCEL("Cancel"),
-    SCRIPT("Script"),
-    SEND("Send");
+    SYNCHRONIZATION("Synchronization");
 
     private final String description;
     private boolean isEndToken = false;

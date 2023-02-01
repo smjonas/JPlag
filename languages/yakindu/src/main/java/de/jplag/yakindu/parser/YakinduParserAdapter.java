@@ -6,12 +6,11 @@ import de.jplag.Token;
 import de.jplag.yakindu.Language;
 import de.jplag.yakindu.YakinduToken;
 import de.jplag.yakindu.YakinduTokenType;
-import de.jplag.yakindu.util.AbstractStatechartVisitor;
-import de.jplag.yakindu.util.StatechartView;
+import de.jplag.yakindu.util.AbstractYakinduVisitor;
+import de.jplag.yakindu.util.YakinduView;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.xtext.validation.EObjectDiagnosticImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yakindu.base.SGraphPackage;
@@ -43,8 +42,8 @@ public class YakinduParserAdapter extends AbstractParser {
 
     protected List<Token> tokens;
     protected File currentFile;
-    protected AbstractStatechartVisitor visitor;
-    protected StatechartView view;
+    protected AbstractYakinduVisitor visitor;
+    protected YakinduView view;
 
     /**
      * Creates the parser.
@@ -105,32 +104,27 @@ public class YakinduParserAdapter extends AbstractParser {
      */
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
-        //view = new StatechartView(file);
+        view = new YakinduView(file);
 
         Statechart statechart = loadStatechart(file);
-        visitor = createStatechartVisitor();
+        visitor = createYakinduVisitor();
         visitor.visit(statechart);
         tokens.add(Token.fileEnd(currentFile));
-        // view.writeToFile(Language.VIEW_FILE_SUFFIX);
+        view.writeToFile(Language.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(YakinduTokenType type, EObject source) {
         YakinduToken token = new YakinduToken(type, currentFile, source);
-        // YakinduToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
-        // TODO: use enhanced token
-        tokens.add(token);
-    }
-
-    public void addToken(YakinduTokenType type) {
-        addToken(type, null);
+        YakinduToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
+        tokens.add(enhancedToken);
     }
 
     /**
      * Extension point for subclasses to employ different token generators.
      *
-     * @return a token generating statechart visitor.
+     * @return a token generating Yakindu Statecharts visitor
      */
-    protected AbstractStatechartVisitor createStatechartVisitor() {
-        return new SimpleStatechartTokenGenerator(this);
+    protected AbstractYakinduVisitor createYakinduVisitor() {
+        return new SimpleYakinduTokenGenerator(this);
     }
 }

@@ -34,13 +34,6 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected StatechartView view;
 
     /**
-     * Creates the parser.
-     */
-    public ScxmlParserAdapter() {
-
-    }
-
-    /**
      * Parses all tokens from a set of files.
      *
      * @param files the set of files.
