@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class StatechartView {
 
-    private final File file;
+/*    private final File file;
     private final StringBuilder builder = new StringBuilder();
     private final Logger logger;
     private int line;
@@ -41,5 +41,5 @@ public class StatechartView {
         String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
         return new YakinduToken(token.getType(), token.getFile(), line, prefix.length(), content.length(), token.getStatechartElement());
-    }
+    }*/
 }

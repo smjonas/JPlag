@@ -1,7 +1,7 @@
 package de.jplag.scxml.util;
 
-import de.jplag.scxml.StatechartToken;
-import de.jplag.scxml.StatechartTokenType;
+import de.jplag.scxml.ScxmlToken;
+import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.StatechartToken;
 import de.jplag.scxml.StatechartTokenType;
 import org.slf4j.Logger;
@@ -37,11 +37,11 @@ public class StatechartView {
         }
     }
 
-    public StatechartToken enhanceToken(StatechartToken token, int depth) {
+    public ScxmlToken enhanceToken(ScxmlToken token, int depth) {
         String prefix = "  ".repeat(depth);
-        StatechartTokenType type = (StatechartTokenType) token.getType();
+        ScxmlTokenType type = (ScxmlTokenType) token.getType();
         String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
-        return new StatechartToken(token.getType(), token.getFile(), line, prefix.length() + 1, content.length(), token.getStatechartElement());
+        return new ScxmlToken(token.getType(), token.getFile(), line, prefix.length() + 1, content.length(), token.getStatechartElement());
     }
 }

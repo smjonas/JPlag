@@ -1,4 +1,5 @@
-/** 
+
+/**
  * Copyright (c) 2015 committers of YAKINDU and others. 
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0 
@@ -7,39 +8,34 @@
  * Contributors:
  * committers of YAKINDU - initial API and implementation
  *
-*/
+ */
 package org.yakindu.sct.model.sgraph.resource;
 
-import de.jplag.yakindu.Language;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.yakindu.base.SGraphPackage;
-import org.yakindu.sct.model.sgraph.Statechart;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Factory;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.yakindu.sct.model.sgraph.Statechart;
+import org.yakindu.base.SGraphPackage;
 
 /**
- * 
+ *
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public class ResourceUtil {
 
 	public static Resource loadResource(String filename) {
 		URI uri = URI.createPlatformResourceURI(filename, true);
+		Factory factory = ResourceFactoryRegistryImpl.INSTANCE.getFactory(uri);
+		Resource resource = factory.createResource(uri);
 		ResourceSet resourceSet = new ResourceSetImpl();
-		String extension = Language.FILE_ENDING.substring(1);
-		Resource resource = resourceSet.createResource(uri, extension);
-		resourceSet.getResource(uri, true);
-		assert resource != null;
 		resourceSet.getResources().add(resource);
 		try {
 			resource.load(Collections.EMPTY_MAP);
@@ -49,10 +45,11 @@ public class ResourceUtil {
 		}
 	}
 
-	public static Statechart loadStatechart(File file) {
-		Resource resource = loadResource(file.getAbsolutePath());
-		return (Statechart) EcoreUtil.getObjectByType(
+	public static Statechart loadStatechart(String filename) {
+		Resource resource = loadResource(filename);
+		Statechart statechart = (Statechart) EcoreUtil.getObjectByType(
 				resource.getContents(), SGraphPackage.Literals.STATECHART);
+		return statechart;
 	}
 
 }

@@ -9,8 +9,8 @@ import de.jplag.scxml.StatechartTokenType;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.Language;
-import de.jplag.scxml.StatechartToken;
-import de.jplag.scxml.StatechartTokenType;
+import de.jplag.scxml.ScxmlToken;
+import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.util.AbstractStatechartVisitor;
@@ -78,9 +78,9 @@ public class ScxmlParserAdapter extends AbstractParser {
         view.writeToFile(Language.VIEW_FILE_SUFFIX);
     }
 
-    public void addToken(StatechartTokenType type, StatechartElement source) {
-        StatechartToken token = new StatechartToken(type, currentFile, source);
-        StatechartToken enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
+    public void addToken(ScxmlTokenType type, StatechartElement source) {
+        ScxmlToken token = new ScxmlToken(type, currentFile, source);
+        Token enhancedToken = view.enhanceToken(token, visitor.getCurrentTreeDepth());
         tokens.add(enhancedToken);
     }
 

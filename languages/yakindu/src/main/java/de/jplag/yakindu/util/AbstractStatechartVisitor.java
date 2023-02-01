@@ -20,7 +20,11 @@ public abstract class AbstractStatechartVisitor {
         return depth;
     }
 
-    public abstract void visitStatechart(Statechart statechart);
+    public void visit(Statechart statechart) {
+        for (Region region : statechart.getRegions()) {
+            visitRegion(region);
+        }
+    }
 
     public abstract void visitRegion(Region region);
 

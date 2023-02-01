@@ -28,13 +28,6 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
     }
 
     @Override
-    public void visitStatechart(Statechart statechart) {
-        for (Region region : statechart.getRegions()) {
-            visitRegion(region);
-        }
-    }
-
-    @Override
     public void visitRegion(Region region) {
         adapter.addToken(YakinduTokenType.REGION);
         depth++;

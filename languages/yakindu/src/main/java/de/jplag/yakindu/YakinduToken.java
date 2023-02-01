@@ -20,7 +20,7 @@ public class YakinduToken extends Token {
      * @param file    is the source model file.
      * @param element is the corresponding eObject in the model from which this token was extracted.
      */
-    public YakinduToken(TokenType type, File file, EObject eObject) {
+    public YakinduToken(YakinduTokenType type, File file, EObject eObject) {
         super(type, file, NO_VALUE, NO_VALUE, NO_VALUE);
         this.eObject = eObject;
     }
