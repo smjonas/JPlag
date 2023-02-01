@@ -1,6 +1,7 @@
 package de.jplag.scxml.parser;
 
-import de.jplag.scxml.StatechartTokenType;
+import de.jplag.TokenType;
+import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.Transition;
@@ -8,6 +9,8 @@ import de.jplag.scxml.parser.model.executable_content.*;
 import de.jplag.scxml.util.AbstractStatechartVisitor;
 
 import java.util.List;
+
+import static de.jplag.scxml.ScxmlTokenType.*;
 
 
 /**
@@ -36,7 +39,7 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitState(State state) {
-        adapter.addToken(StatechartTokenType.STATE, state);
+        adapter.addToken(STATE, state);
         visitActions(state.actions());
 
         depth++;
@@ -48,36 +51,36 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             visitState(substate);
         }
         depth--;
-        adapter.addToken(StatechartTokenType.STATE_END, state);
+        adapter.addToken(STATE_END, state);
     }
 
     @Override
     public void visitActions(List<Action> actions) {
         for (Action action : actions) {
-            adapter.addToken(action.type() == Action.Type.ON_ENTRY ? StatechartTokenType.ON_ENTRY : StatechartTokenType.ON_EXIT, action);
+            adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
             depth++;
             for (ExecutableContent content : action.contents()) {
                 visitExecutableContent(content);
             }
             depth--;
-            adapter.addToken(StatechartTokenType.ACTION_END);
+            adapter.addToken(ACTION_END);
         }
     }
 
     @Override
     public void visitTransition(Transition transition) {
-        adapter.addToken(StatechartTokenType.TRANSITION, transition);
+        adapter.addToken(TRANSITION, transition);
         depth++;
         for (ExecutableContent content : transition.contents()) {
             visitExecutableContent(content);
         }
         depth--;
-        adapter.addToken(StatechartTokenType.TRANSITION_END);
+        adapter.addToken(TRANSITION_END);
     }
 
     @Override
     public void visitIf(If if_) {
-        adapter.addToken(StatechartTokenType.IF, if_);
+        adapter.addToken(IF, if_);
         for (ExecutableContent content : if_.contents()) {
             visitExecutableContent(content);
         }
@@ -85,9 +88,9 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             visitExecutableContent(content);
         }
         if (if_.else_() != null) {
-            adapter.addToken(StatechartTokenType.ELSE, if_.else_());
+            adapter.addToken(ELSE, if_.else_());
         }
-        adapter.addToken(StatechartTokenType.IF_END, if_);
+        adapter.addToken(IF_END, if_);
     }
 
     @Override
@@ -97,26 +100,26 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             return;
         }
 
-        StatechartTokenType type = null;
+        ScxmlTokenType type = null;
         if (content instanceof Assignment) {
-            type = StatechartTokenType.ASSIGNMENT;
+            type = ASSIGNMENT;
         } else if (content instanceof Script) {
-            type = StatechartTokenType.SCRIPT;
+            type = SCRIPT;
         } else if (content instanceof Send) {
-            type = StatechartTokenType.SEND;
+            type = SEND;
         } else if (content instanceof Cancel) {
-            type = StatechartTokenType.CANCEL;
+            type = CANCEL;
         }
         adapter.addToken(type, content);
     }
 
     @Override
     public void visitSimpleExecutableContent(SimpleExecutableContent content) {
-        StatechartTokenType type = switch (content.type()) {
-            case RAISE -> StatechartTokenType.RAISE;
-            case ELSE -> StatechartTokenType.ELSE;
-            case FOREACH -> StatechartTokenType.FOREACH;
-            case LOG -> StatechartTokenType.LOG;
+        ScxmlTokenType type = switch (content.type()) {
+            case RAISE -> RAISE;
+            case ELSE -> ELSE;
+            case FOREACH -> FOREACH;
+            case LOG -> LOG;
         };
         adapter.addToken(type, content);
     }

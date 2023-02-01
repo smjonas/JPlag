@@ -2,8 +2,6 @@ package de.jplag.scxml.util;
 
 import de.jplag.scxml.ScxmlToken;
 import de.jplag.scxml.ScxmlTokenType;
-import de.jplag.scxml.StatechartToken;
-import de.jplag.scxml.StatechartTokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

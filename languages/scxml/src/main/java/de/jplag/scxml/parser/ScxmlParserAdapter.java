@@ -4,8 +4,6 @@ import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
 import de.jplag.scxml.Language;
-import de.jplag.scxml.StatechartToken;
-import de.jplag.scxml.StatechartTokenType;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.Language;
@@ -84,7 +82,7 @@ public class ScxmlParserAdapter extends AbstractParser {
         tokens.add(enhancedToken);
     }
 
-    public void addToken(StatechartTokenType type) {
+    public void addToken(ScxmlTokenType type) {
         addToken(type, null);
     }
 

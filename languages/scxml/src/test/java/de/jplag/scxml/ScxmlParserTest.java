@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static de.jplag.SharedTokenType.FILE_END;
-import static de.jplag.scxml.StatechartTokenType.*;
+import static de.jplag.scxml.ScxmlTokenType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

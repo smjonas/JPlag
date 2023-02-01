@@ -8,7 +8,7 @@ import de.jplag.TokenType;
 public enum YakinduTokenType implements TokenType {
 
     REGION("Region"),
-    END_REGION("Region end", true),
+    REGION_END("Region end", true),
     VERTEX_END("Vertex end", true),
     TRANSITION("Transition"),
     CHOICE("Choice"),

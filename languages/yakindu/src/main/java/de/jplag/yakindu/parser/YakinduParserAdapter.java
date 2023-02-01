@@ -11,6 +11,7 @@ import de.jplag.yakindu.util.StatechartView;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.xtext.validation.EObjectDiagnosticImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yakindu.base.SGraphPackage;
@@ -83,13 +84,19 @@ public class YakinduParserAdapter extends AbstractParser {
 
     private Statechart loadStatechart(File file) throws ParsingException {
 		final ResourceSet resourceSet = new ResourceSetImpl();
+        URI uri = URI.createFileURI(file.getAbsolutePath());
+        Resource resource;
 		try {
-			Resource resource = resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
-            //resource.get
-			return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
-		} catch (WrappedException exception) {
-            throw new ParsingException(file, "failed to load statechart:\n" +  exception.getCause().getMessage());
+            resource = resourceSet.getResource(uri, true);
+        } catch (Exception e) {
+            logger.trace("{}: failed to load (parts of) statechart model:\n {}", file, e.getCause().getMessage());
+            resource = resourceSet.getResource(uri, false);
         }
+
+//		} catch (WrappedException exception) {
+//            throw new ParsingException(file, "failed to load statechart:\n" +  exception.getCause().getMessage());
+        //}
+        return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
     }
 
     /**
