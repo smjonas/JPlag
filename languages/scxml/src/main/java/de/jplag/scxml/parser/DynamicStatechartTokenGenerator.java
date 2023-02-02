@@ -1,28 +1,24 @@
 package de.jplag.scxml.parser;
 
-import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Transition;
-import de.jplag.scxml.parser.model.executable_content.Action;
 import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
-
-import java.util.List;
 
 import static de.jplag.scxml.ScxmlTokenType.*;
 
 /**
- * Visits a metamodel containment tree and extracts the relevant token.
+ * Visits a metamodel containment tree and extracts the relevant tokens.
  *
- * @author Timur Saglam
+ * @author Jonas Strittmatter
  */
-public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
+public class DynamicStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public ImprovedStatechartTokenGenerator(ScxmlParserAdapter adapter) {
+    public DynamicStatechartTokenGenerator(ScxmlParserAdapter adapter) {
         super(adapter);
     }
 
@@ -51,27 +47,6 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
         }
         depth--;
         adapter.addToken(STATE_END, state);
-    }
-
-    @Override
-    public void visitActions(List<Action> actions) {
-        List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
-        List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
-        visitAction(onEntries, ON_ENTRY);
-        visitAction(onExits, ON_EXIT);
-    }
-
-    private void visitAction(List<Action> actions, ScxmlTokenType onExit) {
-        if (!actions.isEmpty()) {
-            adapter.addToken(onExit, null);
-            List<ExecutableContent> onExitContents = actions.stream().flatMap(a -> a.contents().stream()).toList();
-            depth++;
-            for (ExecutableContent content : onExitContents) {
-                visitExecutableContent(content);
-            }
-            depth--;
-            adapter.addToken(ACTION_END, null);
-        }
     }
 
     @Override

@@ -2,20 +2,19 @@ package de.jplag.yakindu.parser;
 
 import de.jplag.Token;
 import de.jplag.yakindu.YakinduTokenType;
-import de.jplag.yakindu.util.AbstractYakinduVisitor;
 import org.yakindu.sct.model.sgraph.*;
 
 import static de.jplag.yakindu.YakinduTokenType.*;
 
 
-public class ImprovedYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
+public class DynamicYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public ImprovedYakinduTokenGenerator(YakinduParserAdapter adapter) {
+    public DynamicYakinduTokenGenerator(YakinduParserAdapter adapter) {
         super(adapter);
     }
 

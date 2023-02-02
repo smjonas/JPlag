@@ -1,16 +1,19 @@
-# EMF metamodel language module
-The EMF metamodel language module allows the use of JPlag with metamodel submissions.
-It is based on the EMF API.
+## SCXML language module
 
-### EMF specification compatibility
-This module is based on the EMF dependencies available on maven central. These might not be the newest versions of EMF. For details, the [JPlag aggregator pom](https://github.com/jplag/JPlag/blob/263e85e544152cc8b0caa3399127debb7a458746/pom.xml#L84-L86).
+This language module enables the use of JPlag with SCXML submissions.
+It works by first parsing the XML files using a SAX parser and transforming them into an intermediate Java object
+structure. The tokens are extracted by iterating over this structure.
 
 ### Token Extraction
-For the token extraction, we visit the containment tree of the metamodel and extract tokens for certain metamodel elements based on their metaclass. In this module, we extract tokens based on a [handcrafted token set](https://github.com/jplag/JPlag/blob/master/languages/emf-metamodel/src/main/java/de/jplag/emf/MetamodelTokenType.java). Note that not for all concrete metaclasses tokens are extracted. `EFactory`, `EGenericType`, and `EObject` are ignored. Moreover, for some metaclasses, multiple token types are extracted. Finally, some references are also used for token extraction.
 
-### Usage
-To use this module, add the `-l emf-metamodel` flag in the CLI, or use a `JPlagOption` object set to `LanguageOption.EMF` in the Java API as described in the usage information in the [readme of the main project](https://github.com/jplag/JPlag#usage) and [in the wiki](https://github.com/jplag/JPlag/wiki/1.-How-to-Use-JPlag).
+There are two token extraction strategies available: the SimpleStatechartTokenGenerator and the
+DynamicStatechartTokenGenerator.
 
-### More Info
-More information can be found in the paper [*"Token-based Plagiarism Detection for Metamodels" (MODELS-C'22)*](https://dl.acm.org/doi/10.1145/3550356.3556508).
-A short summary can be found on [Kudos](https://www.growkudos.com/publications/10.1145%25252F3550356.3556508/reader).
+The SimpleStatechartTokenGenerator extracts tokens by recursively traversing the
+Statechart object, using the elements outlined in the [SCXML specification](https://www.w3.org/TR/scxml).
+The DynamicStatechartTokenGenerator utilizes a larger token set and extracts tokens based on the attributes of the
+StatechartElement, for example extracting a `PARALLEL_STATE` token for the State object if it is parallel.
+
+## Usage
+
+To use the new module, add the `-l scxml` flag in the CLI.
