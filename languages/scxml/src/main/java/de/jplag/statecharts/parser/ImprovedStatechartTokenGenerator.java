@@ -1,13 +1,15 @@
 package de.jplag.statecharts.parser;
 
-import de.jplag.statecharts.parser.model.State;
-import de.jplag.statecharts.parser.model.Transition;
-import de.jplag.statecharts.parser.model.executable_content.Action;
-import de.jplag.statecharts.parser.model.executable_content.ExecutableContent;
+import de.jplag.scxml.parser.ScxmlParserAdapter;
+import de.jplag.scxml.parser.SimpleStatechartTokenGenerator;
+import de.jplag.scxml.parser.model.State;
+import de.jplag.scxml.parser.model.Transition;
+import de.jplag.scxml.parser.model.executable_content.Action;
+import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
 
 import java.util.List;
 
-import static de.jplag.statecharts.StatechartTokenType.*;
+import static de.jplag.scxml.ScxmlTokenType.*;
 
 /**
  * Visits a metamodel containment tree and extracts the relevant token.
