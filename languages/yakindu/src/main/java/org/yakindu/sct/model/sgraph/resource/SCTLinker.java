@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.sct.model.sgraph.resource;
 
@@ -19,31 +18,31 @@ import org.eclipse.xtext.nodemodel.impl.CompositeNodeWithSemanticElement;
 
 /**
  * @author andreas muelder
- * 
+ *
  */
 public class SCTLinker extends LazyLinker {
 
-	@Override
-	protected void clearReference(EObject obj, EReference ref) {
-		// If the CompositeNodeWithSemanticElement adapter exists, we know that
-		// this is an Xtext model element.
-		if (EcoreUtil.getAdapter(obj.eAdapters(),
-				CompositeNodeWithSemanticElement.class) != null) {
-			try {
-				obj.eSetDeliver(false);
-				super.clearReference(obj, ref);
-			} finally {
-				obj.eSetDeliver(true);
-			}
-		}
-	}
+    @Override
+    protected void clearReference(EObject obj, EReference ref) {
+        // If the CompositeNodeWithSemanticElement adapter exists, we know that
+        // this is an Xtext model element.
+        if (EcoreUtil.getAdapter(obj.eAdapters(),
+                CompositeNodeWithSemanticElement.class) != null) {
+            try {
+                obj.eSetDeliver(false);
+                super.clearReference(obj, ref);
+            } finally {
+                obj.eSetDeliver(true);
+            }
+        }
+    }
 
-	protected void createAndSetProxy(EObject obj, INode node, EReference eRef) {
-		try {
-			obj.eSetDeliver(false);
-			super.createAndSetProxy(obj, node, eRef);
-		} finally {
-			obj.eSetDeliver(true);
-		}
-	}
+    protected void createAndSetProxy(EObject obj, INode node, EReference eRef) {
+        try {
+            obj.eSetDeliver(false);
+            super.createAndSetProxy(obj, node, eRef);
+        } finally {
+            obj.eSetDeliver(true);
+        }
+    }
 }

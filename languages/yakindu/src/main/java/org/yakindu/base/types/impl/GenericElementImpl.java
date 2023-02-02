@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types.impl;
 
@@ -29,118 +30,119 @@ import org.yakindu.base.types.TypesPackage;
  * @generated
  */
 public class GenericElementImpl extends NamedElementImpl implements GenericElement {
-	/**
-	 * The cached value of the '{@link #getTypeParameters() <em>Type Parameters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getTypeParameters()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TypeParameter> typeParameters;
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected GenericElementImpl() {
-		super();
-	}
+    /**
+     * The cached value of the '{@link #getTypeParameters() <em>Type Parameters</em>}' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getTypeParameters()
+     * @generated
+     * @ordered
+     */
+    protected EList<TypeParameter> typeParameters;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return TypesPackage.Literals.GENERIC_ELEMENT;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected GenericElementImpl() {
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TypeParameter> getTypeParameters() {
-		if (typeParameters == null) {
-			typeParameters = new EObjectContainmentEList<TypeParameter>(TypeParameter.class, this, TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS);
-		}
-		return typeParameters;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EClass eStaticClass() {
+        return TypesPackage.Literals.GENERIC_ELEMENT;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
-				return ((InternalEList<?>)getTypeParameters()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EList<TypeParameter> getTypeParameters() {
+        if (typeParameters == null) {
+            typeParameters = new EObjectContainmentEList<TypeParameter>(TypeParameter.class, this, TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS);
+        }
+        return typeParameters;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
-				return getTypeParameters();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+        switch (featureID) {
+            case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
+                return ((InternalEList<?>) getTypeParameters()).basicRemove(otherEnd, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
-				getTypeParameters().clear();
-				getTypeParameters().addAll((Collection<? extends TypeParameter>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+        switch (featureID) {
+            case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
+                return getTypeParameters();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
-				getTypeParameters().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void eSet(int featureID, Object newValue) {
+        switch (featureID) {
+            case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
+                getTypeParameters().clear();
+                getTypeParameters().addAll((Collection<? extends TypeParameter>) newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
-				return typeParameters != null && !typeParameters.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void eUnset(int featureID) {
+        switch (featureID) {
+            case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
+                getTypeParameters().clear();
+                return;
+        }
+        super.eUnset(featureID);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public boolean eIsSet(int featureID) {
+        switch (featureID) {
+            case TypesPackage.GENERIC_ELEMENT__TYPE_PARAMETERS:
+                return typeParameters != null && !typeParameters.isEmpty();
+        }
+        return super.eIsSet(featureID);
+    }
 
 } //GenericElementImpl

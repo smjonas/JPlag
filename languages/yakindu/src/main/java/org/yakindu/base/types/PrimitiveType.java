@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types;
 

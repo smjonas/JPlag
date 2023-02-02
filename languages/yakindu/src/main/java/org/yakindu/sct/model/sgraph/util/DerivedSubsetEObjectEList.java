@@ -1,13 +1,12 @@
-/** 
- * Copyright (c) 2015 committers of YAKINDU and others. 
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution, and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+/**
+ * Copyright (c) 2015 committers of YAKINDU and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * committers of YAKINDU - initial API and implementation
- *
-*/
+ */
 package org.yakindu.sct.model.sgraph.util;
 
 import java.util.ConcurrentModificationException;
@@ -22,192 +21,192 @@ import org.eclipse.emf.ecore.util.InternalEList;
 /**
  * A modifiable derived list whose values are obtained from a single multivalued
  * source feature. This list is ideal for implementing derived subset features.
- * 
+ *
  * @since .
  */
 public class DerivedSubsetEObjectEList<E> extends DerivedEObjectEList<E> {
 
-	protected class DerivedSubsetListIterator extends DerivedListIterator {
+    public DerivedSubsetEObjectEList(Class<?> dataClass, InternalEObject owner,
+                                     int featureID, int[] sourceFeatureIDs) {
+        super(dataClass, owner, featureID, sourceFeatureIDs);
 
-		protected int expectedModCount = modCount;
+        EStructuralFeature feature = sourceFeatureIDs.length == 1 ? getEStructuralFeature(sourceFeatureIDs[0])
+                : null;
 
-		@Override
-		public void remove() {
-			checkModCount();
+        if (feature == null || !feature.isMany()
+                || FeatureMapUtil.isFeatureMap(feature)) {
 
-			if (valuesIterator == null) {
-				throw new IllegalStateException();
-			}
+            throw new IllegalArgumentException(String.valueOf(sourceFeatureIDs));
+        }
+    }
 
-			switch (prepared) {
-			case 3:
-			case 1:
-				preparePrevious();
-				break;
-			case -1:
-			case -3:
-				prepareNext();
-				break;
-			}
+    public DerivedSubsetEObjectEList(Class<?> dataClass, InternalEObject owner,
+                                     int featureID, int sourceFeatureID) {
+        this(dataClass, owner, featureID, new int[]{sourceFeatureID});
+    }
 
-			prepared = 0;
+    @Override
+    public List<E> basicList() {
 
-			valuesIterator.remove();
+        return new DerivedSubsetEObjectEList<E>(dataClass, owner, featureID,
+                sourceFeatureIDs) {
 
-			modCount++;
-			expectedModCount++;
-		}
+            @Override
+            public ListIterator<E> listIterator(int index) {
+                return basicListIterator(index);
+            }
+        };
+    }
 
-		@Override
-		public void set(Object element) {
-			checkModCount();
+    @Override
+    protected ListIterator<E> newListIterator() {
+        return new DerivedSubsetListIterator();
+    }
 
-			if (valuesIterator == null) {
-				throw new IllegalStateException();
-			}
+    @Override
+    protected ListIterator<E> newResolvingListIterator() {
+        return new ResolvingDerivedSubsetListIterator();
+    }
 
-			switch (prepared) {
-			case 3:
-			case 1:
-				preparePrevious();
-				break;
-			case -1:
-			case -3:
-				prepareNext();
-				break;
-			}
+    @Override
+    protected ListIterator<E> newEmptyListIterator() {
+        return new EmptyDerivedSubsetListIterator();
+    }
 
-			prepared = 0;
+    @Override
+    protected boolean isNotificationRequired() {
+        return owner.eNotificationRequired();
+    }
 
-			valuesIterator.set(element);
+    protected class DerivedSubsetListIterator extends DerivedListIterator {
 
-			modCount++;
-			expectedModCount++;
-		}
+        protected int expectedModCount = modCount;
 
-		@Override
-		public void add(Object element) {
-			checkModCount();
+        @Override
+        public void remove() {
+            checkModCount();
 
-			if (valuesIterator == null) {
-				@SuppressWarnings("unchecked")
-				List<Object> valuesList = resolve() ? (List<Object>) owner
-						.eGet(sourceFeatureIDs[featureIndex], resolve(), true)
-						: ((InternalEList<Object>) owner
-								.eGet(sourceFeatureIDs[featureIndex],
-										resolve(), true)).basicList();
+            if (valuesIterator == null) {
+                throw new IllegalStateException();
+            }
 
-				valuesList.listIterator(valuesList.size()).add(element);
-			} else {
+            switch (prepared) {
+                case 3:
+                case 1:
+                    preparePrevious();
+                    break;
+                case -1:
+                case -3:
+                    prepareNext();
+                    break;
+            }
 
-				switch (prepared) {
-				case 3:
-					preparePrevious();
-					break;
-				case -3:
-					prepareNext();
-					break;
-				}
+            prepared = 0;
 
-				valuesIterator.add(element);
-			}
+            valuesIterator.remove();
 
-			prepared = 0;
+            modCount++;
+            expectedModCount++;
+        }
 
-			modCount++;
-			expectedModCount++;
+        @Override
+        public void set(Object element) {
+            checkModCount();
 
-			index++;
-		}
+            if (valuesIterator == null) {
+                throw new IllegalStateException();
+            }
 
-		protected void checkModCount() {
+            switch (prepared) {
+                case 3:
+                case 1:
+                    preparePrevious();
+                    break;
+                case -1:
+                case -3:
+                    prepareNext();
+                    break;
+            }
 
-			if (modCount != expectedModCount) {
-				throw new ConcurrentModificationException();
-			}
-		}
-	}
+            prepared = 0;
 
-	protected class ResolvingDerivedSubsetListIterator extends
-			DerivedSubsetListIterator {
+            valuesIterator.set(element);
 
-		@Override
-		protected boolean resolve() {
-			return true;
-		}
+            modCount++;
+            expectedModCount++;
+        }
 
-	}
+        @Override
+        public void add(Object element) {
+            checkModCount();
 
-	protected class EmptyDerivedSubsetListIterator extends
-			EmptyDerivedListIterator {
+            if (valuesIterator == null) {
+                @SuppressWarnings("unchecked")
+                List<Object> valuesList = resolve() ? (List<Object>) owner
+                        .eGet(sourceFeatureIDs[featureIndex], resolve(), true)
+                        : ((InternalEList<Object>) owner
+                        .eGet(sourceFeatureIDs[featureIndex],
+                                resolve(), true)).basicList();
 
-		@Override
-		public void remove() {
-			throw new IllegalStateException();
-		}
+                valuesList.listIterator(valuesList.size()).add(element);
+            } else {
 
-		@Override
-		public void set(Object element) {
-			throw new IllegalStateException();
-		}
+                switch (prepared) {
+                    case 3:
+                        preparePrevious();
+                        break;
+                    case -3:
+                        prepareNext();
+                        break;
+                }
 
-		@Override
-		public void add(Object element) {
-			throw new IllegalStateException();
-		}
+                valuesIterator.add(element);
+            }
 
-	}
+            prepared = 0;
 
-	public DerivedSubsetEObjectEList(Class<?> dataClass, InternalEObject owner,
-			int featureID, int[] sourceFeatureIDs) {
-		super(dataClass, owner, featureID, sourceFeatureIDs);
+            modCount++;
+            expectedModCount++;
 
-		EStructuralFeature feature = sourceFeatureIDs.length == 1 ? getEStructuralFeature(sourceFeatureIDs[0])
-				: null;
+            index++;
+        }
 
-		if (feature == null || !feature.isMany()
-				|| FeatureMapUtil.isFeatureMap(feature)) {
+        protected void checkModCount() {
 
-			throw new IllegalArgumentException(String.valueOf(sourceFeatureIDs));
-		}
-	}
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
 
-	public DerivedSubsetEObjectEList(Class<?> dataClass, InternalEObject owner,
-			int featureID, int sourceFeatureID) {
-		this(dataClass, owner, featureID, new int[] { sourceFeatureID });
-	}
+    protected class ResolvingDerivedSubsetListIterator extends
+            DerivedSubsetListIterator {
 
-	@Override
-	public List<E> basicList() {
+        @Override
+        protected boolean resolve() {
+            return true;
+        }
 
-		return new DerivedSubsetEObjectEList<E>(dataClass, owner, featureID,
-				sourceFeatureIDs) {
+    }
 
-			@Override
-			public ListIterator<E> listIterator(int index) {
-				return basicListIterator(index);
-			}
-		};
-	}
+    protected class EmptyDerivedSubsetListIterator extends
+            EmptyDerivedListIterator {
 
-	@Override
-	protected ListIterator<E> newListIterator() {
-		return new DerivedSubsetListIterator();
-	}
+        @Override
+        public void remove() {
+            throw new IllegalStateException();
+        }
 
-	@Override
-	protected ListIterator<E> newResolvingListIterator() {
-		return new ResolvingDerivedSubsetListIterator();
-	}
+        @Override
+        public void set(Object element) {
+            throw new IllegalStateException();
+        }
 
-	@Override
-	protected ListIterator<E> newEmptyListIterator() {
-		return new EmptyDerivedSubsetListIterator();
-	}
+        @Override
+        public void add(Object element) {
+            throw new IllegalStateException();
+        }
 
-	@Override
-	protected boolean isNotificationRequired() {
-		return owner.eNotificationRequired();
-	}
+    }
 
 }

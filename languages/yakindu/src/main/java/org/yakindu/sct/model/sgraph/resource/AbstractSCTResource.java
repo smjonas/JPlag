@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- *
+ * committers of YAKINDU - initial API and implementation
  */
 
 package org.yakindu.sct.model.sgraph.resource;
@@ -78,451 +77,443 @@ import com.google.inject.name.Named;
  */
 public abstract class AbstractSCTResource extends XMIResourceImpl {
 
-	public static final String SCT_PREFIX = "SCT_";
+    public static final String SCT_PREFIX = "SCT_";
+    protected boolean isParsing = false;
+    protected boolean isLinking = false;
+    protected boolean isSerializing = false;
+    protected Multimap<SpecificationElement, Diagnostic> syntaxDiagnostics;
+    protected Multimap<SpecificationElement, Diagnostic> linkingDiagnostics;
+    protected Map<SpecificationElement, Diagnostic> sublinkDiagnostics;
+    @Inject
+    private IParser parser;
+    @Inject
+    private ILinker linker;
+    @Inject
+    private ISerializer serializer;
+    @Inject
+    private LazyURIEncoder encoder;
+    @Inject
+    private ILinkingService linkingService;
+    @Inject
+    private ILinkingDiagnosticMessageProvider diagnosticMessageProvider;
+    @Inject
+    private LinkingHelper linkingHelper;
+    @Inject
+    private OnChangeEvictingCache cache;
+    @Inject
+    @Named(Constants.LANGUAGE_NAME)
+    private String languageName;
+    private boolean serializerEnabled = false;
 
-	@Inject
-	private IParser parser;
-	@Inject
-	private ILinker linker;
-	@Inject
-	private ISerializer serializer;
-	@Inject
-	private LazyURIEncoder encoder;
-	@Inject
-	private ILinkingService linkingService;
-	@Inject
-	private ILinkingDiagnosticMessageProvider diagnosticMessageProvider;
-	@Inject
-	private LinkingHelper linkingHelper;
-	@Inject
-	private OnChangeEvictingCache cache;
-	@Inject
-	@Named(Constants.LANGUAGE_NAME)
-	private String languageName;
+    public AbstractSCTResource(URI uri) {
+        super(uri);
+        syntaxDiagnostics = HashMultimap.create();
+        linkingDiagnostics = HashMultimap.create();
+        setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
+    }
 
-	protected boolean isParsing = false;
+    protected abstract void parseTransition(Transition element);
 
-	protected boolean isLinking = false;
+    protected abstract void parseState(State element);
 
-	protected boolean isSerializing = false;
+    protected abstract void parseStatechart(Statechart element);
 
-	private boolean serializerEnabled = false;
+    protected abstract void serializeStatechart(Statechart element);
 
-	protected Multimap<SpecificationElement, Diagnostic> syntaxDiagnostics;
+    protected abstract void serializeState(State element);
 
-	protected Multimap<SpecificationElement, Diagnostic> linkingDiagnostics;
+    protected abstract void serializeTransition(Transition element);
 
-	protected Map<SpecificationElement, Diagnostic> sublinkDiagnostics;
+    @Override
+    public void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
+        // mute notifications to avoid cache clearing
+        cache.getOrCreate(this).ignoreNotifications();
+        super.doLoad(inputStream, options);
+        cache.getOrCreate(this).listenToNotifications();
+    }
 
-	protected abstract void parseTransition(Transition element);
+    @Override
+    protected boolean useUUIDs() {
+        return true;
+    }
 
-	protected abstract void parseState(State element);
+    @Override
+    protected boolean useIDAttributes() {
+        return true;
+    }
 
-	protected abstract void parseStatechart(Statechart element);
+    @Override
+    protected void attachedHelper(EObject eObject) {
+        super.attachedHelper(eObject);
+        if (eObject instanceof SpecificationElement) {
+            Adapter parseAdapter = EcoreUtil.getExistingAdapter(eObject, ParseAdapter.class);
+            if (parseAdapter == null) {
+                parseSpecificationElement((SpecificationElement) eObject);
+                linkSpecificationElement((SpecificationElement) eObject);
+                eObject.eAdapters().add(new ParseAdapter());
+            }
+            Adapter serializeAdapter = EcoreUtil.getExistingAdapter(eObject, SerializeAdapter.class);
+            if (serializeAdapter == null) {
+                eObject.eAdapters().add(new SerializeAdapter());
+            }
+        }
+    }
 
-	protected abstract void serializeStatechart(Statechart element);
+    @Override
+    public void detached(EObject eObject) {
+        super.detached(eObject);
+        DETACHED_EOBJECT_TO_ID_MAP.clear();
+    }
 
-	protected abstract void serializeState(State element);
+    @Override
+    protected void detachedHelper(EObject eObject) {
+        if (eObject instanceof SpecificationElement) {
+            Adapter parseAdapter = EcoreUtil.getExistingAdapter(eObject, ParseAdapter.class);
+            if (parseAdapter != null) {
+                eObject.eAdapters().remove(parseAdapter);
+            }
+            Adapter serializeAdapter = EcoreUtil.getExistingAdapter(eObject, SerializeAdapter.class);
+            if (serializeAdapter != null) {
+                eObject.eAdapters().remove(serializeAdapter);
+            }
+        }
+        super.detachedHelper(eObject);
+    }
 
-	protected abstract void serializeTransition(Transition element);
+    @Override
+    public EObject getEObject(String uriFragment) {
+        if (encoder.isCrossLinkFragment(this, uriFragment)) {
+            Triple<EObject, EReference, INode> triple = encoder.decode(this, uriFragment);
+            List<EObject> linkedObjects = null;
+            linkedObjects = linkingService.getLinkedObjects(triple.getFirst(), triple.getSecond(), triple.getThird());
+            if (!linkedObjects.isEmpty()) {
+                return linkedObjects.get(0);
+            } else {
+                createDiagnostic(triple);
+                return null;
+            }
+        }
+        if (uriFragment != null && uriFragment.startsWith(SCT_PREFIX)) {
+            return super.getEObject(uriFragment.substring(SCT_PREFIX.length()));
+        }
+        return super.getEObject(uriFragment);
+    }
 
-	public AbstractSCTResource(URI uri) {
-		super(uri);
-		syntaxDiagnostics = HashMultimap.create();
-		linkingDiagnostics = HashMultimap.create();
-		setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
-	}
+    @Override
+    public String getURIFragment(EObject eObject) {
+        if (unloadingContents != null) {
+            return super.getURIFragment(eObject);
+        }
+        ICompositeNode node = NodeModelUtils.findActualNodeFor(eObject);
+        if (node != null) {
+            String fragment = super.getURIFragment(eObject);
+            if (!Strings.isNullOrEmpty(fragment)) {
+                return SCT_PREFIX + fragment;
+            }
+        }
+        return super.getURIFragment(eObject);
+    }
 
-	@Override
-	public void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
-		// mute notifications to avoid cache clearing
-		cache.getOrCreate(this).ignoreNotifications();
-		super.doLoad(inputStream, options);
-		cache.getOrCreate(this).listenToNotifications();
-	}
+    @Override
+    public String getID(EObject eObject) {
+        if (NodeModelUtils.getNode(eObject) != null)
+            return null;
+        return super.getID(eObject);
+    }
 
-	@Override
-	protected boolean useUUIDs() {
-		return true;
-	}
+    protected void createDiagnostic(Triple<EObject, EReference, INode> triple) {
+        SpecificationElement specificationElement = EcoreUtil2.getContainerOfType(triple.getFirst(),
+                SpecificationElement.class);
+        DiagnosticMessage message = createDiagnosticMessage(triple);
+        Diagnostic diagnostic = new XtextLinkingDiagnostic(triple.getThird(), message.getMessage(),
+                message.getIssueCode(), message.getIssueData());
+        linkingDiagnostics.put(specificationElement, diagnostic);
 
-	@Override
-	protected boolean useIDAttributes() {
-		return true;
-	}
+    }
 
-	@Override
-	protected void attachedHelper(EObject eObject) {
-		super.attachedHelper(eObject);
-		if (eObject instanceof SpecificationElement) {
-			Adapter parseAdapter = EcoreUtil.getExistingAdapter(eObject, ParseAdapter.class);
-			if (parseAdapter == null) {
-				parseSpecificationElement((SpecificationElement) eObject);
-				linkSpecificationElement((SpecificationElement) eObject);
-				eObject.eAdapters().add(new ParseAdapter());
-			}
-			Adapter serializeAdapter = EcoreUtil.getExistingAdapter(eObject, SerializeAdapter.class);
-			if (serializeAdapter == null) {
-				eObject.eAdapters().add(new SerializeAdapter());
-			}
-		}
-	}
+    protected DiagnosticMessage createDiagnosticMessage(Triple<EObject, EReference, INode> triple) {
+        ILinkingDiagnosticMessageProvider.ILinkingDiagnosticContext context = createDiagnosticMessageContext(triple);
+        DiagnosticMessage message = diagnosticMessageProvider.getUnresolvedProxyMessage(context);
+        return message;
+    }
 
-	@Override
-	public void detached(EObject eObject) {
-		super.detached(eObject);
-		DETACHED_EOBJECT_TO_ID_MAP.clear();
-	}
+    protected ILinkingDiagnosticContext createDiagnosticMessageContext(Triple<EObject, EReference, INode> triple) {
+        return new DiagnosticMessageContext(triple, linkingHelper);
+    }
 
-	@Override
-	protected void detachedHelper(EObject eObject) {
-		if (eObject instanceof SpecificationElement) {
-			Adapter parseAdapter = EcoreUtil.getExistingAdapter(eObject, ParseAdapter.class);
-			if (parseAdapter != null) {
-				eObject.eAdapters().remove(parseAdapter);
-			}
-			Adapter serializeAdapter = EcoreUtil.getExistingAdapter(eObject, SerializeAdapter.class);
-			if (serializeAdapter != null) {
-				eObject.eAdapters().remove(serializeAdapter);
-			}
-		}
-		super.detachedHelper(eObject);
-	}
+    // copied from xtext LazyLinkingResource
+    public void resolveLazyCrossReferences(CancelIndicator monitor) {
+        TreeIterator<Object> iterator = EcoreUtil.getAllContents(this, true);
+        while (iterator.hasNext()) {
+            InternalEObject source = (InternalEObject) iterator.next();
+            EStructuralFeature[] eStructuralFeatures = ((EClassImpl.FeatureSubsetSupplier) source.eClass()
+                    .getEAllStructuralFeatures()).crossReferences();
+            if (eStructuralFeatures != null) {
+                for (EStructuralFeature crossRef : eStructuralFeatures) {
+                    if (monitor.isCanceled()) {
+                        return;
+                    }
+                    resolveLazyCrossReference(source, crossRef, monitor);
+                }
+            }
+        }
+    }
 
-	@Override
-	public EObject getEObject(String uriFragment) {
-		if (encoder.isCrossLinkFragment(this, uriFragment)) {
-			Triple<EObject, EReference, INode> triple = encoder.decode(this, uriFragment);
-			List<EObject> linkedObjects = null;
-			linkedObjects = linkingService.getLinkedObjects(triple.getFirst(), triple.getSecond(), triple.getThird());
-			if (!linkedObjects.isEmpty()) {
-				return linkedObjects.get(0);
-			} else {
-				createDiagnostic(triple);
-				return null;
-			}
-		}
-		if (uriFragment != null && uriFragment.startsWith(SCT_PREFIX)) {
-			return super.getEObject(uriFragment.substring(SCT_PREFIX.length()));
-		}
-		return super.getEObject(uriFragment);
-	}
+    // copied from xtext LazyLinkingResource
+    protected void resolveLazyCrossReference(InternalEObject source, EStructuralFeature crossRef,
+                                             CancelIndicator monitor) {
+        if (crossRef.isDerived())
+            return;
+        if (crossRef.isMany()) {
+            @SuppressWarnings("unchecked")
+            InternalEList<EObject> list = (InternalEList<EObject>) source.eGet(crossRef);
+            for (int i = 0; i < list.size(); i++) {
+                EObject proxy = list.basicGet(i);
+                if (proxy.eIsProxy()) {
+                    URI proxyURI = ((InternalEObject) proxy).eProxyURI();
+                    if (getURI().equals(proxyURI.trimFragment())) {
+                        final String fragment = proxyURI.fragment();
+                        if (encoder.isCrossLinkFragment(this, fragment) && !monitor.isCanceled()) {
+                            EObject target = getEObject(fragment);
+                            if (target != null) {
+                                try {
+                                    source.eSetDeliver(false);
+                                    list.setUnique(i, target);
+                                } finally {
+                                    source.eSetDeliver(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            EObject proxy = (EObject) source.eGet(crossRef, false);
+            if (proxy != null && proxy.eIsProxy()) {
+                URI proxyURI = ((InternalEObject) proxy).eProxyURI();
+                if (getURI().equals(proxyURI.trimFragment())) {
+                    final String fragment = proxyURI.fragment();
+                    if (encoder.isCrossLinkFragment(this, fragment) && !monitor.isCanceled()) {
+                        EObject target = getEObject(fragment);
+                        if (target != null) {
+                            try {
+                                source.eSetDeliver(false);
+                                source.eSet(crossRef, target);
+                            } finally {
+                                source.eSetDeliver(true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public String getURIFragment(EObject eObject) {
-		if (unloadingContents != null) {
-			return super.getURIFragment(eObject);
-		}
-		ICompositeNode node = NodeModelUtils.findActualNodeFor(eObject);
-		if (node != null) {
-			String fragment = super.getURIFragment(eObject);
-			if (!Strings.isNullOrEmpty(fragment)) {
-				return SCT_PREFIX + fragment;
-			}
-		}
-		return super.getURIFragment(eObject);
-	}
+    public void parseSpecificationElement(SpecificationElement element) {
+        Assert.isNotNull(element);
+        isParsing = true;
+        if (element instanceof Transition) {
+            parseTransition((Transition) element);
+        } else if (element instanceof State) {
+            parseState((State) element);
+        } else if (element instanceof Statechart) {
+            parseStatechart((Statechart) element);
+        }
+        isParsing = false;
+    }
 
-	@Override
-	public String getID(EObject eObject) {
-		if (NodeModelUtils.getNode(eObject) != null)
-			return null;
-		return super.getID(eObject);
-	}
+    protected IParseResult parse(SpecificationElement element, String rule) {
+        ParserRule parserRule = XtextFactory.eINSTANCE.createParserRule();
+        parserRule.setName(rule);
+        String specification = element.getSpecification();
+        IParseResult result = parser.parse(parserRule, new StringReader(specification != null ? specification : ""));
+        createDiagnostics(result, element);
+        return result;
+    }
 
-	protected void createDiagnostic(Triple<EObject, EReference, INode> triple) {
-		SpecificationElement specificationElement = EcoreUtil2.getContainerOfType(triple.getFirst(),
-				SpecificationElement.class);
-		DiagnosticMessage message = createDiagnosticMessage(triple);
-		Diagnostic diagnostic = new XtextLinkingDiagnostic(triple.getThird(), message.getMessage(),
-				message.getIssueCode(), message.getIssueData());
-		linkingDiagnostics.put(specificationElement, diagnostic);
+    protected void createDiagnostics(IParseResult parseResult, SpecificationElement semanticTarget) {
+        syntaxDiagnostics.get(semanticTarget).clear();
+        for (INode error : parseResult.getSyntaxErrors()) {
+            syntaxDiagnostics.put(semanticTarget, new XtextSyntaxDiagnostic(error));
+        }
+    }
 
-	}
+    public void linkSpecificationElements() {
+        TreeIterator<EObject> iter = getAllContents();
+        while (iter.hasNext()) {
+            EObject currentObject = iter.next();
+            if (currentObject instanceof SpecificationElement) {
+                linkSpecificationElement((SpecificationElement) currentObject);
+            }
+        }
+    }
 
-	protected DiagnosticMessage createDiagnosticMessage(Triple<EObject, EReference, INode> triple) {
-		ILinkingDiagnosticMessageProvider.ILinkingDiagnosticContext context = createDiagnosticMessageContext(triple);
-		DiagnosticMessage message = diagnosticMessageProvider.getUnresolvedProxyMessage(context);
-		return message;
-	}
+    public void parseSpecificationElements() {
+        TreeIterator<EObject> iter = getAllContents();
+        while (iter.hasNext()) {
+            EObject currentObject = iter.next();
+            if (currentObject instanceof SpecificationElement) {
+                parseSpecificationElement((SpecificationElement) currentObject);
+            }
+        }
+    }
 
-	protected ILinkingDiagnosticContext createDiagnosticMessageContext(Triple<EObject, EReference, INode> triple) {
-		return new DiagnosticMessageContext(triple, linkingHelper);
-	}
+    protected void linkSpecificationElement(SpecificationElement element) {
+        isLinking = true;
+        final ListBasedDiagnosticConsumer consumer = new ListBasedDiagnosticConsumer();
+        linker.linkModel(element, consumer);
+        linkingDiagnostics.get(element).clear();
+        linkingDiagnostics.putAll(element, (consumer.getResult(Severity.ERROR)));
+        linkingDiagnostics.putAll(element, (consumer.getResult(Severity.WARNING)));
+        isLinking = false;
+    }
 
-	// copied from xtext LazyLinkingResource
-	public void resolveLazyCrossReferences(CancelIndicator monitor) {
-		TreeIterator<Object> iterator = EcoreUtil.getAllContents(this, true);
-		while (iterator.hasNext()) {
-			InternalEObject source = (InternalEObject) iterator.next();
-			EStructuralFeature[] eStructuralFeatures = ((EClassImpl.FeatureSubsetSupplier) source.eClass()
-					.getEAllStructuralFeatures()).crossReferences();
-			if (eStructuralFeatures != null) {
-				for (EStructuralFeature crossRef : eStructuralFeatures) {
-					if (monitor.isCanceled()) {
-						return;
-					}
-					resolveLazyCrossReference(source, crossRef, monitor);
-				}
-			}
-		}
-	}
+    protected void serializeSpecificationElement(SpecificationElement element) {
+        if (getSyntaxDiagnostics().get(element).size() > 0 || getLinkingDiagnostics().get(element).size() > 0) {
+            return;
+        }
+        try {
+            isSerializing = true;
+            if (element instanceof Transition) {
+                serializeTransition((Transition) element);
+            } else if (element instanceof State) {
+                serializeState((State) element);
+            } else if (element instanceof Statechart) {
+                serializeStatechart((Statechart) element);
+            }
+        } catch (XtextSerializationException ex) {
+            ex.printStackTrace();
+            // Leave the old specification
+        } catch (IConcreteSyntaxValidator.InvalidConcreteSyntaxException ex) {
+            ex.printStackTrace();
+            // Leave the old specification
+        } finally {
+            isSerializing = false;
+        }
+    }
 
-	// copied from xtext LazyLinkingResource
-	protected void resolveLazyCrossReference(InternalEObject source, EStructuralFeature crossRef,
-			CancelIndicator monitor) {
-		if (crossRef.isDerived())
-			return;
-		if (crossRef.isMany()) {
-			@SuppressWarnings("unchecked")
-			InternalEList<EObject> list = (InternalEList<EObject>) source.eGet(crossRef);
-			for (int i = 0; i < list.size(); i++) {
-				EObject proxy = list.basicGet(i);
-				if (proxy.eIsProxy()) {
-					URI proxyURI = ((InternalEObject) proxy).eProxyURI();
-					if (getURI().equals(proxyURI.trimFragment())) {
-						final String fragment = proxyURI.fragment();
-						if (encoder.isCrossLinkFragment(this, fragment) && !monitor.isCanceled()) {
-							EObject target = getEObject(fragment);
-							if (target != null) {
-								try {
-									source.eSetDeliver(false);
-									list.setUnique(i, target);
-								} finally {
-									source.eSetDeliver(true);
-								}
-							}
-						}
-					}
-				}
-			}
-		} else {
-			EObject proxy = (EObject) source.eGet(crossRef, false);
-			if (proxy != null && proxy.eIsProxy()) {
-				URI proxyURI = ((InternalEObject) proxy).eProxyURI();
-				if (getURI().equals(proxyURI.trimFragment())) {
-					final String fragment = proxyURI.fragment();
-					if (encoder.isCrossLinkFragment(this, fragment) && !monitor.isCanceled()) {
-						EObject target = getEObject(fragment);
-						if (target != null) {
-							try {
-								source.eSetDeliver(false);
-								source.eSet(crossRef, target);
-							} finally {
-								source.eSetDeliver(true);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    protected String serialize(EObject object) {
+        if (object != null) {
+            return serializer.serialize(object);
+        }
+        return "";
+    }
 
-	public void parseSpecificationElement(SpecificationElement element) {
-		Assert.isNotNull(element);
-		isParsing = true;
-		if (element instanceof Transition) {
-			parseTransition((Transition) element);
-		} else if (element instanceof State) {
-			parseState((State) element);
-		} else if (element instanceof Statechart) {
-			parseStatechart((Statechart) element);
-		}
-		isParsing = false;
-	}
+    public Multimap<SpecificationElement, Diagnostic> getSyntaxDiagnostics() {
+        return syntaxDiagnostics;
+    }
 
-	protected IParseResult parse(SpecificationElement element, String rule) {
-		ParserRule parserRule = XtextFactory.eINSTANCE.createParserRule();
-		parserRule.setName(rule);
-		String specification = element.getSpecification();
-		IParseResult result = parser.parse(parserRule, new StringReader(specification != null ? specification : ""));
-		createDiagnostics(result, element);
-		return result;
-	}
+    public Multimap<SpecificationElement, Diagnostic> getLinkingDiagnostics() {
+        return linkingDiagnostics;
+    }
 
-	protected void createDiagnostics(IParseResult parseResult, SpecificationElement semanticTarget) {
-		syntaxDiagnostics.get(semanticTarget).clear();
-		for (INode error : parseResult.getSyntaxErrors()) {
-			syntaxDiagnostics.put(semanticTarget, new XtextSyntaxDiagnostic(error));
-		}
-	}
+    public String getLanguageName() {
+        return languageName;
+    }
 
-	public void linkSpecificationElements() {
-		TreeIterator<EObject> iter = getAllContents();
-		while (iter.hasNext()) {
-			EObject currentObject = iter.next();
-			if (currentObject instanceof SpecificationElement) {
-				linkSpecificationElement((SpecificationElement) currentObject);
-			}
-		}
-	}
+    public boolean isSerializerEnabled() {
+        return serializerEnabled;
+    }
 
-	public void parseSpecificationElements() {
-		TreeIterator<EObject> iter = getAllContents();
-		while (iter.hasNext()) {
-			EObject currentObject = iter.next();
-			if (currentObject instanceof SpecificationElement) {
-				parseSpecificationElement((SpecificationElement) currentObject);
-			}
-		}
-	}
+    public void setSerializerEnabled(boolean serializerEnabled) {
+        this.serializerEnabled = serializerEnabled;
+    }
 
-	protected void linkSpecificationElement(SpecificationElement element) {
-		isLinking = true;
-		final ListBasedDiagnosticConsumer consumer = new ListBasedDiagnosticConsumer();
-		linker.linkModel(element, consumer);
-		linkingDiagnostics.get(element).clear();
-		linkingDiagnostics.putAll(element, (consumer.getResult(Severity.ERROR)));
-		linkingDiagnostics.putAll(element, (consumer.getResult(Severity.WARNING)));
-		isLinking = false;
-	}
+    /**
+     * overridden because original calls 'Util.denormalizeURI(uri,
+     * getResourceSet())' which leads into error if there is no platform
+     * available
+     */
+    @Override
+    public void setURI(URI uri) {
+        if (getResourceSet() != null) {
+            setRawURI(uri);
+        }
+    }
 
-	protected void serializeSpecificationElement(SpecificationElement element) {
-		if (getSyntaxDiagnostics().get(element).size() > 0 || getLinkingDiagnostics().get(element).size() > 0) {
-			return;
-		}
-		try {
-			isSerializing = true;
-			if (element instanceof Transition) {
-				serializeTransition((Transition) element);
-			} else if (element instanceof State) {
-				serializeState((State) element);
-			} else if (element instanceof Statechart) {
-				serializeStatechart((Statechart) element);
-			}
-		} catch (XtextSerializationException ex) {
-			ex.printStackTrace();
-			// Leave the old specification
-		} catch (IConcreteSyntaxValidator.InvalidConcreteSyntaxException ex) {
-			ex.printStackTrace();
-			// Leave the old specification
-		} finally {
-			isSerializing = false;
-		}
-	}
+    public void setRawURI(URI uri) {
+        URI oldURI = getURI();
+        if ((uri == oldURI) || ((uri != null) && (uri.equals(oldURI))))
+            return;
 
-	protected String serialize(EObject object) {
-		if (object != null) {
-			return serializer.serialize(object);
-		}
-		return "";
-	}
+        super.setURI(uri);
+    }
 
-	public Multimap<SpecificationElement, Diagnostic> getSyntaxDiagnostics() {
-		return syntaxDiagnostics;
-	}
+    // copied from xtext LazyLinkingResource
+    public static class DiagnosticMessageContext
+            implements ILinkingDiagnosticMessageProvider.ILinkingDiagnosticContext {
 
-	public Multimap<SpecificationElement, Diagnostic> getLinkingDiagnostics() {
-		return linkingDiagnostics;
-	}
+        private final Triple<EObject, EReference, INode> triple;
+        private final LinkingHelper linkingHelper;
 
-	public String getLanguageName() {
-		return languageName;
-	}
+        protected DiagnosticMessageContext(Triple<EObject, EReference, INode> triple, LinkingHelper helper) {
+            this.triple = triple;
+            this.linkingHelper = helper;
+        }
 
-	protected final class SerializeAdapter extends EContentAdapter {
+        public EObject getContext() {
+            return triple.getFirst();
+        }
 
-		@Override
-		public void notifyChanged(Notification msg) {
-			super.notifyChanged(msg);
-			if (isSerializerEnabled()) {
-				if (isLoading() || isParsing || isLinking || isSerializing) {
-					return;
-				}
-				if (msg.getEventType() == Notification.REMOVING_ADAPTER || msg.getEventType() == Notification.RESOLVE) {
-					return;
-				}
-				Object notifier = msg.getNotifier();
-				if (notifier instanceof EObject) {
-					EObject eObject = (EObject) notifier;
-					SpecificationElement container = EcoreUtil2.getContainerOfType(eObject, SpecificationElement.class);
-					if (container != null) {
-						serializeSpecificationElement(container);
-					}
-				}
-			}
-		}
+        public EReference getReference() {
+            return triple.getSecond();
+        }
 
-		@Override
-		public boolean isAdapterForType(Object type) {
-			return SerializeAdapter.class == type;
-		}
-	}
+        public String getLinkText() {
+            return linkingHelper.getCrossRefNodeAsString(triple.getThird(), true);
+        }
 
-	protected final class ParseAdapter extends AdapterImpl {
+    }
 
-		@Override
-		public void notifyChanged(Notification msg) {
-			if (isSerializing) {
-				return;
-			}
-			if (msg.getFeature() == SGraphPackage.Literals.SPECIFICATION_ELEMENT__SPECIFICATION) {
-				String newValString = msg.getNewStringValue();
-				String oldVString = msg.getOldStringValue();
-				if (newValString != null && !newValString.equals(oldVString)) {
-					parseSpecificationElement((SpecificationElement) msg.getNotifier());
-					linkSpecificationElements();
-				}
-			}
-		}
+    protected final class SerializeAdapter extends EContentAdapter {
 
-		@Override
-		public boolean isAdapterForType(Object type) {
-			return ParseAdapter.class == type;
-		}
-	}
+        @Override
+        public void notifyChanged(Notification msg) {
+            super.notifyChanged(msg);
+            if (isSerializerEnabled()) {
+                if (isLoading() || isParsing || isLinking || isSerializing) {
+                    return;
+                }
+                if (msg.getEventType() == Notification.REMOVING_ADAPTER || msg.getEventType() == Notification.RESOLVE) {
+                    return;
+                }
+                Object notifier = msg.getNotifier();
+                if (notifier instanceof EObject) {
+                    EObject eObject = (EObject) notifier;
+                    SpecificationElement container = EcoreUtil2.getContainerOfType(eObject, SpecificationElement.class);
+                    if (container != null) {
+                        serializeSpecificationElement(container);
+                    }
+                }
+            }
+        }
 
-	public boolean isSerializerEnabled() {
-		return serializerEnabled;
-	}
+        @Override
+        public boolean isAdapterForType(Object type) {
+            return SerializeAdapter.class == type;
+        }
+    }
 
-	public void setSerializerEnabled(boolean serializerEnabled) {
-		this.serializerEnabled = serializerEnabled;
-	}
+    protected final class ParseAdapter extends AdapterImpl {
 
-	// copied from xtext LazyLinkingResource
-	public static class DiagnosticMessageContext
-			implements ILinkingDiagnosticMessageProvider.ILinkingDiagnosticContext {
+        @Override
+        public void notifyChanged(Notification msg) {
+            if (isSerializing) {
+                return;
+            }
+            if (msg.getFeature() == SGraphPackage.Literals.SPECIFICATION_ELEMENT__SPECIFICATION) {
+                String newValString = msg.getNewStringValue();
+                String oldVString = msg.getOldStringValue();
+                if (newValString != null && !newValString.equals(oldVString)) {
+                    parseSpecificationElement((SpecificationElement) msg.getNotifier());
+                    linkSpecificationElements();
+                }
+            }
+        }
 
-		private final Triple<EObject, EReference, INode> triple;
-		private final LinkingHelper linkingHelper;
-
-		protected DiagnosticMessageContext(Triple<EObject, EReference, INode> triple, LinkingHelper helper) {
-			this.triple = triple;
-			this.linkingHelper = helper;
-		}
-
-		public EObject getContext() {
-			return triple.getFirst();
-		}
-
-		public EReference getReference() {
-			return triple.getSecond();
-		}
-
-		public String getLinkText() {
-			return linkingHelper.getCrossRefNodeAsString(triple.getThird(), true);
-		}
-
-	}
-
-	/**
-	 * overridden because original calls 'Util.denormalizeURI(uri,
-	 * getResourceSet())' which leads into error if there is no platform
-	 * available
-	 */
-	@Override
-	public void setURI(URI uri) {
-		if (getResourceSet() != null) {
-			setRawURI(uri);
-		}
-	}
-
-	public void setRawURI(URI uri) {
-		URI oldURI = getURI();
-		if ((uri == oldURI) || ((uri != null) && (uri.equals(oldURI))))
-			return;
-
-		super.setURI(uri);
-	}
+        @Override
+        public boolean isAdapterForType(Object type) {
+            return ParseAdapter.class == type;
+        }
+    }
 }

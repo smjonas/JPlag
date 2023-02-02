@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types;
 
@@ -14,26 +13,26 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public class TypeParameterBinding extends AdapterImpl {
 
-	private Type actualType;
+    private Type actualType;
 
-	public TypeParameterBinding(Type actualType) {
-		this.actualType = actualType;
-	}
+    public TypeParameterBinding(Type actualType) {
+        this.actualType = actualType;
+    }
 
-	@Override
-	public boolean isAdapterForType(Object type) {
-		return TypeParameterBinding.class == type;
-	}
+    @Override
+    public boolean isAdapterForType(Object type) {
+        return TypeParameterBinding.class == type;
+    }
 
-	public Type getActualType() {
-		return actualType;
-	}
-	
-	public void setActualType(Type actualType) {
-		this.actualType = actualType;
-	}
+    public Type getActualType() {
+        return actualType;
+    }
+
+    public void setActualType(Type actualType) {
+        this.actualType = actualType;
+    }
 }

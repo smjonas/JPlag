@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.interpreter;
 
@@ -14,13 +13,13 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public class DefaultTypeSystemInterpreter extends AbstractTypeSystemInterpreter {
 
-	@Override
-	public Object interpret(EObject object) {
-		throw new IllegalArgumentException("not yet implemented");
-	}
+    @Override
+    public Object interpret(EObject object) {
+        throw new IllegalArgumentException("not yet implemented");
+    }
 
 }

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * </copyright>
- *
+ * <p>
  * $Id$
  */
 package org.yakindu.base.types.impl;
@@ -36,242 +36,239 @@ import org.yakindu.base.types.TypesPackage;
  * @generated
  */
 public class TypeImpl extends DeclarationImpl implements Type {
-	/**
-	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAbstract()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean ABSTRACT_EDEFAULT = false;
+    /**
+     * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isAbstract()
+     * @generated
+     * @ordered
+     */
+    protected static final boolean ABSTRACT_EDEFAULT = false;
+    /**
+     * The default value of the '{@link #isVisible() <em>Visible</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isVisible()
+     * @generated
+     * @ordered
+     */
+    protected static final boolean VISIBLE_EDEFAULT = true;
+    /**
+     * The cached value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isAbstract()
+     * @generated
+     * @ordered
+     */
+    protected boolean abstract_ = ABSTRACT_EDEFAULT;
+    /**
+     * The cached value of the '{@link #isVisible() <em>Visible</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #isVisible()
+     * @generated
+     * @ordered
+     */
+    protected boolean visible = VISIBLE_EDEFAULT;
 
-	/**
-	 * The cached value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAbstract()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean abstract_ = ABSTRACT_EDEFAULT;
+    /**
+     * The cached value of the '{@link #getSuperTypes() <em>Super Types</em>}' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getSuperTypes()
+     * @generated
+     * @ordered
+     */
+    protected EList<TypeSpecifier> superTypes;
 
-	/**
-	 * The default value of the '{@link #isVisible() <em>Visible</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isVisible()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean VISIBLE_EDEFAULT = true;
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected TypeImpl() {
+        super();
+    }
 
-	/**
-	 * The cached value of the '{@link #isVisible() <em>Visible</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isVisible()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean visible = VISIBLE_EDEFAULT;
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EClass eStaticClass() {
+        return TypesPackage.Literals.TYPE;
+    }
 
-	/**
-	 * The cached value of the '{@link #getSuperTypes() <em>Super Types</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getSuperTypes()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TypeSpecifier> superTypes;
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public boolean isAbstract() {
+        return abstract_;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected TypeImpl() {
-		super();
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setAbstract(boolean newAbstract) {
+        boolean oldAbstract = abstract_;
+        abstract_ = newAbstract;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, TypesPackage.TYPE__ABSTRACT, oldAbstract, abstract_));
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return TypesPackage.Literals.TYPE;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public boolean isVisible() {
+        return visible;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public boolean isAbstract() {
-		return abstract_;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setAbstract(boolean newAbstract) {
-		boolean oldAbstract = abstract_;
-		abstract_ = newAbstract;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, TypesPackage.TYPE__ABSTRACT, oldAbstract, abstract_));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public boolean isVisible() {
-		return visible;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setVisible(boolean newVisible) {
-		boolean oldVisible = visible;
-		visible = newVisible;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, TypesPackage.TYPE__VISIBLE, oldVisible, visible));
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setVisible(boolean newVisible) {
+        boolean oldVisible = visible;
+        visible = newVisible;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, TypesPackage.TYPE__VISIBLE, oldVisible, visible));
+    }
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TypeSpecifier> getSuperTypes() {
-		if (superTypes == null) {
-			superTypes = new EObjectContainmentEList<TypeSpecifier>(TypeSpecifier.class, this, TypesPackage.TYPE__SUPER_TYPES);
-		}
-		return superTypes;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EList<TypeSpecifier> getSuperTypes() {
+        if (superTypes == null) {
+            superTypes = new EObjectContainmentEList<TypeSpecifier>(TypeSpecifier.class, this, TypesPackage.TYPE__SUPER_TYPES);
+        }
+        return superTypes;
+    }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated NOT
-	 */
-	public Type getOriginType() {
-		return this;
-	}
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     *
+     * @generated NOT
+     */
+    public Type getOriginType() {
+        return this;
+    }
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case TypesPackage.TYPE__SUPER_TYPES:
-				return ((InternalEList<?>)getSuperTypes()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+        switch (featureID) {
+            case TypesPackage.TYPE__SUPER_TYPES:
+                return ((InternalEList<?>) getSuperTypes()).basicRemove(otherEnd, msgs);
+        }
+        return super.eInverseRemove(otherEnd, featureID, msgs);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case TypesPackage.TYPE__ABSTRACT:
-				return isAbstract();
-			case TypesPackage.TYPE__VISIBLE:
-				return isVisible();
-			case TypesPackage.TYPE__SUPER_TYPES:
-				return getSuperTypes();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+        switch (featureID) {
+            case TypesPackage.TYPE__ABSTRACT:
+                return isAbstract();
+            case TypesPackage.TYPE__VISIBLE:
+                return isVisible();
+            case TypesPackage.TYPE__SUPER_TYPES:
+                return getSuperTypes();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case TypesPackage.TYPE__ABSTRACT:
-				setAbstract((Boolean)newValue);
-				return;
-			case TypesPackage.TYPE__VISIBLE:
-				setVisible((Boolean)newValue);
-				return;
-			case TypesPackage.TYPE__SUPER_TYPES:
-				getSuperTypes().clear();
-				getSuperTypes().addAll((Collection<? extends TypeSpecifier>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void eSet(int featureID, Object newValue) {
+        switch (featureID) {
+            case TypesPackage.TYPE__ABSTRACT:
+                setAbstract((Boolean) newValue);
+                return;
+            case TypesPackage.TYPE__VISIBLE:
+                setVisible((Boolean) newValue);
+                return;
+            case TypesPackage.TYPE__SUPER_TYPES:
+                getSuperTypes().clear();
+                getSuperTypes().addAll((Collection<? extends TypeSpecifier>) newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case TypesPackage.TYPE__ABSTRACT:
-				setAbstract(ABSTRACT_EDEFAULT);
-				return;
-			case TypesPackage.TYPE__VISIBLE:
-				setVisible(VISIBLE_EDEFAULT);
-				return;
-			case TypesPackage.TYPE__SUPER_TYPES:
-				getSuperTypes().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void eUnset(int featureID) {
+        switch (featureID) {
+            case TypesPackage.TYPE__ABSTRACT:
+                setAbstract(ABSTRACT_EDEFAULT);
+                return;
+            case TypesPackage.TYPE__VISIBLE:
+                setVisible(VISIBLE_EDEFAULT);
+                return;
+            case TypesPackage.TYPE__SUPER_TYPES:
+                getSuperTypes().clear();
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case TypesPackage.TYPE__ABSTRACT:
-				return abstract_ != ABSTRACT_EDEFAULT;
-			case TypesPackage.TYPE__VISIBLE:
-				return visible != VISIBLE_EDEFAULT;
-			case TypesPackage.TYPE__SUPER_TYPES:
-				return superTypes != null && !superTypes.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public boolean eIsSet(int featureID) {
+        switch (featureID) {
+            case TypesPackage.TYPE__ABSTRACT:
+                return abstract_ != ABSTRACT_EDEFAULT;
+            case TypesPackage.TYPE__VISIBLE:
+                return visible != VISIBLE_EDEFAULT;
+            case TypesPackage.TYPE__SUPER_TYPES:
+                return superTypes != null && !superTypes.isEmpty();
+        }
+        return super.eIsSet(featureID);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated NOT
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
-	
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated NOT
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
+
 } //TypeImpl

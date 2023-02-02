@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.inferrer;
 
@@ -21,85 +20,85 @@ import org.yakindu.base.types.validation.IValidationIssueAcceptor;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public interface ITypeSystemInferrer {
 
-	public static final String EXCEPTION_CODE = "RuntimeException";
-	public static final String NO_INFER_METHOD_CODE = "NoInferMethod";
-	public static final String IS_TYPE_CODE = "NotExpectedType.";
-	public static final String NOT_TYPE_CODE = "NotType";
-	public static final String NOT_SAME_CODE = "NotSame";
-	public static final String NOT_COMPATIBLE_CODE = "IncompatibleTypes";
-	public static final String NOT_INFERRABLE_TYPE_PARAMETER_CODE = "NotInferrableTypeParameter";
+    public static final String EXCEPTION_CODE = "RuntimeException";
+    public static final String NO_INFER_METHOD_CODE = "NoInferMethod";
+    public static final String IS_TYPE_CODE = "NotExpectedType.";
+    public static final String NOT_TYPE_CODE = "NotType";
+    public static final String NOT_SAME_CODE = "NotSame";
+    public static final String NOT_COMPATIBLE_CODE = "IncompatibleTypes";
+    public static final String NOT_INFERRABLE_TYPE_PARAMETER_CODE = "NotInferrableTypeParameter";
 
-	public static class InferenceResult {
+    public InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor);
 
-		private Type type;
-		private List<InferenceResult> bindings = new ArrayList<>();
+    public InferenceResult infer(EObject object);
 
-		protected InferenceResult(Type type) {
-			Assert.isNotNull(type);
-			this.type = type;
-		}
+    public static class InferenceResult {
 
-		protected InferenceResult(Type type, List<InferenceResult> bindings) {
-			Assert.isNotNull(type);
-			Assert.isNotNull(bindings);
-			this.type = type;
-			this.bindings.addAll(bindings);
-		}
+        private Type type;
+        private List<InferenceResult> bindings = new ArrayList<>();
 
-		public static InferenceResult from(Type type) {
-			return new InferenceResult(type);
-		}
+        protected InferenceResult(Type type) {
+            Assert.isNotNull(type);
+            this.type = type;
+        }
 
-		public static InferenceResult from(Type type, List<InferenceResult> bindings) {
-			return new InferenceResult(type, bindings);
-		}
+        protected InferenceResult(Type type, List<InferenceResult> bindings) {
+            Assert.isNotNull(type);
+            Assert.isNotNull(bindings);
+            this.type = type;
+            this.bindings.addAll(bindings);
+        }
 
-		public Type getType() {
-			return type;
-		}
+        public static InferenceResult from(Type type) {
+            return new InferenceResult(type);
+        }
 
-		public List<InferenceResult> getBindings() {
-			return bindings;
-		}
+        public static InferenceResult from(Type type, List<InferenceResult> bindings) {
+            return new InferenceResult(type, bindings);
+        }
 
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append(type.toString());
-			if (type instanceof GenericElement && !((GenericElement) type).getTypeParameters().isEmpty()) {
-				builder.append("<");
-				String sep = "";
-				for (InferenceResult type : bindings) {
-					builder.append(sep);
-					builder.append(type.toString());
-					sep = ", ";
-				}
-				builder.append(">");
-			}
-			return builder.toString();
-		}
-	}
+        public Type getType() {
+            return type;
+        }
 
-	public InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor);
+        public List<InferenceResult> getBindings() {
+            return bindings;
+        }
 
-	public InferenceResult infer(EObject object);
-	
-	public static class NullImpl implements ITypeSystemInferrer {
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(type.toString());
+            if (type instanceof GenericElement && !((GenericElement) type).getTypeParameters().isEmpty()) {
+                builder.append("<");
+                String sep = "";
+                for (InferenceResult type : bindings) {
+                    builder.append(sep);
+                    builder.append(type.toString());
+                    sep = ", ";
+                }
+                builder.append(">");
+            }
+            return builder.toString();
+        }
+    }
 
-		@Override
-		public InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor) {
-			return null;
-		}
+    public static class NullImpl implements ITypeSystemInferrer {
 
-		@Override
-		public InferenceResult infer(EObject object) {
-			return null;
-		}
-		
-	}
-	
+        @Override
+        public InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor) {
+            return null;
+        }
+
+        @Override
+        public InferenceResult infer(EObject object) {
+            return null;
+        }
+
+    }
+
 }

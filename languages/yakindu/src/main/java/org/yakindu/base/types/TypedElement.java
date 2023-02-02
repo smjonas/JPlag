@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * </copyright>
- *
+ * <p>
  * $Id$
  */
 package org.yakindu.base.types;
@@ -26,45 +26,45 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface TypedElement extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Type</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Type</em>' reference.
-	 * @see TypesPackage#getTypedElement_Type()
-	 * @model transient="true" changeable="false" volatile="true" derived="true"
-	 * @generated
-	 */
-	Type getType();
+    /**
+     * Returns the value of the '<em><b>Type</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Type</em>' reference isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Type</em>' reference.
+     * @see TypesPackage#getTypedElement_Type()
+     * @model transient="true" changeable="false" volatile="true" derived="true"
+     * @generated
+     */
+    Type getType();
 
-	/**
-	 * Returns the value of the '<em><b>Type Specifier</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type Specifier</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Type Specifier</em>' containment reference.
-	 * @see #setTypeSpecifier(TypeSpecifier)
-	 * @see TypesPackage#getTypedElement_TypeSpecifier()
-	 * @model containment="true"
-	 * @generated
-	 */
-	TypeSpecifier getTypeSpecifier();
+    /**
+     * Returns the value of the '<em><b>Type Specifier</b></em>' containment reference.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Type Specifier</em>' containment reference isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Type Specifier</em>' containment reference.
+     * @see #setTypeSpecifier(TypeSpecifier)
+     * @see TypesPackage#getTypedElement_TypeSpecifier()
+     * @model containment="true"
+     * @generated
+     */
+    TypeSpecifier getTypeSpecifier();
 
-	/**
-	 * Sets the value of the '{@link TypedElement#getTypeSpecifier <em>Type Specifier</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Type Specifier</em>' containment reference.
-	 * @see #getTypeSpecifier()
-	 * @generated
-	 */
-	void setTypeSpecifier(TypeSpecifier value);
+    /**
+     * Sets the value of the '{@link TypedElement#getTypeSpecifier <em>Type Specifier</em>}' containment reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Type Specifier</em>' containment reference.
+     * @see #getTypeSpecifier()
+     * @generated
+     */
+    void setTypeSpecifier(TypeSpecifier value);
 
 } // TypedElement

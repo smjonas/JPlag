@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types;
 
@@ -21,28 +22,28 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface ComplexType extends Type, GenericElement {
-	/**
-	 * Returns the value of the '<em><b>Features</b></em>' containment reference list.
-	 * The list contents are of type {@link Declaration}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Features</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Features</em>' containment reference list.
-	 * @see TypesPackage#getComplexType_Features()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<Declaration> getFeatures();
+    /**
+     * Returns the value of the '<em><b>Features</b></em>' containment reference list.
+     * The list contents are of type {@link Declaration}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Features</em>' containment reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Features</em>' containment reference list.
+     * @see TypesPackage#getComplexType_Features()
+     * @model containment="true"
+     * @generated
+     */
+    EList<Declaration> getFeatures();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @model kind="operation"
-	 * @generated
-	 */
-	EList<Declaration> getAllFeatures();
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model kind="operation"
+     * @generated
+     */
+    EList<Declaration> getAllFeatures();
 
 } // ComplexType

@@ -1,7 +1,7 @@
 /**
  * <copyright>
  * </copyright>
- *
+ * <p>
  * $Id$
  */
 package org.yakindu.base.base;
@@ -17,48 +17,48 @@ import org.eclipse.emf.ecore.EFactory;
  * @generated
  */
 public interface BaseFactory extends EFactory {
-	/**
-	 * The singleton instance of the factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	BaseFactory eINSTANCE = org.yakindu.base.base.impl.BaseFactoryImpl.init();
+    /**
+     * The singleton instance of the factory.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    BaseFactory eINSTANCE = org.yakindu.base.base.impl.BaseFactoryImpl.init();
 
-	/**
-	 * Returns a new object of class '<em>Named Element</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Named Element</em>'.
-	 * @generated
-	 */
-	NamedElement createNamedElement();
+    /**
+     * Returns a new object of class '<em>Named Element</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Named Element</em>'.
+     * @generated
+     */
+    NamedElement createNamedElement();
 
-	/**
-	 * Returns a new object of class '<em>Documented Element</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Documented Element</em>'.
-	 * @generated
-	 */
-	DocumentedElement createDocumentedElement();
+    /**
+     * Returns a new object of class '<em>Documented Element</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Documented Element</em>'.
+     * @generated
+     */
+    DocumentedElement createDocumentedElement();
 
-	/**
-	 * Returns a new object of class '<em>Domain Element</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Domain Element</em>'.
-	 * @generated
-	 */
-	DomainElement createDomainElement();
+    /**
+     * Returns a new object of class '<em>Domain Element</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Domain Element</em>'.
+     * @generated
+     */
+    DomainElement createDomainElement();
 
-	/**
-	 * Returns the package supported by this factory.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the package supported by this factory.
-	 * @generated
-	 */
-	BasePackage getBasePackage();
+    /**
+     * Returns the package supported by this factory.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the package supported by this factory.
+     * @generated
+     */
+    BasePackage getBasePackage();
 
 } //BaseFactory

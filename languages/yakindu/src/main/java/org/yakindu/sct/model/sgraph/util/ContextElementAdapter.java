@@ -4,10 +4,9 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * <p>
  * Contributors:
- * 	itemis AG - initial API and implementation
- * 
+ * itemis AG - initial API and implementation
  */
 package org.yakindu.sct.model.sgraph.util;
 
@@ -18,33 +17,33 @@ import org.eclipse.emf.ecore.EObject;
 /**
  * The {@link ContextElementAdapter} is added to the FakeResource to get access
  * to the context element for scoping/validation.
- * 
+ *
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 
 public class ContextElementAdapter extends AdapterImpl {
 
-	private EObject eObject;
+    private EObject eObject;
 
-	public ContextElementAdapter() {
-	}
-	
-	public ContextElementAdapter(EObject eObject) {
-		Assert.isNotNull(eObject);
-		this.eObject = eObject;
-	}
+    public ContextElementAdapter() {
+    }
 
-	@Override
-	public boolean isAdapterForType(Object type) {
-		return type == ContextElementAdapter.class;
-	}
+    public ContextElementAdapter(EObject eObject) {
+        Assert.isNotNull(eObject);
+        this.eObject = eObject;
+    }
 
-	public EObject getElement() {
-		return eObject;
-	}
+    @Override
+    public boolean isAdapterForType(Object type) {
+        return type == ContextElementAdapter.class;
+    }
 
-	public void setElement(EObject object) {
-		this.eObject = object;
-	}
+    public EObject getElement() {
+        return eObject;
+    }
+
+    public void setElement(EObject object) {
+        this.eObject = object;
+    }
 }

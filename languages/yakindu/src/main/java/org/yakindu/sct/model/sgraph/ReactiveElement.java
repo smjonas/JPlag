@@ -6,7 +6,6 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
  * committers of YAKINDU - initial API and implementation
- * 
  */
 package org.yakindu.sct.model.sgraph;
 
@@ -30,27 +29,27 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface ReactiveElement extends EObject {
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	String copyright = "Copyright (c) 2011 committers of YAKINDU and others.\r\nAll rights reserved. This program and the accompanying materials\r\nare made available under the terms of the Eclipse Public License v1.0\r\nwhich accompanies this distribution, and is available at\r\nhttp://www.eclipse.org/legal/epl-v10.html\r\nContributors:\r\ncommitters of YAKINDU - initial API and implementation\r\n";
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    String copyright = "Copyright (c) 2011 committers of YAKINDU and others.\r\nAll rights reserved. This program and the accompanying materials\r\nare made available under the terms of the Eclipse Public License v1.0\r\nwhich accompanies this distribution, and is available at\r\nhttp://www.eclipse.org/legal/epl-v10.html\r\nContributors:\r\ncommitters of YAKINDU - initial API and implementation\r\n";
 
-	/**
-	 * Returns the value of the '<em><b>Local Reactions</b></em>' reference list.
-	 * The list contents are of type {@link Reaction}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Local Reactions</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Local Reactions</em>' reference list.
-	 * @see org.yakindu.sct.model.sgraph.SGraphPackage#getReactiveElement_LocalReactions()
-	 * @model transient="true" changeable="false" volatile="true" derived="true"
-	 * @generated
-	 */
-	EList<Reaction> getLocalReactions();
+    /**
+     * Returns the value of the '<em><b>Local Reactions</b></em>' reference list.
+     * The list contents are of type {@link Reaction}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Local Reactions</em>' containment reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Local Reactions</em>' reference list.
+     * @see org.yakindu.sct.model.sgraph.SGraphPackage#getReactiveElement_LocalReactions()
+     * @model transient="true" changeable="false" volatile="true" derived="true"
+     * @generated
+     */
+    EList<Reaction> getLocalReactions();
 
 } // ReactiveElement

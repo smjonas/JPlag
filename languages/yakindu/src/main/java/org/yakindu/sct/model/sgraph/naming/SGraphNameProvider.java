@@ -4,9 +4,9 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p>
  * Contributors:
- *     committers of YAKINDU - initial API and implementation
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.sct.model.sgraph.naming;
 
@@ -44,200 +44,200 @@ import com.google.inject.Inject;
 
 /**
  * NameProvider for SGraph elements like statecharts, scopes and declarations.
- * 
+ *
  * @author benjamin schwertfeger
  * @author andreas muelder
- * 
+ *
  */
 public class SGraphNameProvider extends DefaultDeclarativeQualifiedNameProvider {
 
-	/** "Default" */
-	private static final QualifiedName DEFAULT_ENTRY_NAME = QualifiedName
-			.create("_entry_Default");
-	private static final QualifiedName DEFAULT_EXIT_NAME = QualifiedName
-			.create("_exit_Default");
-	private static final String _FINAL_STATE_NAME = "_final_";
-	private static final String _CHOICE_NAME = "_choice_";
-	private static final String _SYNC_NAME = "_sync";
+    /** "Default" */
+    private static final QualifiedName DEFAULT_ENTRY_NAME = QualifiedName
+            .create("_entry_Default");
+    private static final QualifiedName DEFAULT_EXIT_NAME = QualifiedName
+            .create("_exit_Default");
+    private static final String _FINAL_STATE_NAME = "_final_";
+    private static final String _CHOICE_NAME = "_choice_";
+    private static final String _SYNC_NAME = "_sync";
 
-	@Inject
-	private IQualifiedNameConverter nameConverter;
-	@Inject
-	private IdentifierConverter identifierConverter;
+    @Inject
+    private IQualifiedNameConverter nameConverter;
+    @Inject
+    private IdentifierConverter identifierConverter;
 
-	@Override
-	protected Function<EObject, String> getResolver() {
-		return SimpleAttributeResolver.NAME_RESOLVER;
-	}
+    @Override
+    protected Function<EObject, String> getResolver() {
+        return SimpleAttributeResolver.NAME_RESOLVER;
+    }
 
-	public QualifiedName qualifiedName(Statechart ele) {
-		String scName = ele.getName();
-		if (Strings.isEmpty(scName)) {
-			return null;
-		}
-		QualifiedName name = QualifiedName.create(identifierConverter
-				.toIdentifier(ele.getName()));
-		if (!Strings.isEmpty(ele.getNamespace())) {
-			name = nameConverter.toQualifiedName(ele.getNamespace()).append(
-					name);
-		}
-		return name;
-	}
+    public QualifiedName qualifiedName(Statechart ele) {
+        String scName = ele.getName();
+        if (Strings.isEmpty(scName)) {
+            return null;
+        }
+        QualifiedName name = QualifiedName.create(identifierConverter
+                .toIdentifier(ele.getName()));
+        if (!Strings.isEmpty(ele.getNamespace())) {
+            name = nameConverter.toQualifiedName(ele.getNamespace()).append(
+                    name);
+        }
+        return name;
+    }
 
-	public QualifiedName qualifiedName(Synchronization ele) {
+    public QualifiedName qualifiedName(Synchronization ele) {
 
-		QualifiedName qualifiedNameFromConverter = null;
+        QualifiedName qualifiedNameFromConverter = null;
 
-		if (!Strings.isEmpty(ele.getName())) {
-			qualifiedNameFromConverter = QualifiedName.create(ele.getName());
-		} else {
-			LinkedList<Synchronization> list = new LinkedList<Synchronization>();
-			Iterables.addAll(list, Iterables.filter(
-					((Region) ele.eContainer()).getVertices(),
-					Synchronization.class));
-			qualifiedNameFromConverter = QualifiedName.create(_SYNC_NAME
-					+ list.indexOf(ele));
-		}
+        if (!Strings.isEmpty(ele.getName())) {
+            qualifiedNameFromConverter = QualifiedName.create(ele.getName());
+        } else {
+            LinkedList<Synchronization> list = new LinkedList<Synchronization>();
+            Iterables.addAll(list, Iterables.filter(
+                    ((Region) ele.eContainer()).getVertices(),
+                    Synchronization.class));
+            qualifiedNameFromConverter = QualifiedName.create(_SYNC_NAME
+                    + list.indexOf(ele));
+        }
 
-		return getParentQualifiedName(ele, qualifiedNameFromConverter);
-	}
+        return getParentQualifiedName(ele, qualifiedNameFromConverter);
+    }
 
-	public QualifiedName qualifiedName(Choice ele) {
+    public QualifiedName qualifiedName(Choice ele) {
 
-		// first get order number of choice node
-		List<Vertex> choiceList = new ArrayList<Vertex>();
-		choiceList.addAll(Collections2.filter(
-				((Region) ele.eContainer()).getVertices(),
-				new Predicate<Vertex>() {
-					public boolean apply(Vertex input) {
-						return input instanceof Choice;
-					}
-				}));
-		int index = choiceList.indexOf(ele);
+        // first get order number of choice node
+        List<Vertex> choiceList = new ArrayList<Vertex>();
+        choiceList.addAll(Collections2.filter(
+                ((Region) ele.eContainer()).getVertices(),
+                new Predicate<Vertex>() {
+                    public boolean apply(Vertex input) {
+                        return input instanceof Choice;
+                    }
+                }));
+        int index = choiceList.indexOf(ele);
 
-		QualifiedName qualifiedNameFromConverter = QualifiedName
-				.create(_CHOICE_NAME + index);
+        QualifiedName qualifiedNameFromConverter = QualifiedName
+                .create(_CHOICE_NAME + index);
 
-		return getParentQualifiedName(ele, qualifiedNameFromConverter);
-	}
+        return getParentQualifiedName(ele, qualifiedNameFromConverter);
+    }
 
-	public QualifiedName qualifiedName(Entry ele) {
+    public QualifiedName qualifiedName(Entry ele) {
 
-		QualifiedName name = DEFAULT_ENTRY_NAME;
-		if (ele.getName() != null && !ele.getName().isEmpty()) {
-			name = QualifiedName.create(ele.getName());
-		}
+        QualifiedName name = DEFAULT_ENTRY_NAME;
+        if (ele.getName() != null && !ele.getName().isEmpty()) {
+            name = QualifiedName.create(ele.getName());
+        }
 
-		return getParentQualifiedName(ele, name);
-	}
+        return getParentQualifiedName(ele, name);
+    }
 
-	public QualifiedName qualifiedName(Exit ele) {
+    public QualifiedName qualifiedName(Exit ele) {
 
-		QualifiedName name = DEFAULT_EXIT_NAME;
-		if (ele.getName() != null && !ele.getName().isEmpty()) {
-			name = QualifiedName.create(ele.getName());
-		}
+        QualifiedName name = DEFAULT_EXIT_NAME;
+        if (ele.getName() != null && !ele.getName().isEmpty()) {
+            name = QualifiedName.create(ele.getName());
+        }
 
-		return getParentQualifiedName(ele, name);
-	}
+        return getParentQualifiedName(ele, name);
+    }
 
-	protected QualifiedName getParentQualifiedName(final EObject ele,
-			final QualifiedName childName) {
-		EObject temp = ele;
-		while (temp.eContainer() != null) {
-			temp = temp.eContainer();
-			QualifiedName parentsQualifiedName = getFullyQualifiedName(temp);
-			if (parentsQualifiedName != null)
-				return parentsQualifiedName.append(childName);
-		}
-		return childName;
-	}
+    protected QualifiedName getParentQualifiedName(final EObject ele,
+                                                   final QualifiedName childName) {
+        EObject temp = ele;
+        while (temp.eContainer() != null) {
+            temp = temp.eContainer();
+            QualifiedName parentsQualifiedName = getFullyQualifiedName(temp);
+            if (parentsQualifiedName != null)
+                return parentsQualifiedName.append(childName);
+        }
+        return childName;
+    }
 
-	public QualifiedName qualifiedName(Scope ele) {
-		QualifiedName name = null;
-		String nameString = SimpleAttributeResolver.NAME_RESOLVER.apply(ele);
-		if (!Strings.isEmpty(nameString)) {
-			name = nameConverter.toQualifiedName(nameString);
-		}
+    public QualifiedName qualifiedName(Scope ele) {
+        QualifiedName name = null;
+        String nameString = SimpleAttributeResolver.NAME_RESOLVER.apply(ele);
+        if (!Strings.isEmpty(nameString)) {
+            name = nameConverter.toQualifiedName(nameString);
+        }
 
-		QualifiedName namespace = getNamespace(ele);
-		if (namespace != null && name != null) {
-			name = namespace.append(name);
-		}
-		return name;
-	}
+        QualifiedName namespace = getNamespace(ele);
+        if (namespace != null && name != null) {
+            name = namespace.append(name);
+        }
+        return name;
+    }
 
-	public QualifiedName qualifiedName(FinalState ele) {
-		QualifiedName qfn = null;
-		if (Strings.isEmpty(ele.getName())) {
-			qfn = QualifiedName.create(_FINAL_STATE_NAME);
-		} else {
-			qfn = QualifiedName.create(identifierConverter.toIdentifier(ele
-					.getName()));
-		}
+    public QualifiedName qualifiedName(FinalState ele) {
+        QualifiedName qfn = null;
+        if (Strings.isEmpty(ele.getName())) {
+            qfn = QualifiedName.create(_FINAL_STATE_NAME);
+        } else {
+            qfn = QualifiedName.create(identifierConverter.toIdentifier(ele
+                    .getName()));
+        }
 
-		return getParentQualifiedName(ele, qfn);
-	}
+        return getParentQualifiedName(ele, qfn);
+    }
 
-	public QualifiedName qualifiedName(State ele) {
-		if (ele.getName() == null) {
-			return null;
-		}
-		QualifiedName qualifiedNameFromConverter = QualifiedName
-				.create(identifierConverter.toIdentifier(ele.getName()));
+    public QualifiedName qualifiedName(State ele) {
+        if (ele.getName() == null) {
+            return null;
+        }
+        QualifiedName qualifiedNameFromConverter = QualifiedName
+                .create(identifierConverter.toIdentifier(ele.getName()));
 
-		return getParentQualifiedName(ele, qualifiedNameFromConverter);
-	}
+        return getParentQualifiedName(ele, qualifiedNameFromConverter);
+    }
 
-	public QualifiedName qualifiedName(Region ele) {
-		QualifiedName qualifiedNameFromConverter = null;
-		if (ele.getName() == null || ele.getName().isEmpty()) {
-			if (ele.eContainer() instanceof CompositeElement) {
-				CompositeElement parent = (CompositeElement) ele.eContainer();
-				int index = parent.getRegions().indexOf(ele);
-				if (index != -1) {
-					qualifiedNameFromConverter = QualifiedName.create("_region"
-							+ index);
-				}
-			}
-			if (qualifiedNameFromConverter == null) {
-				return null;
-			}
-		} else {
-			qualifiedNameFromConverter = QualifiedName
-					.create(identifierConverter.toIdentifier(ele.getName()));
-		}
+    public QualifiedName qualifiedName(Region ele) {
+        QualifiedName qualifiedNameFromConverter = null;
+        if (ele.getName() == null || ele.getName().isEmpty()) {
+            if (ele.eContainer() instanceof CompositeElement) {
+                CompositeElement parent = (CompositeElement) ele.eContainer();
+                int index = parent.getRegions().indexOf(ele);
+                if (index != -1) {
+                    qualifiedNameFromConverter = QualifiedName.create("_region"
+                            + index);
+                }
+            }
+            if (qualifiedNameFromConverter == null) {
+                return null;
+            }
+        } else {
+            qualifiedNameFromConverter = QualifiedName
+                    .create(identifierConverter.toIdentifier(ele.getName()));
+        }
 
-		return getParentQualifiedName(ele, qualifiedNameFromConverter);
-	}
+        return getParentQualifiedName(ele, qualifiedNameFromConverter);
+    }
 
-	public QualifiedName qualifiedName(Declaration ele) {
-		QualifiedName name = null;
-		QualifiedName namespace = getNamespace(ele);
-		if (!Strings.isEmpty(ele.getName())) {
-			name = nameConverter.toQualifiedName(ele.getName());
-		}
-		if (namespace != null && name != null) {
-			return namespace.append(name);
-		}
-		if (namespace == null && name != null && ele instanceof ComplexType) {
-			return getParentQualifiedName(ele, name);
-		}
-		return name;
-	}
-	
+    public QualifiedName qualifiedName(Declaration ele) {
+        QualifiedName name = null;
+        QualifiedName namespace = getNamespace(ele);
+        if (!Strings.isEmpty(ele.getName())) {
+            name = nameConverter.toQualifiedName(ele.getName());
+        }
+        if (namespace != null && name != null) {
+            return namespace.append(name);
+        }
+        if (namespace == null && name != null && ele instanceof ComplexType) {
+            return getParentQualifiedName(ele, name);
+        }
+        return name;
+    }
 
-	protected QualifiedName getNamespace(EObject child) {
-		QualifiedName name = null;
-		if (!(child instanceof ScopedElement)) {
-			ScopedElement interfaceScope = EcoreUtil2.getContainerOfType(child,
-					ScopedElement.class);
-			if (interfaceScope != null
-					&& !Strings.isEmpty(interfaceScope.getNamespace())) {
-				name = nameConverter.toQualifiedName(interfaceScope
-						.getNamespace());
-			}
-		}
-		return name;
-	}
+
+    protected QualifiedName getNamespace(EObject child) {
+        QualifiedName name = null;
+        if (!(child instanceof ScopedElement)) {
+            ScopedElement interfaceScope = EcoreUtil2.getContainerOfType(child,
+                    ScopedElement.class);
+            if (interfaceScope != null
+                    && !Strings.isEmpty(interfaceScope.getNamespace())) {
+                name = nameConverter.toQualifiedName(interfaceScope
+                        .getNamespace());
+            }
+        }
+        return name;
+    }
 }

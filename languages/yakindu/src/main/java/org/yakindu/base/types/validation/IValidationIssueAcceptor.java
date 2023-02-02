@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.validation;
 
@@ -22,94 +21,93 @@ import com.google.common.collect.Lists;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public interface IValidationIssueAcceptor {
 
-	public static class ValidationIssue {
-		public static enum Severity {
-			ERROR, WARNING, INFO
-		}
+    public void accept(ValidationIssue trace);
 
-		private Severity severity;
-		private String message;
-		private String issueCode;
-		private EObject target;
+    public static class ValidationIssue {
+        private Severity severity;
+        private String message;
+        private String issueCode;
+        private EObject target;
+        public ValidationIssue(Severity severity, String message, String issueCode) {
+            this(severity, message, null, issueCode);
+        }
 
-		public ValidationIssue(Severity severity, String message, String issueCode) {
-			this(severity, message, null, issueCode);
-		}
+        public ValidationIssue(Severity severity, String message, EObject target, String issueCode) {
+            Assert.isNotNull(message);
+            Assert.isNotNull(issueCode);
+            Assert.isNotNull(severity);
+            this.severity = severity;
+            this.message = message;
+            this.target = target;
+            this.issueCode = issueCode;
+        }
 
-		public ValidationIssue(Severity severity, String message, EObject target, String issueCode) {
-			Assert.isNotNull(message);
-			Assert.isNotNull(issueCode);
-			Assert.isNotNull(severity);
-			this.severity = severity;
-			this.message = message;
-			this.target = target;
-			this.issueCode = issueCode;
-		}
+        public Severity getSeverity() {
+            return severity;
+        }
 
-		public Severity getSeverity() {
-			return severity;
-		}
+        public void setSeverity(Severity severity) {
+            this.severity = severity;
+        }
 
-		public void setSeverity(Severity severity) {
-			this.severity = severity;
-		}
+        public String getMessage() {
+            return message;
+        }
 
-		public String getMessage() {
-			return message;
-		}
+        public void setMessage(String message) {
+            this.message = message;
+        }
 
-		public void setMessage(String message) {
-			this.message = message;
-		}
+        public EObject getTarget() {
+            return target;
+        }
 
-		public EObject getTarget() {
-			return target;
-		}
+        public void setTarget(EObject target) {
+            this.target = target;
+        }
 
-		public void setTarget(EObject target) {
-			this.target = target;
-		}
+        public String getIssueCode() {
+            return issueCode;
+        }
 
-		public String getIssueCode() {
-			return issueCode;
-		}
+        @Override
+        public String toString() {
+            return "ValidationIssue [severity=" + severity + ", message=" + message + ", issueCode=" + issueCode
+                    + ", target=" + target + "]";
+        }
 
-		@Override
-		public String toString() {
-			return "ValidationIssue [severity=" + severity + ", message=" + message + ", issueCode=" + issueCode
-					+ ", target=" + target + "]";
-		}
+        public static enum Severity {
+            ERROR, WARNING, INFO
+        }
 
-	}
+    }
 
-	public void accept(ValidationIssue trace);
-	
-	public static final class ListBasedValidationIssueAcceptor implements IValidationIssueAcceptor {
+    public static final class ListBasedValidationIssueAcceptor implements IValidationIssueAcceptor {
 
-		private List<ValidationIssue> traces = Lists.newArrayList();
+        private List<ValidationIssue> traces = Lists.newArrayList();
 
-		@Override
-		public void accept(ValidationIssue trace) {
-			traces.add(trace);
-		}
+        @Override
+        public void accept(ValidationIssue trace) {
+            traces.add(trace);
+        }
 
-		public List<ValidationIssue> getTraces() {
-			return traces;
-		}
+        public List<ValidationIssue> getTraces() {
+            return traces;
+        }
 
-		public List<ValidationIssue> getTraces(final Severity severity) {
-			return Lists.newArrayList(Iterables.filter(traces, new Predicate<ValidationIssue>() {
-				@Override
-				public boolean apply(ValidationIssue input) {
-					return input.getSeverity() == severity;
-				}
-			}));
-		}
+        public List<ValidationIssue> getTraces(final Severity severity) {
+            return Lists.newArrayList(Iterables.filter(traces, new Predicate<ValidationIssue>() {
+                @Override
+                public boolean apply(ValidationIssue input) {
+                    return input.getSeverity() == severity;
+                }
+            }));
+        }
 
-	}
+    }
 
 }

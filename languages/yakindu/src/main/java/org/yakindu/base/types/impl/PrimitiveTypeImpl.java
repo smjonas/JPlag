@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types.impl;
 
@@ -14,23 +15,23 @@ import org.yakindu.base.types.TypesPackage;
  * @generated
  */
 public class PrimitiveTypeImpl extends TypeImpl implements PrimitiveType {
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected PrimitiveTypeImpl() {
-		super();
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected PrimitiveTypeImpl() {
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return TypesPackage.Literals.PRIMITIVE_TYPE;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EClass eStaticClass() {
+        return TypesPackage.Literals.PRIMITIVE_TYPE;
+    }
 
 } //PrimitiveTypeImpl

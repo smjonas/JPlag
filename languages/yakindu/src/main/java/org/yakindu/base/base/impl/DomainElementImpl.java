@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.base.impl;
 
@@ -23,138 +24,138 @@ import org.yakindu.base.base.DomainElement;
  * @generated
  */
 public class DomainElementImpl extends EObjectImpl implements DomainElement {
-	/**
-	 * The default value of the '{@link #getDomainID() <em>Domain ID</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDomainID()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String DOMAIN_ID_EDEFAULT = "org.yakindu.domain.default";
+    /**
+     * The default value of the '{@link #getDomainID() <em>Domain ID</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getDomainID()
+     * @generated
+     * @ordered
+     */
+    protected static final String DOMAIN_ID_EDEFAULT = "org.yakindu.domain.default";
 
-	/**
-	 * The cached value of the '{@link #getDomainID() <em>Domain ID</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDomainID()
-	 * @generated
-	 * @ordered
-	 */
-	protected String domainID = DOMAIN_ID_EDEFAULT;
+    /**
+     * The cached value of the '{@link #getDomainID() <em>Domain ID</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getDomainID()
+     * @generated
+     * @ordered
+     */
+    protected String domainID = DOMAIN_ID_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected DomainElementImpl() {
-		super();
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected DomainElementImpl() {
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return BasePackage.Literals.DOMAIN_ELEMENT;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EClass eStaticClass() {
+        return BasePackage.Literals.DOMAIN_ELEMENT;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getDomainID() {
-		return domainID;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public String getDomainID() {
+        return domainID;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setDomainID(String newDomainID) {
-		String oldDomainID = domainID;
-		domainID = newDomainID;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, BasePackage.DOMAIN_ELEMENT__DOMAIN_ID, oldDomainID, domainID));
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setDomainID(String newDomainID) {
+        String oldDomainID = domainID;
+        domainID = newDomainID;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, BasePackage.DOMAIN_ELEMENT__DOMAIN_ID, oldDomainID, domainID));
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
-				return getDomainID();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+        switch (featureID) {
+            case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
+                return getDomainID();
+        }
+        return super.eGet(featureID, resolve, coreType);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
-				setDomainID((String)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void eSet(int featureID, Object newValue) {
+        switch (featureID) {
+            case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
+                setDomainID((String) newValue);
+                return;
+        }
+        super.eSet(featureID, newValue);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
-				setDomainID(DOMAIN_ID_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void eUnset(int featureID) {
+        switch (featureID) {
+            case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
+                setDomainID(DOMAIN_ID_EDEFAULT);
+                return;
+        }
+        super.eUnset(featureID);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
-				return DOMAIN_ID_EDEFAULT == null ? domainID != null : !DOMAIN_ID_EDEFAULT.equals(domainID);
-		}
-		return super.eIsSet(featureID);
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public boolean eIsSet(int featureID) {
+        switch (featureID) {
+            case BasePackage.DOMAIN_ELEMENT__DOMAIN_ID:
+                return DOMAIN_ID_EDEFAULT == null ? domainID != null : !DOMAIN_ID_EDEFAULT.equals(domainID);
+        }
+        return super.eIsSet(featureID);
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String toString() {
+        if (eIsProxy()) return super.toString();
 
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (domainID: ");
-		result.append(domainID);
-		result.append(')');
-		return result.toString();
-	}
+        StringBuilder result = new StringBuilder(super.toString());
+        result.append(" (domainID: ");
+        result.append(domainID);
+        result.append(')');
+        return result.toString();
+    }
 
 } //DomainElementImpl

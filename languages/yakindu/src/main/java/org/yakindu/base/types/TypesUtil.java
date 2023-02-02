@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types;
 
@@ -21,56 +20,55 @@ import org.yakindu.base.base.NamedElement;
  */
 public class TypesUtil {
 
-	public static final String ID_SEPARATOR = ".";
+    public static final String ID_SEPARATOR = ".";
 
-	public static String computeQID(NamedElement element) {
-		if (element.getName() == null) {
-			return null;
-		}
+    public static String computeQID(NamedElement element) {
+        if (element.getName() == null) {
+            return null;
+        }
 
-		StringBuilder id = new StringBuilder();
-		id.append(element.getName());
-		EObject container = element.eContainer();
-		while (container != null) {
+        StringBuilder id = new StringBuilder();
+        id.append(element.getName());
+        EObject container = element.eContainer();
+        while (container != null) {
 
-			if (container.eClass().getEAllStructuralFeatures().contains(BasePackage.Literals.NAMED_ELEMENT__NAME)) {
-				prependNamedElementName(id, container);
-			} else {
-				prependContainingFeatureName(id, container);
-			}
-			container = container.eContainer();
-		}
-		return id.toString();
-	}
-	
-	private static void prependNamedElementName(StringBuilder id, EObject container) {
-		String name = (String) container.eGet(BasePackage.Literals.NAMED_ELEMENT__NAME);
-		if (name != null) {
-			id.insert(0, ID_SEPARATOR);
-			id.insert(0, name);
-		}
-	}
+            if (container.eClass().getEAllStructuralFeatures().contains(BasePackage.Literals.NAMED_ELEMENT__NAME)) {
+                prependNamedElementName(id, container);
+            } else {
+                prependContainingFeatureName(id, container);
+            }
+            container = container.eContainer();
+        }
+        return id.toString();
+    }
 
-	private static void prependContainingFeatureName(StringBuilder id, EObject container) {
-		EStructuralFeature feature = container.eContainingFeature();
-		if (feature != null) {
-			String name;
-			if (feature.isMany()) {
-				Object elements = container.eContainer().eGet(feature);
-				int index = 0;
-				if (elements instanceof BasicEList) {
-					BasicEList<?> elementList = (BasicEList<?>) elements;
-					index = elementList.indexOf(container);
-				}
-				name = feature.getName() + index;
-			} else {
-				name = feature.getName();
-			}
-			id.insert(0, ID_SEPARATOR);
-			id.insert(0, name);
-		}
-	}
+    private static void prependNamedElementName(StringBuilder id, EObject container) {
+        String name = (String) container.eGet(BasePackage.Literals.NAMED_ELEMENT__NAME);
+        if (name != null) {
+            id.insert(0, ID_SEPARATOR);
+            id.insert(0, name);
+        }
+    }
 
+    private static void prependContainingFeatureName(StringBuilder id, EObject container) {
+        EStructuralFeature feature = container.eContainingFeature();
+        if (feature != null) {
+            String name;
+            if (feature.isMany()) {
+                Object elements = container.eContainer().eGet(feature);
+                int index = 0;
+                if (elements instanceof BasicEList) {
+                    BasicEList<?> elementList = (BasicEList<?>) elements;
+                    index = elementList.indexOf(container);
+                }
+                name = feature.getName() + index;
+            } else {
+                name = feature.getName();
+            }
+            id.insert(0, ID_SEPARATOR);
+            id.insert(0, name);
+        }
+    }
 
 
 }

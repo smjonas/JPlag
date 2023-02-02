@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.interpreter;
 
@@ -18,43 +17,43 @@ import org.eclipse.xtext.util.PolymorphicDispatcher;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public abstract class AbstractTypeSystemInterpreter implements ITypeSystemInterpreter {
 
-	private static final String METHOD_NAME = "interpret";
+    private static final String METHOD_NAME = "interpret";
 
-	private PolymorphicDispatcher<Object> dispatcher;
+    private PolymorphicDispatcher<Object> dispatcher;
 
-	public AbstractTypeSystemInterpreter() {
-		initDispatcher();
-	}
+    public AbstractTypeSystemInterpreter() {
+        initDispatcher();
+    }
 
-	public final Object interpretExpression(EObject object) {
-		return dispatcher.invoke(object);
-	}
+    public final Object interpretExpression(EObject object) {
+        return dispatcher.invoke(object);
+    }
 
-	protected void initDispatcher() {
-		dispatcher = new PolymorphicDispatcher<Object>(METHOD_NAME, 1, 1, Collections.singletonList(this),
-				new PolymorphicDispatcher.ErrorHandler<Object>() {
-					@Override
-					public Object handle(Object[] params, Throwable throwable) {
-						if (throwable instanceof NoSuchMethodError) {
-							warning("No infer method for type " + Arrays.toString(params));
-						} else {
-							error(throwable.getMessage());
-						}
-						return null;
-					}
-				});
-	}
+    protected void initDispatcher() {
+        dispatcher = new PolymorphicDispatcher<Object>(METHOD_NAME, 1, 1, Collections.singletonList(this),
+                new PolymorphicDispatcher.ErrorHandler<Object>() {
+                    @Override
+                    public Object handle(Object[] params, Throwable throwable) {
+                        if (throwable instanceof NoSuchMethodError) {
+                            warning("No infer method for type " + Arrays.toString(params));
+                        } else {
+                            error(throwable.getMessage());
+                        }
+                        return null;
+                    }
+                });
+    }
 
-	protected void warning(String msg) {
-		// Howto report?
-	}
+    protected void warning(String msg) {
+        // Howto report?
+    }
 
-	protected void error(String msg) {
-		// Howto report?
-	}
+    protected void error(String msg) {
+        // Howto report?
+    }
 
 }

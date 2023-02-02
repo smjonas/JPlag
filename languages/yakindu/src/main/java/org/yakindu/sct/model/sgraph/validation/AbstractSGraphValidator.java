@@ -4,9 +4,9 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p>
  * Contributors:
- *     committers of YAKINDU - initial API and implementation
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.sct.model.sgraph.validation;
 
@@ -22,15 +22,15 @@ import com.google.inject.Inject;
  */
 public abstract class AbstractSGraphValidator extends AbstractDeclarativeValidator {
 
-	@Override
-	public boolean isLanguageSpecific() {
-		return false;
-	}
+    @Override
+    public boolean isLanguageSpecific() {
+        return false;
+    }
 
-	@Override
-	@Inject
-	public void register(EValidatorRegistrar registrar) {
-		// Do not register because this validator is only a composite #398987
-	}
+    @Override
+    @Inject
+    public void register(EValidatorRegistrar registrar) {
+        // Do not register because this validator is only a composite #398987
+    }
 
 }

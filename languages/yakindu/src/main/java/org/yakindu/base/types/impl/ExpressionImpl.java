@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types.impl;
 
@@ -15,23 +16,23 @@ import org.yakindu.base.types.TypesPackage;
  * @generated
  */
 public abstract class ExpressionImpl extends EObjectImpl implements Expression {
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected ExpressionImpl() {
-		super();
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ExpressionImpl() {
+        super();
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return TypesPackage.Literals.EXPRESSION;
-	}
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EClass eStaticClass() {
+        return TypesPackage.Literals.EXPRESSION;
+    }
 
 } //ExpressionImpl

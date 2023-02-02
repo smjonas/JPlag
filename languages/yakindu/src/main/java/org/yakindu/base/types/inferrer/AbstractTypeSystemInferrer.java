@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.inferrer;
 
@@ -36,164 +35,158 @@ import com.google.inject.Inject;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 public abstract class AbstractTypeSystemInferrer implements ITypeSystemInferrer {
 
-	protected static final String NO_INFER_METHOD = "No infer method for type(s) %s";
-	protected static final String ASSERT_IS_TYPE = "Expected one of %s, but was %s.";
-	public static final String ASSERT_NOT_TYPE = "Expected type is not %s.";
-	public static final String ASSERT_SAME = "Expected types %s and %s are same.";
-	public static final String ASSERT_COMPATIBLE = "Incompatible types %s and %s.";
+    public static final String ASSERT_NOT_TYPE = "Expected type is not %s.";
+    public static final String ASSERT_SAME = "Expected types %s and %s are same.";
+    public static final String ASSERT_COMPATIBLE = "Incompatible types %s and %s.";
+    protected static final String NO_INFER_METHOD = "No infer method for type(s) %s";
+    protected static final String ASSERT_IS_TYPE = "Expected one of %s, but was %s.";
+    private static final String METHOD_NAME = "doInfer";
 
-	private static final String METHOD_NAME = "doInfer";
+    @Inject
+    protected ITypeSystem registry;
+    protected IValidationIssueAcceptor acceptor;
+    protected Set<EObject> inferring = Sets.newHashSet();
+    @Inject
+    TypeValidator typeValidator;
+    private PolymorphicDispatcher<Object> dispatcher;
+    private LoadingCache<EObject, InferenceResult> typeCache;
 
-	@Inject
-	protected ITypeSystem registry;
+    public AbstractTypeSystemInferrer() {
+        initDispatcher();
+    }
 
-	@Inject
-	TypeValidator typeValidator;
+    protected InferenceResult getResultFor(String name) {
+        return InferenceResult.from(registry.getType(name));
+    }
 
-	protected IValidationIssueAcceptor acceptor;
+    protected InferenceResult getCommonType(InferenceResult result1, InferenceResult result2) {
+        return InferenceResult.from(registry.getCommonTypeWithConversion(result1.getType(), result2.getType()));
+    }
 
-	private PolymorphicDispatcher<Object> dispatcher;
+    @Override
+    public final InferenceResult infer(EObject object) {
+        return infer(object, null);
+    }
 
-	private LoadingCache<EObject, InferenceResult> typeCache;
+    @Override
+    public final InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor) {
+        initTypeCache();
+        this.acceptor = (acceptor != null ? acceptor : new ListBasedValidationIssueAcceptor());
+        InferenceResult result = inferTypeDispatch(object);
+        typeCache.invalidateAll();
+        inferring.clear();
+        return result;
+    }
 
-	public AbstractTypeSystemInferrer() {
-		initDispatcher();
-	}
+    protected InferenceResult inferTypeDispatch(EObject object) {
+        if (object == null || object.eIsProxy() || inferring.contains(object))
+            return null;
+        try {
+            inferring.add(object);
+            return typeCache.get(object);
+        } catch (Exception e) {
+            // Ignore invalid expressions and recursions
+        } catch (Error err) {
+            // rethrow CyclicLinkingException to avoid error dialogs popping up
+            CyclicLinkingException cle = unwrapCyclicLinkingException(err);
+            if (cle != null) {
+                throw cle;
+            }
+        } finally {
+            inferring.remove(object);
+        }
+        return null;
+    }
 
-	protected InferenceResult getResultFor(String name) {
-		return InferenceResult.from(registry.getType(name));
-	}
+    protected CyclicLinkingException unwrapCyclicLinkingException(Error err) {
+        Throwable cause = err.getCause();
+        while (cause != null) {
+            if (cause instanceof CyclicLinkingException) {
+                return (CyclicLinkingException) cause;
+            }
+            cause = cause.getCause();
+        }
+        return null;
+    }
 
-	protected InferenceResult getCommonType(InferenceResult result1, InferenceResult result2) {
-		return InferenceResult.from(registry.getCommonTypeWithConversion(result1.getType(), result2.getType()));
-	}
+    private void initTypeCache() {
+        typeCache = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<EObject, InferenceResult>() {
 
-	@Override
-	public final InferenceResult infer(EObject object) {
-		return infer(object, null);
-	}
+            public InferenceResult load(EObject key) {
+                // TODO: this is not relevant anymore as we do not declare type
+                // aliases in type system
+                if (key instanceof TypeAlias) {
+                    // for type aliases we want to infer their base types
+                    return (InferenceResult) dispatcher.invoke(key);
+                }
+                if (key instanceof Type) {
+                    Collection<Type> types = registry.getTypes();
+                    for (Type type : types) {
+                        if (registry.isSame((Type) key, type))
+                            return InferenceResult.from(type);
+                    }
+                }
+                return (InferenceResult) dispatcher.invoke(key);
+            }
+        });
+    }
 
-	@Override
-	public final InferenceResult infer(EObject object, IValidationIssueAcceptor acceptor) {
-		initTypeCache();
-		this.acceptor = (acceptor != null ? acceptor : new ListBasedValidationIssueAcceptor());
-		InferenceResult result = inferTypeDispatch(object);
-		typeCache.invalidateAll();
-		inferring.clear();
-		return result;
-	}
-	
-	protected Set<EObject> inferring = Sets.newHashSet();
+    public void initDispatcher(List<ITypeSystemInferrer> targets) {
+        dispatcher = new PolymorphicDispatcher<Object>(METHOD_NAME, 1, 1, targets,
+                new PolymorphicDispatcher.ErrorHandler<Object>() {
+                    @Override
+                    public Object handle(Object[] params, Throwable throwable) {
+                        if (throwable instanceof NoSuchMethodError) {
+                            warning(String.format(NO_INFER_METHOD, Arrays.toString(params)), NO_INFER_METHOD_CODE);
+                        } else {
+                            error(throwable.getMessage(), EXCEPTION_CODE);
+                        }
+                        return null;
+                    }
+                });
+    }
 
-	protected InferenceResult inferTypeDispatch(EObject object) {
-		if (object == null || object.eIsProxy() || inferring.contains(object))
-			return null;
-		try {
-			inferring.add(object);
-			return typeCache.get(object);
-		} catch (Exception e) {
-			// Ignore invalid expressions and recursions
-		} catch (Error err) {
-			// rethrow CyclicLinkingException to avoid error dialogs popping up
-			CyclicLinkingException cle = unwrapCyclicLinkingException(err);
-			if (cle != null) {
-				throw cle;
-			}
-		} finally {
-			inferring.remove(object);
-		}
-		return null;
-	}
-	
-	protected CyclicLinkingException unwrapCyclicLinkingException(Error err) {
-		Throwable cause = err.getCause();
-		while (cause != null) {
-			if (cause instanceof CyclicLinkingException) {
-				return (CyclicLinkingException) cause;
-			}
-			cause = cause.getCause();
-		}
-		return null;
-	}
+    protected void initDispatcher() {
+        initDispatcher(Collections.singletonList(this));
+    }
 
-	private void initTypeCache() {
-		typeCache = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<EObject, InferenceResult>() {
+    protected void assertNotType(InferenceResult currentResult, String msg, InferenceResult... candidates) {
+        typeValidator.assertNotType(currentResult, msg, acceptor, candidates);
+    }
 
-			public InferenceResult load(EObject key) {
-				// TODO: this is not relevant anymore as we do not declare type
-				// aliases in type system
-				if (key instanceof TypeAlias) {
-					// for type aliases we want to infer their base types
-					return (InferenceResult) dispatcher.invoke(key);
-				}
-				if (key instanceof Type) {
-					Collection<Type> types = registry.getTypes();
-					for (Type type : types) {
-						if (registry.isSame((Type) key, type))
-							return InferenceResult.from(type);
-					}
-				}
-				return (InferenceResult) dispatcher.invoke(key);
-			}
-		});
-	}
+    protected void assertSame(InferenceResult result1, InferenceResult result2, String msg) {
+        typeValidator.assertSame(result1, result2, msg, acceptor);
+    }
 
-	public void initDispatcher(List<ITypeSystemInferrer> targets) {
-		dispatcher = new PolymorphicDispatcher<Object>(METHOD_NAME, 1, 1, targets,
-				new PolymorphicDispatcher.ErrorHandler<Object>() {
-					@Override
-					public Object handle(Object[] params, Throwable throwable) {
-						if (throwable instanceof NoSuchMethodError) {
-							warning(String.format(NO_INFER_METHOD, Arrays.toString(params)), NO_INFER_METHOD_CODE);
-						} else {
-							error(throwable.getMessage(), EXCEPTION_CODE);
-						}
-						return null;
-					}
-				});
-	}
+    protected void assertCompatible(InferenceResult result1, InferenceResult result2, String msg) {
+        typeValidator.assertCompatible(result1, result2, msg, acceptor);
+    }
 
-	protected void initDispatcher() {
-		initDispatcher(Collections.singletonList(this));
-	}
+    protected void assertAssignable(InferenceResult varResult, InferenceResult valueResult, String msg) {
+        typeValidator.assertAssignable(varResult, valueResult, msg, acceptor);
+    }
 
-	protected void assertNotType(InferenceResult currentResult, String msg, InferenceResult... candidates) {
-		typeValidator.assertNotType(currentResult, msg, acceptor, candidates);
-	}
+    protected void assertTypeBindingsSame(InferenceResult result1, InferenceResult result2, String msg) {
+        typeValidator.assertTypeBindingsSame(result1, result2, msg, acceptor);
+    }
 
-	protected void assertSame(InferenceResult result1, InferenceResult result2, String msg) {
-		typeValidator.assertSame(result1, result2, msg, acceptor);
-	}
+    protected void assertIsSubType(InferenceResult subResult, InferenceResult superResult, String msg) {
+        typeValidator.assertIsSubType(subResult, superResult, msg, acceptor);
+    }
 
-	protected void assertCompatible(InferenceResult result1, InferenceResult result2, String msg) {
-		typeValidator.assertCompatible(result1, result2, msg, acceptor);
-	}
+    protected void info(String msg, String issueCode) {
+        acceptor.accept(new ValidationIssue(Severity.INFO, msg, issueCode));
+    }
 
-	protected void assertAssignable(InferenceResult varResult, InferenceResult valueResult, String msg) {
-		typeValidator.assertAssignable(varResult, valueResult, msg, acceptor);
-	}
+    protected void warning(String msg, String issueCode) {
+        acceptor.accept(new ValidationIssue(Severity.WARNING, msg, issueCode));
+    }
 
-	protected void assertTypeBindingsSame(InferenceResult result1, InferenceResult result2, String msg) {
-		typeValidator.assertTypeBindingsSame(result1, result2, msg, acceptor);
-	}
-
-	protected void assertIsSubType(InferenceResult subResult, InferenceResult superResult, String msg) {
-		typeValidator.assertIsSubType(subResult, superResult, msg, acceptor);
-	}
-
-	protected void info(String msg, String issueCode) {
-		acceptor.accept(new ValidationIssue(Severity.INFO, msg, issueCode));
-	}
-
-	protected void warning(String msg, String issueCode) {
-		acceptor.accept(new ValidationIssue(Severity.WARNING, msg, issueCode));
-	}
-
-	protected void error(String msg, String issueCode) {
-		acceptor.accept(new ValidationIssue(Severity.ERROR, msg, issueCode));
-	}
+    protected void error(String msg, String issueCode) {
+        acceptor.accept(new ValidationIssue(Severity.ERROR, msg, issueCode));
+    }
 }

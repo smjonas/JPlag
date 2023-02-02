@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types;
 
@@ -23,54 +24,54 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface AnnotatableElement extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Annotations</b></em>' containment reference list.
-	 * The list contents are of type {@link Annotation}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Annotations</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Annotations</em>' containment reference list.
-	 * @see TypesPackage#getAnnotatableElement_Annotations()
-	 * @model containment="true" transient="true"
-	 * @generated
-	 */
-	EList<Annotation> getAnnotations();
+    /**
+     * Returns the value of the '<em><b>Annotations</b></em>' containment reference list.
+     * The list contents are of type {@link Annotation}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Annotations</em>' reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Annotations</em>' containment reference list.
+     * @see TypesPackage#getAnnotatableElement_Annotations()
+     * @model containment="true" transient="true"
+     * @generated
+     */
+    EList<Annotation> getAnnotations();
 
-	/**
-	 * Returns the value of the '<em><b>Annotation Info</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Annotation Info</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Annotation Info</em>' containment reference.
-	 * @see #setAnnotationInfo(AnnotatableElement)
-	 * @see TypesPackage#getAnnotatableElement_AnnotationInfo()
-	 * @model containment="true"
-	 * @generated
-	 */
-	AnnotatableElement getAnnotationInfo();
+    /**
+     * Returns the value of the '<em><b>Annotation Info</b></em>' containment reference.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Annotation Info</em>' containment reference isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Annotation Info</em>' containment reference.
+     * @see #setAnnotationInfo(AnnotatableElement)
+     * @see TypesPackage#getAnnotatableElement_AnnotationInfo()
+     * @model containment="true"
+     * @generated
+     */
+    AnnotatableElement getAnnotationInfo();
 
-	/**
-	 * Sets the value of the '{@link AnnotatableElement#getAnnotationInfo <em>Annotation Info</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Annotation Info</em>' containment reference.
-	 * @see #getAnnotationInfo()
-	 * @generated
-	 */
-	void setAnnotationInfo(AnnotatableElement value);
+    /**
+     * Sets the value of the '{@link AnnotatableElement#getAnnotationInfo <em>Annotation Info</em>}' containment reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Annotation Info</em>' containment reference.
+     * @see #getAnnotationInfo()
+     * @generated
+     */
+    void setAnnotationInfo(AnnotatableElement value);
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @model
-	 * @generated
-	 */
-	Annotation getAnnotationOfType(String typeName);
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model
+     * @generated
+     */
+    Annotation getAnnotationOfType(String typeName);
 
 } // AnnotatableElement

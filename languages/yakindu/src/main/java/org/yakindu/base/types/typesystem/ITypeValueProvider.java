@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.typesystem;
 
@@ -16,10 +15,10 @@ import com.google.inject.ImplementedBy;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 @ImplementedBy(GenericTypeValueProvider.class)
 public interface ITypeValueProvider {
 
-	public Object defaultValue(Type type);
+    public Object defaultValue(Type type);
 }

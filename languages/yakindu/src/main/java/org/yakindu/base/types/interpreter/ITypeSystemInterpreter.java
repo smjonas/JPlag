@@ -5,8 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- * 	committers of YAKINDU - initial API and implementation
- * 
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.base.types.interpreter;
 
@@ -16,11 +15,11 @@ import com.google.inject.ImplementedBy;
 
 /**
  * @author andreas muelder - Initial contribution and API
- * 
+ *
  */
 @ImplementedBy(DefaultTypeSystemInterpreter.class)
 public interface ITypeSystemInterpreter {
 
-	public Object interpret(EObject object);
+    public Object interpret(EObject object);
 
 }

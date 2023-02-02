@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types;
 
@@ -23,20 +24,20 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface MetaComposite extends EObject {
-	/**
-	 * Returns the value of the '<em><b>Meta Features</b></em>' containment reference list.
-	 * The list contents are of type {@link Declaration}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Meta Features</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Meta Features</em>' containment reference list.
-	 * @see TypesPackage#getMetaComposite_MetaFeatures()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<Declaration> getMetaFeatures();
+    /**
+     * Returns the value of the '<em><b>Meta Features</b></em>' containment reference list.
+     * The list contents are of type {@link Declaration}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Meta Features</em>' containment reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Meta Features</em>' containment reference list.
+     * @see TypesPackage#getMetaComposite_MetaFeatures()
+     * @model containment="true"
+     * @generated
+     */
+    EList<Declaration> getMetaFeatures();
 
 } // MetaComposite

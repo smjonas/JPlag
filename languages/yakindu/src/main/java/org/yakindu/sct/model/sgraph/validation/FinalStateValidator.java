@@ -4,9 +4,9 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p>
  * Contributors:
- *     committers of YAKINDU - initial API and implementation
+ * committers of YAKINDU - initial API and implementation
  */
 package org.yakindu.sct.model.sgraph.validation;
 
@@ -15,20 +15,20 @@ import org.eclipse.xtext.validation.CheckType;
 import org.yakindu.sct.model.sgraph.FinalState;
 
 /**
- * 
+ *
  * All validation constraints for the meta model element {@link FinalState}
- * 
+ *
  */
 public class FinalStateValidator extends AbstractSGraphValidator {
 
-	private static final String FINAL_STATE_TRANSITIONS_NO_OUT_MSG = "A final state should not have outgoing transitions.";
-	public static final String FINAL_STATE_TRANSITIONS_NO_OUT_CODE = "finalstate.NoOutTransitions";
+    public static final String FINAL_STATE_TRANSITIONS_NO_OUT_CODE = "finalstate.NoOutTransitions";
+    private static final String FINAL_STATE_TRANSITIONS_NO_OUT_MSG = "A final state should not have outgoing transitions.";
 
-	@Check(CheckType.FAST)
-	public void checkFinalStateTransitionsNoOut(FinalState finalState) {
-		if ((finalState.getOutgoingTransitions().size() > 0)) {
-			warning(FINAL_STATE_TRANSITIONS_NO_OUT_MSG, finalState, null, -1, FINAL_STATE_TRANSITIONS_NO_OUT_CODE);
-		}
-	}
+    @Check(CheckType.FAST)
+    public void checkFinalStateTransitionsNoOut(FinalState finalState) {
+        if ((finalState.getOutgoingTransitions().size() > 0)) {
+            warning(FINAL_STATE_TRANSITIONS_NO_OUT_MSG, finalState, null, -1, FINAL_STATE_TRANSITIONS_NO_OUT_CODE);
+        }
+    }
 
 }

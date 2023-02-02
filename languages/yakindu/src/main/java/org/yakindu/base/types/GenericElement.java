@@ -1,4 +1,5 @@
 /**
+ *
  */
 package org.yakindu.base.types;
 
@@ -22,20 +23,20 @@ import org.yakindu.base.base.NamedElement;
  * @generated
  */
 public interface GenericElement extends NamedElement {
-	/**
-	 * Returns the value of the '<em><b>Type Parameters</b></em>' containment reference list.
-	 * The list contents are of type {@link TypeParameter}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type Parameters</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Type Parameters</em>' containment reference list.
-	 * @see TypesPackage#getGenericElement_TypeParameters()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<TypeParameter> getTypeParameters();
+    /**
+     * Returns the value of the '<em><b>Type Parameters</b></em>' containment reference list.
+     * The list contents are of type {@link TypeParameter}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Type Parameters</em>' containment reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Type Parameters</em>' containment reference list.
+     * @see TypesPackage#getGenericElement_TypeParameters()
+     * @model containment="true"
+     * @generated
+     */
+    EList<TypeParameter> getTypeParameters();
 
 } // GenericElement
