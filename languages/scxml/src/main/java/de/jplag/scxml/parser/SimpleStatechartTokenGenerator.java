@@ -37,21 +37,23 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
         }
     }
 
-    @Override
-    public void visitState(State state) {
-        adapter.addToken(STATE, state);
+    protected void visitStateContents(State state) {
         visitActions(state.actions());
-
-        depth++;
         for (Transition transition : state.transitions()) {
             visitTransition(transition);
         }
-
         for (State substate : state.substates()) {
             visitState(substate);
         }
         depth--;
         adapter.addToken(STATE_END, state);
+    }
+
+    @Override
+    public void visitState(State state) {
+        adapter.addToken(STATE, state);
+        depth++;
+        visitStateContents(state);
     }
 
     @Override
