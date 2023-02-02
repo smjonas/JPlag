@@ -12,7 +12,7 @@ import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.util.AbstractStatechartVisitor;
-import de.jplag.scxml.util.StatechartView;
+import de.jplag.scxml.util.ScxmlView;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,7 +31,7 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected List<Token> tokens;
     protected File currentFile;
     protected AbstractStatechartVisitor visitor;
-    protected StatechartView view;
+    protected ScxmlView view;
 
     /**
      * Parses all tokens from a set of files.
@@ -55,7 +55,7 @@ public class ScxmlParserAdapter extends AbstractParser {
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
         Statechart statechart;
-        view = new StatechartView(file);
+        view = new ScxmlView(file);
 
         try {
             statechart = new ScxmlParser().parse(file);

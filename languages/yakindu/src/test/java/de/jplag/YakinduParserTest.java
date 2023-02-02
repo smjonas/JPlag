@@ -34,7 +34,10 @@ class YakinduParserTest {
         List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
 
         assertEquals(List.of(
-                REGION, ENTRY, TRANSITION, VERTEX_END, REGULAR_STATE, TRANSITION, VERTEX_END, REGULAR_STATE, TRANSITION, VERTEX_END, REGION_END, FILE_END
+                REGION, STATE, TRANSITION, VERTEX_END, STATE, REGION,
+                STATE, TRANSITION, VERTEX_END, STATE, TRANSITION, TRANSITION,
+                VERTEX_END, ENTRY, TRANSITION, VERTEX_END, REGION_END,
+                TRANSITION, VERTEX_END, ENTRY, TRANSITION, VERTEX_END, REGION_END, FILE_END
         ), tokenTypes);
     }
 }

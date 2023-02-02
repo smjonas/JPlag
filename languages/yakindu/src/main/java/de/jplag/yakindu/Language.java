@@ -19,7 +19,7 @@ public class Language implements de.jplag.Language {
 
     // (The sct extension was used in older versions of Yakindu)
     public static final String[] SUFFIXES = {".sct", ".ysc"};
-    public static final String VIEW_FILE_SUFFIX = ".yakinduview";
+    public static final String VIEW_FILE_SUFFIX = ".view";
 
     private static final String NAME = "Yakindu Statechart";
     private static final String IDENTIFIER = "yakindu";

@@ -1,5 +1,6 @@
 package de.jplag.scxml.parser;
 
+import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.Action;
@@ -56,22 +57,14 @@ public class ImprovedStatechartTokenGenerator extends SimpleStatechartTokenGener
     public void visitActions(List<Action> actions) {
         List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
         List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
-        if (!onEntries.isEmpty()) {
-            // Only extract a single ON_ENTRY token even if the state contains multiple.
-            // Functionally, this makes no difference.
-            adapter.addToken(ON_ENTRY, null);
-            List<ExecutableContent> onEntryContents = onEntries.stream().flatMap(a -> a.contents().stream()).toList();
-            depth++;
-            for (ExecutableContent content : onEntryContents) {
-                visitExecutableContent(content);
-            }
-            depth--;
-            adapter.addToken(ACTION_END, null);
-        }
+        visitAction(onEntries, ON_ENTRY);
+        visitAction(onExits, ON_EXIT);
+    }
 
-        if (!onExits.isEmpty()) {
-            adapter.addToken(ON_EXIT, null);
-            List<ExecutableContent> onExitContents = onExits.stream().flatMap(a -> a.contents().stream()).toList();
+    private void visitAction(List<Action> actions, ScxmlTokenType onExit) {
+        if (!actions.isEmpty()) {
+            adapter.addToken(onExit, null);
+            List<ExecutableContent> onExitContents = actions.stream().flatMap(a -> a.contents().stream()).toList();
             depth++;
             for (ExecutableContent content : onExitContents) {
                 visitExecutableContent(content);

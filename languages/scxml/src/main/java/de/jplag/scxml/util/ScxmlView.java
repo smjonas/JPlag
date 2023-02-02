@@ -40,6 +40,6 @@ public class ScxmlView {
         ScxmlTokenType type = (ScxmlTokenType) token.getType();
         String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
         builder.append(prefix).append(content).append("\n");
-        return new ScxmlToken(token.getType(), token.getFile(), line, prefix.length() + 1, content.length(), token.getStatechartElement());
+        return new ScxmlToken(token.getType(), token.getFile(), line++, prefix.length() + 1, content.length(), token.getStatechartElement());
     }
 }
