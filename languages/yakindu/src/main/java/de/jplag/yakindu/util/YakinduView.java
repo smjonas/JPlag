@@ -42,6 +42,6 @@ public class YakinduView {
         YakinduTokenType type = (YakinduTokenType) token.getType();
         String content = type.isEndToken() ? "}" : token + (type.isLeaf() ? "" : " {");
         builder.append(prefix).append(content).append("\n");
-        return new YakinduToken(token.getType(), token.getFile(), line++, prefix.length(), content.length(), token.getEObject());
+        return new YakinduToken(token.getType(), token.getFile(), line++, prefix.length() + 1, content.length(), token.getEObject());
     }
 }
