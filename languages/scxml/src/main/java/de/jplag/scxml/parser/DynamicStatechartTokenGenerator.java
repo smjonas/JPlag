@@ -1,15 +1,21 @@
-package de.jplag.scxml.parser;
+package de.jplag.statecharts.parser;
 
+import de.jplag.scxml.ScxmlTokenType;
+import de.jplag.scxml.parser.ScxmlParserAdapter;
+import de.jplag.scxml.parser.SimpleStatechartTokenGenerator;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Transition;
+import de.jplag.scxml.parser.model.executable_content.Action;
 import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
+
+import java.util.List;
 
 import static de.jplag.scxml.ScxmlTokenType.*;
 
 /**
- * Visits a metamodel containment tree and extracts the relevant tokens.
+ * Visits a metamodel containment tree and extracts the relevant token.
  *
- * @author Jonas Strittmatter
+ * @author Timur Saglam
  */
 public class DynamicStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
 
@@ -36,17 +42,30 @@ public class DynamicStatechartTokenGenerator extends SimpleStatechartTokenGenera
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
         depth++;
         visitStateAttributes(state);
-        visitActions(state.actions());
+        visitStateContents(state);
+    }
 
-        for (Transition transition : state.transitions()) {
-            visitTransition(transition);
-        }
+    @Override
+    public void visitActions(List<Action> actions) {
+        List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
+        List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
+        visitActions(onEntries, ON_ENTRY);
+        visitActions(onExits, ON_EXIT);
+    }
 
-        for (State substate : state.substates()) {
-            visitState(substate);
+    private void visitActions(List<Action> onEntries, ScxmlTokenType onEntry) {
+        if (!onEntries.isEmpty()) {
+            // Only extract a single ON_ENTRY token even if the state contains multiple.
+            // Functionally, this makes no difference.
+            adapter.addToken(onEntry, null);
+            List<ExecutableContent> onEntryContents = onEntries.stream().flatMap(a -> a.contents().stream()).toList();
+            depth++;
+            for (ExecutableContent content : onEntryContents) {
+                visitExecutableContent(content);
+            }
+            depth--;
+            adapter.addToken(ACTION_END, null);
         }
-        depth--;
-        adapter.addToken(STATE_END, state);
     }
 
     @Override
