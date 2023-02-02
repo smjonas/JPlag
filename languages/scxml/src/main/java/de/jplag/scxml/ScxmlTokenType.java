@@ -42,6 +42,7 @@ public enum ScxmlTokenType implements TokenType {
 
     /**
      * Creates a statechart token type that may be an end token.
+     *
      * @param isEndToken indicates that the token is an end token
      */
     ScxmlTokenType(String description, boolean isEndToken) {

@@ -28,6 +28,10 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         this(id, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false, false);
     }
 
+    public static Builder builder(String id) {
+        return new Builder(id);
+    }
+
     public boolean isRegion() {
         return !substates.isEmpty();
     }
@@ -71,6 +75,19 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
 
     }
 
+    // @Override
+    // public String toString() {
+    //     return ("State{" +
+    //             "id='" + id + '\'' +
+    //             ", transitions=" + transitions +
+    //             ", substates=" + substates +
+    //             ", onEntries=" + onEntries() +
+    //             ", onExits=" + onExits() +
+    //             ", initial=" + initial +
+    //             ", parallel=" + parallel +
+    //             "}").replace("], ", "],\n");
+    // }
+
     /**
      * Sets the timed attribute of each transition of this state that is timed.
      * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
@@ -109,33 +126,16 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         }
     }
 
-    // @Override
-    // public String toString() {
-    //     return ("State{" +
-    //             "id='" + id + '\'' +
-    //             ", transitions=" + transitions +
-    //             ", substates=" + substates +
-    //             ", onEntries=" + onEntries() +
-    //             ", onExits=" + onExits() +
-    //             ", initial=" + initial +
-    //             ", parallel=" + parallel +
-    //             "}").replace("], ", "],\n");
-    // }
-
     @Override
     public String toString() {
         return String.format("%s: %s {", id, isRegion() ? "Region" : "State");
     }
 
-    public static Builder builder(String id) {
-        return new Builder(id);
-    }
-
     public static class Builder {
         private final String id;
+        private final List<Action> actions = new ArrayList<>();
         private ArrayList<Transition> transitions = new ArrayList<>();
         private List<State> substates = new ArrayList<>();
-        private final List<Action> actions = new ArrayList<>();
         private boolean initial;
         private boolean parallel;
 

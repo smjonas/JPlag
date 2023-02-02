@@ -25,7 +25,7 @@ public class ScxmlView {
 
     public void writeToFile(String suffix) {
         File viewFile = new File(file + suffix);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(viewFile));) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(viewFile))) {
             if (!viewFile.createNewFile()) {
                 logger.warn("Overwriting statechart view file: {}", viewFile);
             }

@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record Transition(String target, String event, String cond, List<ExecutableContent> contents, boolean timed) implements StatechartElement {
-
-    public static Transition makeTimed(Transition transition) {
-        return new Transition(transition.target, null, transition.cond, transition.contents, true);
-    }
+public record Transition(String target, String event, String cond, List<ExecutableContent> contents,
+                         boolean timed) implements StatechartElement {
 
     public Transition(String target, String event, List<ExecutableContent> contents) {
         this(target, event, null, contents, false);
@@ -30,6 +27,10 @@ public record Transition(String target, String event, String cond, List<Executab
 
     public Transition(String target) {
         this(target, (String) null);
+    }
+
+    public static Transition makeTimed(Transition transition) {
+        return new Transition(transition.target, null, transition.cond, transition.contents, true);
     }
 
     public boolean isInitial() {

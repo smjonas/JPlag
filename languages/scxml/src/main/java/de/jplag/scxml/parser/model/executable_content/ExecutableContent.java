@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface ExecutableContent extends StatechartElement {
 
-    final Set<String> ALLOWED_ELEMENTS = Set.of(
+    Set<String> ALLOWED_ELEMENTS = Set.of(
             "raise", "if", "elseif", "else", "foreach", "log", "assign", "script", "send", "cancel"
     );
 

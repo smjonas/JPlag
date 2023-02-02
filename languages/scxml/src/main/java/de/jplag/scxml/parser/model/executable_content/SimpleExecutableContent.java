@@ -9,15 +9,15 @@ package de.jplag.scxml.parser.model.executable_content;
  */
 public record SimpleExecutableContent(Type type) implements ExecutableContent {
 
+    @Override
+    public String toString() {
+        return String.format("SimpleExecutableContent (type=%s) {", type);
+    }
+
     public enum Type {
         RAISE,
         ELSE,
         FOREACH,
         LOG
-    }
-
-    @Override
-    public String toString() {
-        return String.format("SimpleExecutableContent (type=%s) {", type);
     }
 }

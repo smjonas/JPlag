@@ -1,3 +1,4 @@
 package de.jplag.scxml.parser.model;
 
-public interface StatechartElement {}
+public interface StatechartElement {
+}
