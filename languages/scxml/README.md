@@ -14,6 +14,9 @@ Statechart object, using the elements outlined in the [SCXML specification](http
 The DynamicStatechartTokenGenerator utilizes a larger token set and extracts tokens based on the attributes of the
 StatechartElement, for example extracting a `PARALLEL_STATE` token for the State object if it is parallel.
 
+The set of possible tokens can be found here:
+https://github.com/smjonas/JPlag/blob/statecharts/languages/scxml/src/main/java/de/jplag/scxml/ScxmlTokenType.java
+
 ## Usage
 
 To use the new module, add the `-l scxml` flag in the CLI.
