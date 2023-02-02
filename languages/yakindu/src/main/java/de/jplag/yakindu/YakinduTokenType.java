@@ -20,7 +20,7 @@ public enum YakinduTokenType implements TokenType {
         }
     },
     REGION_END("Region end", Set.of(REGION)),
-//    STATE_END("State end", Set.of(STATE, REGULAR_STATE, FINAL_STATE)),
+    //    STATE_END("State end", Set.of(STATE, REGULAR_STATE, FINAL_STATE)),
 //    REGULAR_STATE_END("Regular state end"),
 //    FINAL_STATE_END("Final state end"),
     EVENT("Event"),
@@ -60,6 +60,7 @@ public enum YakinduTokenType implements TokenType {
 
     /**
      * Creates a Yakindu token type that is an end token.
+     *
      * @param startTokens the set of start tokens that are closed by this token.
      *                    The isLeaf attribute of all the startTokens is thus set to false.
      */

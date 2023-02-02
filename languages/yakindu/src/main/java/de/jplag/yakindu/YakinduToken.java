@@ -3,13 +3,13 @@ package de.jplag.yakindu;
 import de.jplag.Token;
 import de.jplag.TokenType;
 import org.eclipse.emf.ecore.EObject;
+
 import java.io.File;
 
 import static de.jplag.yakindu.YakinduTokenType.STATE;
 
 /**
  * Yakindu Statechart token.
- *
  */
 public class YakinduToken extends Token {
 

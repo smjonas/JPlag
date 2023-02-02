@@ -82,10 +82,10 @@ public class YakinduParserAdapter extends AbstractParser {
     }
 
     private Statechart loadStatechart(File file) throws ParsingException {
-		final ResourceSet resourceSet = new ResourceSetImpl();
+        final ResourceSet resourceSet = new ResourceSetImpl();
         URI uri = URI.createFileURI(file.getAbsolutePath());
         Resource resource;
-		try {
+        try {
             resource = resourceSet.getResource(uri, true);
         } catch (WrappedException e) {
             logger.trace("{}: failed to load (parts of) statechart model:\n {}", file, e.getMessage());

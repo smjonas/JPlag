@@ -26,7 +26,7 @@ public class ImprovedYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
             case STATIC -> STATIC_CHOICE;
         };
         adapter.addToken(type, choice);
-     }
+    }
 
     @Override
     public void visitEntry(Entry entry) {
