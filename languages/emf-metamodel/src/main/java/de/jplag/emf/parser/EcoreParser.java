@@ -3,10 +3,19 @@ package de.jplag.emf.parser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.gmf.runtime.notation.NotationPackage;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
@@ -33,6 +42,22 @@ public class EcoreParser extends AbstractParser {
      */
     public EcoreParser() {
         EMFUtil.registerEcoreExtension();
+        registerURIs();
+        registerFileExtensions();
+    }
+
+    private void registerURIs() {
+        EPackage.Registry registry = EPackage.Registry.INSTANCE;
+        registry.put("http://www.yakindu.org/sct/sgraph/2.0.0", SGraphPackage.eINSTANCE);
+        registry.put("http://www.eclipse.org/gmf/runtime/1.0.2/notation", NotationPackage.eINSTANCE);
+    }
+
+    private void registerFileExtensions() {
+        Map<String, Object> extensionMap = Registry.INSTANCE.getExtensionToFactoryMap();
+        for (String suffix : Language.SUFFIXES) {
+            String extension = suffix.substring(1);
+            extensionMap.put(extension, new XMIResourceFactoryImpl());
+        }
     }
 
     /**
