@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
+import de.jplag.ParsingException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
@@ -60,14 +61,17 @@ public final class EMFUtil {
      * @param file is file path to the (meta)model.
      * @return the resource of the loaded (meta)model or null if it could not be loaded.
      */
-    public static Resource loadModelResource(File file) {
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        try {
-            return resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
-        } catch (WrappedException exception) {
-            logger.error("Could not load {}: {}", file, exception.getCause().getMessage());
-        }
-        return null;
+    public static Resource loadModelResource(File file) throws ParsingException {
+//        final ResourceSet resourceSet = new ResourceSetImpl();
+//        URI uri = URI.createFileURI(file.getAbsolutePath());
+//        Resource resource = null;
+//        try {
+//            resource = resourceSet.getResource(uri, false);
+//        } catch (WrappedException e) {
+//            //throw new ParsingException(e.getMessage());
+//            resource = resourceSet.getResource(uri, false);
+//        }
+//        return Resource(resource);
     }
 
     /**

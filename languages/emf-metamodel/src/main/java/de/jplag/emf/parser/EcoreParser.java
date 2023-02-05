@@ -7,13 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.gmf.runtime.notation.NotationPackage;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
@@ -43,21 +42,9 @@ public class EcoreParser extends AbstractParser {
     public EcoreParser() {
         EMFUtil.registerEcoreExtension();
         registerURIs();
-        registerFileExtensions();
     }
 
     private void registerURIs() {
-        EPackage.Registry registry = EPackage.Registry.INSTANCE;
-        registry.put("http://www.yakindu.org/sct/sgraph/2.0.0", SGraphPackage.eINSTANCE);
-        registry.put("http://www.eclipse.org/gmf/runtime/1.0.2/notation", NotationPackage.eINSTANCE);
-    }
-
-    private void registerFileExtensions() {
-        Map<String, Object> extensionMap = Registry.INSTANCE.getExtensionToFactoryMap();
-        for (String suffix : Language.SUFFIXES) {
-            String extension = suffix.substring(1);
-            extensionMap.put(extension, new XMIResourceFactoryImpl());
-        }
     }
 
     /**
@@ -73,13 +60,26 @@ public class EcoreParser extends AbstractParser {
         return tokens;
     }
 
+    private Resource loadModelResource(File file) throws ParsingException {
+        final ResourceSet resourceSet = new ResourceSetImpl();
+        URI uri = URI.createFileURI(file.getAbsolutePath());
+        Resource resource = null;
+        try {
+            resource = resourceSet.getResource(uri, false);
+        } catch (WrappedException e) {
+            //throw new ParsingException(e.getMessage());
+            resource = resourceSet.getResource(uri, false);
+        }
+        return Resource(resource);
+    }
+
     /**
      * Loads a metamodel from a file and parses it.
      * @param file is the metamodel file.
      */
     protected void parseModelFile(File file) throws ParsingException {
         currentFile = file;
-        Resource model = EMFUtil.loadModelResource(file);
+        Resource model = loadModelResource(file);
         if (model == null) {
             throw new ParsingException(file, "failed to load model");
         } else {
