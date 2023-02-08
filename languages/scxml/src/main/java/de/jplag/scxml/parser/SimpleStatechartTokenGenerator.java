@@ -1,6 +1,5 @@
 package de.jplag.scxml.parser;
 
-import de.jplag.TokenType;
 import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Statechart;
@@ -121,9 +120,12 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
             case RAISE -> RAISE;
             case ELSE -> ELSE;
             case FOREACH -> FOREACH;
-            case LOG -> LOG;
+            // Don't extract a token for log elements
+            case LOG -> null;
         };
-        adapter.addToken(type, content);
+        if (type != null) {
+            adapter.addToken(type, content);
+        }
     }
 
 }

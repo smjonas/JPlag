@@ -8,11 +8,15 @@ import java.util.Set;
 
 public interface ExecutableContent extends StatechartElement {
 
-    Set<String> ALLOWED_ELEMENTS = Set.of(
+    Set<String> ALLOWED_XML_ELEMENTS = Set.of(
             "raise", "if", "elseif", "else", "foreach", "log", "assign", "script", "send", "cancel"
     );
 
-    static ExecutableContent fromNode(Node node) {
+    String EVENT_ATTRIBUTE = "event";
+    String SEND_ID_ATTRIBUTE = "sendid";
+    String DELAY_ATTRIBUTE = "delay";
+
+    static ExecutableContent fromNode(Node node) throws IllegalArgumentException {
         return switch (node.getNodeName()) {
             case "raise" -> new SimpleExecutableContent(SimpleExecutableContent.Type.RAISE);
             case "if" -> new If(node);
@@ -22,9 +26,9 @@ public interface ExecutableContent extends StatechartElement {
             case "log" -> new SimpleExecutableContent(SimpleExecutableContent.Type.LOG);
             case "assign" -> new Assignment();
             case "script" -> new Script(node.getTextContent());
-            case "send" -> new Send(NodeUtil.getAttribute(node, "event"), NodeUtil.getAttribute(node, "delay"));
-            case "cancel" -> new Cancel(NodeUtil.getAttribute(node, "sendid"));
-            default -> throw new AssertionError("invalid node " + node.getNodeName());
+            case "send" -> new Send(NodeUtil.getAttribute(node, EVENT_ATTRIBUTE), NodeUtil.getAttribute(node, DELAY_ATTRIBUTE));
+            case "cancel" -> new Cancel(NodeUtil.getAttribute(node, SEND_ID_ATTRIBUTE));
+            default -> throw new IllegalArgumentException("invalid node " + node.getNodeName());
         };
     }
 }

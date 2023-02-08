@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record State(String id, ArrayList<Transition> transitions, List<State> substates, List<Action> actions,
+public record State(String id, List<Transition> transitions, List<State> substates, List<Action> actions,
                     boolean initial, boolean parallel) implements StatechartElement {
 
-    public State(String id, ArrayList<Transition> transitions, List<State> substates, List<Action> actions, boolean initial, boolean parallel) {
+    public State(String id, List<Transition> transitions, List<State> substates, List<Action> actions, boolean initial, boolean parallel) {
         this.id = id;
         assert transitions != null : "State.transitions must not be null";
         this.transitions = transitions;
@@ -75,19 +75,6 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
 
     }
 
-    // @Override
-    // public String toString() {
-    //     return ("State{" +
-    //             "id='" + id + '\'' +
-    //             ", transitions=" + transitions +
-    //             ", substates=" + substates +
-    //             ", onEntries=" + onEntries() +
-    //             ", onExits=" + onExits() +
-    //             ", initial=" + initial +
-    //             ", parallel=" + parallel +
-    //             "}").replace("], ", "],\n");
-    // }
-
     /**
      * Sets the timed attribute of each transition of this state that is timed.
      * To model a timed transition, Yakindu adds onentry.send, onexit.cancel
@@ -131,50 +118,4 @@ public record State(String id, ArrayList<Transition> transitions, List<State> su
         return String.format("%s: %s {", id, isRegion() ? "Region" : "State");
     }
 
-    public static class Builder {
-        private final String id;
-        private final List<Action> actions = new ArrayList<>();
-        private ArrayList<Transition> transitions = new ArrayList<>();
-        private List<State> substates = new ArrayList<>();
-        private boolean initial;
-        private boolean parallel;
-
-        public Builder(String id) {
-            this.id = id;
-        }
-
-        public Builder setParallel() {
-            parallel = true;
-            return this;
-        }
-
-        public Builder setInitial() {
-            initial = true;
-            return this;
-        }
-
-        public Builder addTransitions(Transition... transitions) {
-            this.transitions = new ArrayList<>(List.of(transitions));
-            return this;
-        }
-
-        public Builder addSubstates(State... substates) {
-            this.substates = Arrays.asList(substates);
-            return this;
-        }
-
-        public Builder addOnEntry(ExecutableContent... contents) {
-            this.actions.add(new Action(Action.Type.ON_ENTRY, List.of(contents)));
-            return this;
-        }
-
-        public Builder addOnExit(ExecutableContent... contents) {
-            this.actions.add(new Action(Action.Type.ON_EXIT, List.of(contents)));
-            return this;
-        }
-
-        public State build() {
-            return new State(id, transitions, substates, actions, initial, parallel);
-        }
-    }
 }

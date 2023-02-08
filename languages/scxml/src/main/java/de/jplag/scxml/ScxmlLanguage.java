@@ -3,7 +3,6 @@ package de.jplag.scxml;
 import de.jplag.ParsingException;
 import de.jplag.Token;
 import de.jplag.scxml.parser.ScxmlParserAdapter;
-import de.jplag.scxml.parser.ScxmlParserAdapter;
 import org.kohsuke.MetaInfServices;
 
 import java.io.File;
@@ -16,10 +15,10 @@ import java.util.Set;
  * @author Timur Saglam
  */
 @MetaInfServices(de.jplag.Language.class)
-public class Language implements de.jplag.Language {
+public class ScxmlLanguage implements de.jplag.Language {
 
     public static final String FILE_ENDING = ".scxml";
-    public static final String VIEW_FILE_SUFFIX = ".view";
+    public static final String VIEW_FILE_SUFFIX = ".scxmlview";
 
     private static final String NAME = "SCXML (Statechart XML)";
     private static final String IDENTIFIER = "scxml";
@@ -27,7 +26,7 @@ public class Language implements de.jplag.Language {
 
     protected final ScxmlParserAdapter parser;
 
-    public Language() {
+    public ScxmlLanguage() {
         this.parser = new ScxmlParserAdapter();
     }
 

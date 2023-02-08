@@ -18,6 +18,14 @@ public class DynamicYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
         super(adapter);
     }
 
+    //@Override
+    //public void visitState(State state) {
+    //    YakinduTokenType type;
+    //    if (state.isOrthogonal()) {
+    //        type = ORTHOGONAL_STATE;
+    //    } else if
+    //}
+
     @Override
     public void visitChoice(Choice choice) {
         YakinduTokenType type = switch (choice.getKind()) {

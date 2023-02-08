@@ -37,6 +37,11 @@ public enum YakinduTokenType implements TokenType {
             return ((State) eObject).getName() + ": ";
         }
     },
+    ORTHOGONAL_STATE("Orthogonal state"),
+    //ORTHOGONAL_STATE("Orthogonal state"),
+    //ORTHOGONAL_STATE("Orthogonal state"),
+    //ORTHOGONAL_STATE("Orthogonal state"),
+    //ORTHOGONAL_STATE("Orthogonal state"),
     FINAL_STATE("Final state"),
     // Pseudostate + subclasses
     CHOICE("Choice"),

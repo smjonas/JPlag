@@ -17,14 +17,14 @@ import static de.jplag.scxml.ScxmlTokenType.*;
  *
  * @author Timur Saglam
  */
-public class DynamicStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
+public class EnhancedStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public DynamicStatechartTokenGenerator(ScxmlParserAdapter adapter) {
+    public EnhancedStatechartTokenGenerator(ScxmlParserAdapter adapter) {
         super(adapter);
     }
 
@@ -53,12 +53,12 @@ public class DynamicStatechartTokenGenerator extends SimpleStatechartTokenGenera
         visitActions(onExits, ON_EXIT);
     }
 
-    private void visitActions(List<Action> onEntries, ScxmlTokenType onEntry) {
-        if (!onEntries.isEmpty()) {
+    private void visitActions(List<Action> actions, ScxmlTokenType tokenType) {
+        if (!actions.isEmpty()) {
             // Only extract a single ON_ENTRY token even if the state contains multiple.
             // Functionally, this makes no difference.
-            adapter.addToken(onEntry, null);
-            List<ExecutableContent> onEntryContents = onEntries.stream().flatMap(a -> a.contents().stream()).toList();
+            adapter.addToken(tokenType, null);
+            List<ExecutableContent> onEntryContents = actions.stream().flatMap(a -> a.contents().stream()).toList();
             depth++;
             for (ExecutableContent content : onEntryContents) {
                 visitExecutableContent(content);
