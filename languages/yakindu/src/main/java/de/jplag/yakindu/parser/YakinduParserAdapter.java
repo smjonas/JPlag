@@ -3,7 +3,7 @@ package de.jplag.yakindu.parser;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
-import de.jplag.yakindu.Language;
+import de.jplag.yakindu.YakinduLanguage;
 import de.jplag.yakindu.YakinduToken;
 import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.util.AbstractYakinduVisitor;
@@ -61,7 +61,7 @@ public class YakinduParserAdapter extends AbstractParser {
 
     private void registerFileExtensions() {
         Map<String, Object> extensionMap = Registry.INSTANCE.getExtensionToFactoryMap();
-        for (String suffix : Language.SUFFIXES) {
+        for (String suffix : YakinduLanguage.SUFFIXES) {
             String extension = suffix.substring(1);
             extensionMap.put(extension, new XMIResourceFactoryImpl());
         }
@@ -111,7 +111,7 @@ public class YakinduParserAdapter extends AbstractParser {
         visitor.visit(statechart);
 
         tokens.add(Token.fileEnd(currentFile));
-        view.writeToFile(Language.VIEW_FILE_SUFFIX);
+        view.writeToFile(YakinduLanguage.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(YakinduTokenType type, EObject source) {

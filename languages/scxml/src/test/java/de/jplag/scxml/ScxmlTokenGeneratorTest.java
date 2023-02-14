@@ -41,6 +41,6 @@ public class ScxmlTokenGeneratorTest {
 
     @AfterEach
     public void tearDown() {
-        FileUtil.clearFiles(baseDirectory, Language.VIEW_FILE_SUFFIX);
+        FileUtil.clearFiles(baseDirectory, ScxmlLanguage.VIEW_FILE_SUFFIX);
     }
 }

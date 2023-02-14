@@ -25,11 +25,11 @@ class ScxmlParserTest {
     private File baseDirectory = BASE_PATH.toFile();
 
     private static final String[] TEST_SUBJECTS = {"simple_state.scxml", "timed_transition.scxml", "statechart.scxml"};
-    private Language language;
+    private ScxmlLanguage language;
 
     @BeforeEach
     public void setUp() {
-        language = new Language();
+        language = new ScxmlLanguage();
         // FileUtil.assertDirectory(baseDirectory, TEST_SUBJECTS);
     }
 

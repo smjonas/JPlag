@@ -28,10 +28,6 @@ public record State(String id, List<Transition> transitions, List<State> substat
         this(id, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false, false);
     }
 
-    public static Builder builder(String id) {
-        return new Builder(id);
-    }
-
     public boolean isRegion() {
         return !substates.isEmpty();
     }

@@ -102,10 +102,10 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
             adapter.addToken(FINAL_STATE, vertex);
         } else if (vertex instanceof RegularState) {
             adapter.addToken(REGULAR_STATE, vertex);
-        } else if (vertex instanceof Choice) {
-            visitChoice((Choice) vertex);
-        } else if (vertex instanceof Entry) {
-            visitEntry((Entry) vertex);
+        } else if (vertex instanceof Choice choice) {
+            visitChoice(choice);
+        } else if (vertex instanceof Entry entry) {
+            visitEntry(entry);
         } else if (vertex instanceof Exit) {
             adapter.addToken(EXIT, vertex);
         } else if (vertex instanceof Synchronization) {

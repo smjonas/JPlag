@@ -3,7 +3,7 @@ package de.jplag.scxml.parser;
 import de.jplag.AbstractParser;
 import de.jplag.ParsingException;
 import de.jplag.Token;
-import de.jplag.scxml.Language;
+import de.jplag.scxml.ScxmlLanguage;
 import de.jplag.scxml.ScxmlToken;
 import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.Statechart;
@@ -63,7 +63,7 @@ public class ScxmlParserAdapter extends AbstractParser {
         visitor = createStatechartVisitor();
         visitor.visit(statechart);
         tokens.add(Token.fileEnd(currentFile));
-        view.writeToFile(Language.VIEW_FILE_SUFFIX);
+        view.writeToFile(ScxmlLanguage.VIEW_FILE_SUFFIX);
     }
 
     public void addToken(ScxmlTokenType type, StatechartElement source) {
