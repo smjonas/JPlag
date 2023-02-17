@@ -7,8 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.yakindu.YakinduTokenType.*;

@@ -94,6 +94,7 @@ public class YakinduParserAdapter extends AbstractParser {
             throw new ParsingException(file, "failed to load statechart:\n" + e.getMessage());
         }
 
+        // TODO: check that Statechart is not null
         return (Statechart) EcoreUtil.getObjectByType(resource.getContents(), SGraphPackage.Literals.STATECHART);
     }
 

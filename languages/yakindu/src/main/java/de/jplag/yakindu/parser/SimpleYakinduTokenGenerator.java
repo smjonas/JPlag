@@ -145,6 +145,7 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     }
 
     @Override
+    // TODO: can inline
     public void visitChoice(Choice choice) {
         adapter.addToken(CHOICE, choice);
     }
