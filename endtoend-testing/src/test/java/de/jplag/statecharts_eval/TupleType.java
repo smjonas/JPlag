@@ -1,8 +1,5 @@
 package de.jplag.statecharts_eval;
 
-import de.jplag.JPlagComparison;
-import org.apache.commons.io.FilenameUtils;
-
 public enum TupleType {
 
     PLAG_ORIGINAL("Plag-Original"),
@@ -16,11 +13,6 @@ public enum TupleType {
         this.text = text;
     }
 
-    @Override
-    public String toString() {
-        return text;
-    }
-
     public static TupleType of(String firstFilename, String secondFilename) {
         if ((firstFilename + "_obfuscated").equals(secondFilename) || firstFilename.equals(secondFilename + "_obfuscated")) {
             return PLAG_ORIGINAL;
@@ -30,5 +22,10 @@ public enum TupleType {
             return ORIGINAL_ORIGINAL;
         }
         return UNRELATED;
+    }
+
+    @Override
+    public String toString() {
+        return text;
     }
 }
