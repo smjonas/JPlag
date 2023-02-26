@@ -108,7 +108,7 @@ public class YakinduParserAdapter extends AbstractParser {
 
         Statechart statechart = loadStatechart(file);
         visitor = createYakinduVisitor();
-        visitor.visit(statechart);
+        visitor.visitStatechart(statechart);
 
         tokens.add(Token.fileEnd(currentFile));
         view.writeToFile(YakinduLanguage.VIEW_FILE_SUFFIX);

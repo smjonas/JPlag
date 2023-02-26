@@ -1,11 +1,17 @@
 package de.jplag.yakindu.util;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.yakindu.base.types.Declaration;
 import org.yakindu.base.types.Property;
+import org.yakindu.base.types.impl.DeclarationImpl;
 import org.yakindu.sct.model.sgraph.*;
+import org.yakindu.sct.model.sgraph.impl.*;
 
 import java.net.ProtocolException;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
@@ -25,19 +31,19 @@ public abstract class AbstractYakinduVisitor {
         return depth;
     }
 
-    public void visit(Statechart statechart) {
-        for (Scope scope : statechart.getScopes()) {
-            visitScope(scope);
+    protected void visit(EObject object) {
+        if (object instanceof Vertex vertex) {
+            visitVertex(vertex);
+            return;
         }
-        for (Region region : statechart.getRegions()) {
-            visitRegion(region);
-        }
-    }
-
-    protected void visitScope(Scope scope) {
-        for (Declaration declaration : scope.getDeclarations()) {
-            visitDeclaration(declaration);
-        }
+        Map<Class<? extends EObject>, Consumer<EObject>> visitorMap = Map.of(
+            StatechartImpl.class, e -> visitStatechart((Statechart) e),
+            RegionImpl.class, e -> visitRegion((Region) e),
+            DeclarationImpl.class, e -> visitDeclaration((Declaration) e),
+            ReactionImpl.class, e -> visitReaction((Reaction) e),
+            TransitionImpl.class, e -> visitTransition((Transition) e)
+        );
+        visitorMap.get(object.getClass()).accept(object);
     }
 
     protected void visitCompositeElement(CompositeElement compositeElement) {
@@ -48,9 +54,11 @@ public abstract class AbstractYakinduVisitor {
         }
     }
 
-    protected abstract void visitDeclaration(Declaration declaration);
+    public abstract void visitStatechart(Statechart statechart);
 
     protected abstract void visitRegion(Region region);
+
+    protected abstract void visitDeclaration(Declaration declaration);
 
     public abstract void visitState(State state);
 

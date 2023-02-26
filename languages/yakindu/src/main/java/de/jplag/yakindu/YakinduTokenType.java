@@ -4,6 +4,7 @@ import de.jplag.TokenType;
 import org.eclipse.emf.ecore.EObject;
 import org.yakindu.sct.model.sgraph.Region;
 import org.yakindu.sct.model.sgraph.State;
+import org.yakindu.sct.model.sgraph.Transition;
 
 import java.util.List;
 import java.util.Set;

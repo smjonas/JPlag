@@ -1,20 +1,32 @@
 package de.jplag.yakindu.parser;
 
-import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.util.AbstractYakinduVisitor;
-import org.apache.commons.lang3.ArrayUtils;
-import org.checkerframework.checker.units.qual.C;
 import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.xtext.validation.impl.ConcreteSyntaxConstraintProvider;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.yakindu.base.types.Declaration;
 import org.yakindu.base.types.Event;
 import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
 
-import java.util.Comparator;
-import java.util.Map;
-
 import static de.jplag.yakindu.YakinduTokenType.*;
+
+/*
+a
+  b
+    c
+  b
+=> Sorting the child elements of a by comparing their string representations,
+(here: bc, b), so the first element b would come before the second because b < bc
+
+vs.
+a
+  b
+  b
+    c
+=> a b b c
+
+*/
 
 /**
  * Visits a metamodel containment tree and extracts the relevant token.
@@ -22,7 +34,8 @@ import static de.jplag.yakindu.YakinduTokenType.*;
  * @author Timur Saglam
  */
 public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
-    protected final YakinduParserAdapter adapter;
+    protected YakinduParserAdapter adapter;
+    protected YakinduParserAdapter mainAdapter;
 
     /**
      * Creates the visitor.
@@ -30,7 +43,31 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
      * @param adapter is the parser adapter which receives the generated tokens.
      */
     public SimpleYakinduTokenGenerator(YakinduParserAdapter adapter) {
-        this.adapter = adapter;
+        this.mainAdapter = adapter;
+        this.adapter = mainAdapter;
+    }
+
+    private String peekTokens(EObject object) {
+        YakinduParserAdapter prevAdapter = this.adapter;
+        PeekAdapter peekAdapter = new PeekAdapter();
+        // Switch out the main adapter for the peek adapter
+        // so that the main token stream is not affected
+        this.adapter = peekAdapter;
+        visit(object);
+        this.adapter = prevAdapter;
+        return peekAdapter.getTokenListRepresentation();
+    }
+
+    private <T extends EObject> EList<T> sort(EList<T> objects) {
+        ECollections.sort(objects, (v1, v2) -> peekTokens(v1).compareTo(peekTokens(v2)));
+        return objects;
+    }
+
+    @Override
+    public void visitStatechart(Statechart statechart) {
+        for (Region region : sort(statechart.getRegions())) {
+            visitRegion(region);
+        }
     }
 
     @Override
@@ -42,42 +79,11 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
         }
     }
 
-    private int orderByVertexSubclass(Vertex vertex) {
-        if (vertex instanceof State) {
-            return 1;
-        } else if (vertex instanceof FinalState) {
-            return 2;
-        } else if (vertex instanceof RegularState) {
-            return 3;
-        } else if (vertex instanceof Choice) {
-            return 4;
-        } else if (vertex instanceof Entry) {
-            return 5;
-        } else if (vertex instanceof Exit) {
-            return 6;
-        } else if (vertex instanceof Synchronization) {
-            return 7;
-        }
-        throw new IllegalArgumentException("Unexpected subclass for vertex " + vertex);
-    }
-
     @Override
     public void visitRegion(Region region) {
         adapter.addToken(REGION, region);
         depth++;
-
-        var sortedVertices = region.getVertices();
-        // For robustness against reordering, first sort by the number of outgoing transitions (the child elements of Vertex)
-        ECollections.sort(sortedVertices, (v1, v2) -> {
-            int v1TransitionsCount = v1.getOutgoingTransitions() == null ? 0 : v1.getOutgoingTransitions().size();
-            int v2TransitionsCount = v2.getOutgoingTransitions() == null ? 0 : v2.getOutgoingTransitions().size();
-            return v1TransitionsCount - v2TransitionsCount;
-        });
-
-        // Then, sort by the subclass
-        ECollections.sort(sortedVertices, (v1, v2) -> orderByVertexSubclass(v1) - orderByVertexSubclass(v2));
-
-        for (Vertex vertex : sortedVertices) {
+        for (Vertex vertex : sort(region.getVertices())) {
             visitVertex(vertex);
         }
         depth--;
@@ -88,7 +94,7 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     public void visitState(State state) {
         adapter.addToken(STATE, state);
         depth++;
-        for (Region region : state.getRegions()) {
+        for (Region region : sort(state.getRegions())) {
             visitRegion(region);
         }
         depth--;
@@ -114,7 +120,7 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
 
         depth++;
         if (vertex.getOutgoingTransitions() != null) {
-            for (Transition transition : vertex.getOutgoingTransitions()) {
+            for (Transition transition : sort(vertex.getOutgoingTransitions())) {
                 visitTransition(transition);
             }
         }
