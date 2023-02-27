@@ -47,7 +47,7 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
         this.adapter = mainAdapter;
     }
 
-    private String peekTokens(EObject object) {
+    private List<Integer> peekTokens(EObject object) {
         YakinduParserAdapter prevAdapter = this.adapter;
         PeekAdapter peekAdapter = new PeekAdapter();
         // Switch out the main adapter for the peek adapter
@@ -59,7 +59,9 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     }
 
     private <T extends EObject> EList<T> sort(EList<T> objects) {
-        ECollections.sort(objects, (v1, v2) -> peekTokens(v1).compareTo(peekTokens(v2)));
+        ECollections.sort(objects, (v1, v2) -> {
+            PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2));
+        };
         return objects;
     }
 

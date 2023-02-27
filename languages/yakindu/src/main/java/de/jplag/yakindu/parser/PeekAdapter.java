@@ -10,19 +10,25 @@ import java.util.stream.Collectors;
 
 public class PeekAdapter extends YakinduParserAdapter {
 
-    private final List<YakinduTokenType> tokens = new ArrayList<>();
+    private final List<Integer> tokens = new ArrayList<>();
 
     @Override
     public void addToken(YakinduTokenType type, EObject source) {
-        tokens.add(type);
+        tokens.add(type.ordinal());
     }
 
-    private String numberToChar(int n) {
-        assert n >= 0 && n < 26 : "numberToChar: argument is " + n;
-        return String.valueOf((char)(n + 65));
+    public List<Integer> getTokenTypeList() {
+        return tokens;
     }
 
-    public String getTokenListRepresentation() {
-        return tokens.stream().map(t -> numberToChar(t.ordinal())).collect(Collectors.joining());
+    public static int compareTokenTypeLists(List<Integer> first, List<Integer> second) {
+        int size = Math.min(first.size(), second.size());
+        for (int i = 0; i < size; i++) {
+            int result = Integer.compare(first.get(i), second.get(i));
+            if (result != 0) {
+                return result;
+            }
+        }
+        return Integer.compare(tokenOrdinals1.size(), tokenOrdinals2.size());
     }
 }
