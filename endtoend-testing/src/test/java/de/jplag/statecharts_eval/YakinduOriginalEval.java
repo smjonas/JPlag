@@ -49,6 +49,6 @@ class YakinduOriginalEval {
                 ));
             }
         }
-        Util.writeCSVFile("target", "yakindu_similarity_dist", lines);
+        Util.writeCSVFile("yakindu_similarity_dist", lines);
     }
 }

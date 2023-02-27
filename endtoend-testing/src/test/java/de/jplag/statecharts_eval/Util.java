@@ -30,8 +30,10 @@ public class Util {
         return new JPlag(jplagOptions).run();
     }
 
-    public static void writeCSVFile(String path, String fileName, List<List<String>> results) {
-        File file = new File(path + File.separator + fileName + ".csv");
+    public static void writeCSVFile(String fileName, List<List<String>> results) {
+        String baseDir = "/home/jonas/Desktop/statecharts-eval/eval/plots/input";
+        File file = new File(baseDir + File.separator + fileName + ".csv");
+
         System.out.println(file.getAbsolutePath());
         try (PrintWriter writer = new PrintWriter(file)) {
             StringBuilder builder = new StringBuilder();

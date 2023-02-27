@@ -72,7 +72,7 @@ class YakinduEval {
                     }
                 }
             }
-            Util.writeCSVFile("target", tool, lines);
+            Util.writeCSVFile(tool, lines);
         }
     }
 }
