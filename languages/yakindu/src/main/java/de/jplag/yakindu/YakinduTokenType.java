@@ -30,8 +30,8 @@ public enum YakinduTokenType implements TokenType {
     TRIGGER("Trigger"),
     EFFECT("Effect"),
     // Vertex tokens
-    // RegularState + subclasses
-    REGULAR_STATE("Regular state"),
+    // Subclasses of RegularState
+    FINAL_STATE("Final state"),
     STATE("State") {
         @Override
         public String getDescriptionPrefix(EObject eObject) {
@@ -43,7 +43,6 @@ public enum YakinduTokenType implements TokenType {
     //ORTHOGONAL_STATE("Orthogonal state"),
     //ORTHOGONAL_STATE("Orthogonal state"),
     //ORTHOGONAL_STATE("Orthogonal state"),
-    FINAL_STATE("Final state"),
     // Pseudostate + subclasses
     CHOICE("Choice"),
     DYNAMIC_CHOICE("Dynamic choice"),
@@ -54,7 +53,7 @@ public enum YakinduTokenType implements TokenType {
     DEEP_HISTORY_ENTRY("Deep history entry"),
     EXIT("Exit"),
     SYNCHRONIZATION("Synchronization"),
-    VERTEX_END("Vertex end", Set.of(REGULAR_STATE, FINAL_STATE, STATE, CHOICE, DYNAMIC_CHOICE, STATIC_CHOICE, ENTRY, INITIAL_ENTRY, SHALLOW_HISTORY_ENTRY, DEEP_HISTORY_ENTRY, EXIT, SYNCHRONIZATION));
+    VERTEX_END("Vertex end", Set.of(FINAL_STATE, STATE, CHOICE, DYNAMIC_CHOICE, STATIC_CHOICE, ENTRY, INITIAL_ENTRY, SHALLOW_HISTORY_ENTRY, DEEP_HISTORY_ENTRY, EXIT, SYNCHRONIZATION));
 
     private final String description;
     private boolean isLeaf = true;
