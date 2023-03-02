@@ -1,30 +1,40 @@
 package de.jplag.yakindu.parser;
 
-import de.jplag.Token;
 import de.jplag.yakindu.YakinduTokenType;
 import org.yakindu.sct.model.sgraph.*;
 
 import static de.jplag.yakindu.YakinduTokenType.*;
 
 
-public class DynamicYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
+public class HandcraftedYakinduTokenGenerator extends SimpleYakinduTokenGenerator {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public DynamicYakinduTokenGenerator(YakinduParserAdapter adapter) {
+    public HandcraftedYakinduTokenGenerator(YakinduParserAdapter adapter) {
         super(adapter);
     }
 
-    //@Override
-    //public void visitState(State state) {
-    //    YakinduTokenType type;
-    //    if (state.isOrthogonal()) {
-    //        type = ORTHOGONAL_STATE;
-    //    } else if
-    //}
+    @Override
+    public void visitState(State state) {
+        YakinduTokenType type = null;
+        if (state.isOrthogonal() || state.isComposite()) {
+            if (state.isOrthogonal() && state.isComposite()) {
+                type = ORTHOGONAL_COMPOSITE_STATE;
+            } else if (state.isOrthogonal()) {
+                type = ORTHOGONAL_STATE;
+            } else if (state.isComposite()) {
+                type = COMPOSITE_STATE;
+            }
+        } else {
+            type = STATE;
+        }
+        adapter.addToken(type, state);
+        visitStateContents(state);
+        // No end token since that gets already added in visitVertex
+    }
 
     @Override
     public void visitChoice(Choice choice) {

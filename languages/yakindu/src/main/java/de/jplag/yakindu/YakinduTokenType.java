@@ -4,9 +4,7 @@ import de.jplag.TokenType;
 import org.eclipse.emf.ecore.EObject;
 import org.yakindu.sct.model.sgraph.Region;
 import org.yakindu.sct.model.sgraph.State;
-import org.yakindu.sct.model.sgraph.Transition;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,20 +27,34 @@ public enum YakinduTokenType implements TokenType {
     TRANSITION("Transition"),
     TRIGGER("Trigger"),
     EFFECT("Effect"),
+    TRIGGER_EFFECT("Trigger and effect"),
     // Vertex tokens
     // Subclasses of RegularState
-    FINAL_STATE("Final state"),
     STATE("State") {
         @Override
         public String getDescriptionPrefix(EObject eObject) {
             return ((State) eObject).getName() + ": ";
         }
     },
-    ORTHOGONAL_STATE("Orthogonal state"),
-    //ORTHOGONAL_STATE("Orthogonal state"),
-    //ORTHOGONAL_STATE("Orthogonal state"),
-    //ORTHOGONAL_STATE("Orthogonal state"),
-    //ORTHOGONAL_STATE("Orthogonal state"),
+    ORTHOGONAL_STATE("Orthogonal state") {
+        @Override
+        public String getDescriptionPrefix(EObject eObject) {
+            return ((State) eObject).getName() + ": ";
+        }
+    },
+    COMPOSITE_STATE("Composite state") {
+        @Override
+        public String getDescriptionPrefix(EObject eObject) {
+            return ((State) eObject).getName() + ": ";
+        }
+    },
+    ORTHOGONAL_COMPOSITE_STATE("Orthogonal and composite state") {
+        @Override
+        public String getDescriptionPrefix(EObject eObject) {
+            return ((State) eObject).getName() + ": ";
+        }
+    },
+    FINAL_STATE("Final state"),
     // Pseudostate + subclasses
     CHOICE("Choice"),
     DYNAMIC_CHOICE("Dynamic choice"),

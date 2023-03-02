@@ -1,5 +1,7 @@
 package de.jplag.yakindu.parser;
 
+import de.jplag.TokenType;
+import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.util.AbstractYakinduVisitor;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -8,6 +10,8 @@ import org.yakindu.base.types.Declaration;
 import org.yakindu.base.types.Event;
 import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
+
+import java.util.List;
 
 import static de.jplag.yakindu.YakinduTokenType.*;
 
@@ -34,40 +38,15 @@ a
  * @author Timur Saglam
  */
 public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
-    protected YakinduParserAdapter adapter;
-    protected YakinduParserAdapter mainAdapter;
 
-    /**
-     * Creates the visitor.
-     *
-     * @param adapter is the parser adapter which receives the generated tokens.
-     */
     public SimpleYakinduTokenGenerator(YakinduParserAdapter adapter) {
-        this.mainAdapter = adapter;
-        this.adapter = mainAdapter;
-    }
-
-    private String peekTokens(EObject object) {
-        YakinduParserAdapter prevAdapter = this.adapter;
-        PeekAdapter peekAdapter = new PeekAdapter();
-        // Switch out the main adapter for the peek adapter
-        // so that the main token stream is not affected
-        this.adapter = peekAdapter;
-        visit(object);
-        this.adapter = prevAdapter;
-        return peekAdapter.getTokenListRepresentation();
-    }
-
-    private <T extends EObject> EList<T> sort(EList<T> objects) {
-        ECollections.sort(objects, (v1, v2) -> peekTokens(v1).compareTo(peekTokens(v2)));
-        return objects;
+        super(adapter);
     }
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (Region region : sort(statechart.getRegions())) {
-            visitRegion(region);
-        }
+        visitReactiveElement(statechart);
+        visitCompositeElement(statechart);
     }
 
     @Override
@@ -90,14 +69,18 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
         adapter.addToken(REGION_END, region);
     }
 
+    protected void visitStateContents(State state) {
+        depth++;
+        visitReactiveElement(state);
+        visitCompositeElement(state);
+        depth--;
+    }
+
     @Override
     public void visitState(State state) {
         adapter.addToken(STATE, state);
-        depth++;
-        for (Region region : sort(state.getRegions())) {
-            visitRegion(region);
-        }
-        depth--;
+        visitStateContents(state);
+        // No end token since that gets already added in visitVertex
     }
 
     @Override
@@ -128,12 +111,18 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
 
     @Override
     public void visitReaction(Reaction reaction) {
-        if (reaction.getTrigger() != null) {
-            adapter.addToken(TRIGGER, reaction);
+        boolean hasTrigger = reaction.getTrigger() != null;
+        boolean hasEffect = reaction.getEffect() != null;
+
+        YakinduTokenType type = null;
+        if (hasTrigger && hasEffect) {
+            type = TRIGGER_EFFECT;
+        } else if (hasTrigger) {
+            type = TRIGGER;
+        } else if (hasEffect) {
+            type = EFFECT;
         }
-        if (reaction.getEffect() != null) {
-            adapter.addToken(EFFECT, reaction);
-        }
+        adapter.addToken(type, reaction);
     }
 
     @Override

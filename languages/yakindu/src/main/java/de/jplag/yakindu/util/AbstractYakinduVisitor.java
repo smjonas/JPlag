@@ -1,5 +1,8 @@
 package de.jplag.yakindu.util;
 
+import de.jplag.yakindu.parser.PeekAdapter;
+import de.jplag.yakindu.parser.YakinduParserAdapter;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.yakindu.base.types.Declaration;
@@ -9,6 +12,7 @@ import org.yakindu.sct.model.sgraph.*;
 import org.yakindu.sct.model.sgraph.impl.*;
 
 import java.net.ProtocolException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -21,6 +25,11 @@ import java.util.function.Function;
 public abstract class AbstractYakinduVisitor {
 
     protected int depth;
+    protected YakinduParserAdapter adapter;
+
+    public AbstractYakinduVisitor(YakinduParserAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     /**
      * Returns the current depth in the containment tree from the starting point.
@@ -29,6 +38,34 @@ public abstract class AbstractYakinduVisitor {
      */
     public int getCurrentTreeDepth() {
         return depth;
+    }
+
+    private List<Integer> peekTokens(EObject object) {
+        YakinduParserAdapter prevAdapter = this.adapter;
+        PeekAdapter peekAdapter = new PeekAdapter();
+        // Switch out the main adapter for the peek adapter
+        // so that the main token stream is not affected
+        this.adapter = peekAdapter;
+        visit(object);
+        this.adapter = prevAdapter;
+        return peekAdapter.getTokenTypes();
+    }
+
+    protected <T extends EObject> EList<T> sort(EList<T> objects) {
+        ECollections.sort(objects, (v1, v2) -> PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2)));
+        return objects;
+    }
+
+    protected void visitReactiveElement(ReactiveElement element) {
+        for (Reaction reaction : sort(element.getLocalReactions())) {
+            visitReaction(reaction);
+        }
+    }
+
+    protected void visitCompositeElement(CompositeElement element) {
+        for (Region region : sort(element.getRegions())) {
+            visitRegion(region);
+        }
     }
 
     protected void visit(EObject object) {
@@ -40,18 +77,10 @@ public abstract class AbstractYakinduVisitor {
             StatechartImpl.class, e -> visitStatechart((Statechart) e),
             RegionImpl.class, e -> visitRegion((Region) e),
             DeclarationImpl.class, e -> visitDeclaration((Declaration) e),
-            ReactionImpl.class, e -> visitReaction((Reaction) e),
-            TransitionImpl.class, e -> visitTransition((Transition) e)
+            TransitionImpl.class, e -> visitTransition((Transition) e),
+            ReactionImpl.class, e -> visitReaction((Reaction) e)
         );
         visitorMap.get(object.getClass()).accept(object);
-    }
-
-    protected void visitCompositeElement(CompositeElement compositeElement) {
-        if (compositeElement instanceof Statechart) {
-            visit((Statechart) compositeElement);
-        } else if (compositeElement instanceof State) {
-            visitState((State) compositeElement);
-        }
     }
 
     public abstract void visitStatechart(Statechart statechart);
@@ -60,7 +89,7 @@ public abstract class AbstractYakinduVisitor {
 
     protected abstract void visitDeclaration(Declaration declaration);
 
-    public abstract void visitState(State state);
+    protected abstract void visitState(State state);
 
     protected abstract void visitVertex(Vertex vertex);
 

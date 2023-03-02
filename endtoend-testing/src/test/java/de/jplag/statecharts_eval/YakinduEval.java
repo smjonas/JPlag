@@ -75,4 +75,16 @@ class YakinduEval {
             Util.writeCSVFile("target", tool, lines);
         }
     }
+
+    @AfterAll
+    public static void tearDown() {
+        for (String subFolder : PLAGIARISM_TYPES) {
+            File[] files = Path.of(BASE_SUBMISSION_DIR).resolve(subFolder).toFile().listFiles();
+            for (File file : files) {
+                if (file.getName().endsWith(".emfatic") || file.getName().endsWith(".yakinduview")) {
+                    file.delete();
+                }
+            }
+        }
+    }
 }

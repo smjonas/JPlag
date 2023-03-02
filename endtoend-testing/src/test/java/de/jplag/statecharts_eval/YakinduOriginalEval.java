@@ -21,7 +21,7 @@ class YakinduOriginalEval {
             int minTokenLength, double similarity, double maxSimilarity
     ) {
         return new ArrayList<>(List.of(
-                first, second, language, extractionStrategy,
+                TupleType.of(first, second).toString(), first, second, language, extractionStrategy,
                 Integer.toString(minTokenLength), Double.toString(similarity), Double.toString(maxSimilarity)
         ));
     }
