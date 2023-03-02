@@ -91,8 +91,6 @@ class YakinduParserTest {
         );
         assertThat(tokenTypes).containsAll(expectedTokenTypes);
     }
-
-
 }
 
 

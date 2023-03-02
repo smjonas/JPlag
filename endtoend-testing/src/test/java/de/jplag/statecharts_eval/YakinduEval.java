@@ -4,13 +4,16 @@ import de.jplag.JPlagComparison;
 import de.jplag.JPlagResult;
 import de.jplag.exceptions.ExitException;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 
 class YakinduEval {
 
-    private static final Set<String> TOOLS = Set.of("yakindu", "scxml");
+    private static final List<String> TOOLS = List.of("yakindu", "scxml");
 
     private static final String[] PLAGIARISM_TYPES = new String[]{"move", "swap", "delete", "insert"};
     private static final List<String> LINES_HEADER = List.of(
@@ -78,13 +81,13 @@ class YakinduEval {
 
     @AfterAll
     public static void tearDown() {
-        for (String subFolder : PLAGIARISM_TYPES) {
-            File[] files = Path.of(BASE_SUBMISSION_DIR).resolve(subFolder).toFile().listFiles();
-            for (File file : files) {
-                if (file.getName().endsWith(".emfatic") || file.getName().endsWith(".yakinduview")) {
-                    file.delete();
-                }
-            }
-        }
+        // for (String subFolder : PLAGIARISM_TYPES) {
+        //     File[] files = Path.of(BASE_SUBMISSION_DIR).resolve(subFolder).toFile().listFiles();
+        //     for (File file : files) {
+        //         if (file.getName().endsWith(".emfatic") || file.getName().endsWith(".yakinduview")) {
+        //             file.delete();
+        //         }
+        //     }
+        // }
     }
 }

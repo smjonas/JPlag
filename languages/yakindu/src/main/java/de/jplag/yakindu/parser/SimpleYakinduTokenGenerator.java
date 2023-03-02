@@ -113,13 +113,16 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     public void visitReaction(Reaction reaction) {
         boolean hasTrigger = reaction.getTrigger() != null;
         boolean hasEffect = reaction.getEffect() != null;
+        if (!hasTrigger && !hasEffect) {
+            return;
+        }
 
-        YakinduTokenType type = null;
+        YakinduTokenType type;
         if (hasTrigger && hasEffect) {
             type = TRIGGER_EFFECT;
         } else if (hasTrigger) {
             type = TRIGGER;
-        } else if (hasEffect) {
+        } else {
             type = EFFECT;
         }
         adapter.addToken(type, reaction);
