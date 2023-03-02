@@ -62,16 +62,13 @@ public final class EMFUtil {
      * @return the resource of the loaded (meta)model or null if it could not be loaded.
      */
     public static Resource loadModelResource(File file) throws ParsingException {
-//        final ResourceSet resourceSet = new ResourceSetImpl();
-//        URI uri = URI.createFileURI(file.getAbsolutePath());
-//        Resource resource = null;
-//        try {
-//            resource = resourceSet.getResource(uri, false);
-//        } catch (WrappedException e) {
-//            //throw new ParsingException(e.getMessage());
-//            resource = resourceSet.getResource(uri, false);
-//        }
-//        return Resource(resource);
+        final ResourceSet resourceSet = new ResourceSetImpl();
+        try {
+            return resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
+        } catch (WrappedException exception) {
+            logger.error("Could not load {}: {}", file, exception.getCause().getMessage());
+        }
+        return null;
     }
 
     /**

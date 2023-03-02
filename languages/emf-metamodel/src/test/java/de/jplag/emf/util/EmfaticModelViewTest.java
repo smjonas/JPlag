@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import de.jplag.ParsingException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ class EmfaticModelViewTest extends AbstractEmfTest {
     @ParameterizedTest
     @DisplayName("Test content of emfatic view files of example metamodels")
     @MethodSource("provideModelNames")
-    void testEmfaticViewFiles(String modelName) {
+    void testEmfaticViewFiles(String modelName) throws ParsingException {
         // Load model:
         File modelFile = new File(baseDirectory, modelName);
         Resource modelResource = loadAndVerifyModel(modelFile);

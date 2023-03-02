@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import de.jplag.ParsingException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,7 @@ public abstract class AbstractEmfTest {
      * @param modelFile is the file to load.
      * @return the loaded resource.
      */
-    protected Resource loadAndVerifyModel(File modelFile) {
+    protected Resource loadAndVerifyModel(File modelFile) throws ParsingException {
         assertTrue(modelFile.exists());
         Resource modelResource = EMFUtil.loadModelResource(modelFile);
         assertNotNull(modelResource);

@@ -32,7 +32,7 @@ class MinimalModelInstanceTest {
     private final Logger logger = LoggerFactory.getLogger(MinimalModelInstanceTest.class);
 
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "statecharts");
-    private static final String[] TEST_SUBJECTS = {"bookStore.ecore", "bookStore.xml", "bookStore2.xml"};
+    // private static final String[] TEST_SUBJECTS = {"bookStore.ecore", "bookStore.xml", "bookStore2.xml"};
 
     private Language language;
     private File baseDirectory;

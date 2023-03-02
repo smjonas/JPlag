@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
@@ -65,12 +66,12 @@ public class EcoreParser extends AbstractParser {
         URI uri = URI.createFileURI(file.getAbsolutePath());
         Resource resource = null;
         try {
-            resource = resourceSet.getResource(uri, false);
+            resource = resourceSet.getResource(uri, true);
         } catch (WrappedException e) {
             //throw new ParsingException(e.getMessage());
             resource = resourceSet.getResource(uri, false);
         }
-        return Resource(resource);
+        return resource;
     }
 
     /**
