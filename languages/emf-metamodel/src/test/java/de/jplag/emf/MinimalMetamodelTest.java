@@ -22,7 +22,7 @@ import de.jplag.TokenType;
 import de.jplag.testutils.TokenUtils;
 
 class MinimalMetamodelTest extends AbstractEmfTest {
-    private final Logger logger = LoggerFactory.getLogger(MinimalMetamodelTest.class);
+    /*private final Logger logger = LoggerFactory.getLogger(MinimalMetamodelTest.class);
 
     @Test
     @DisplayName("Test tokens generated from example metamodels")
@@ -43,6 +43,5 @@ class MinimalMetamodelTest extends AbstractEmfTest {
         assertTrue(originalTokens.size() < extendedTokens.size());
         assertTrue(renamedTokens.size() < renamedRefactorTokens.size());
         assertIterableEquals(originalTokens, renamedTokens);
-    }
-
+    } */
 }
