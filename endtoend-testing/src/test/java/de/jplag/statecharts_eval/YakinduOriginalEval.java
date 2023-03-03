@@ -21,7 +21,7 @@ class YakinduOriginalEval {
             int minTokenLength, double similarity, double maxSimilarity
     ) {
         return new ArrayList<>(List.of(
-                TupleType.of(first, second).toString(), first, second, language, extractionStrategy,
+                first, second, language, extractionStrategy,
                 Integer.toString(minTokenLength), Double.toString(similarity), Double.toString(maxSimilarity)
         ));
     }
@@ -33,11 +33,11 @@ class YakinduOriginalEval {
 
         List<List<String>> lines = new ArrayList<>();
         lines.add(LINES_HEADER);
-        final String EXTRACTION_STRATEGY = "simple";
+        final String EXTRACTION_STRATEGY = "handcrafted";
 
-        for (final int min_token_match : Set.of(2, 4, 6, 8, 10, 12, 14, 16, 18)) {
-            JPlagResult jplagResult = Util.runJPlag("yakindu", "original", min_token_match);
-            assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.ORIGINAL_SUBMISSIONS_COUNT_2020);
+        for (final int min_token_match : Set.of(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30)) {
+            JPlagResult jplagResult = Util.runJPlag("yakindu", "2021_assignments", min_token_match);
+            assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.ORIGINAL_SUBMISSIONS_COUNT_2021);
 
             for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
                 String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
@@ -49,6 +49,6 @@ class YakinduOriginalEval {
                 ));
             }
         }
-        Util.writeCSVFile("target", "yakindu_similarity_dist", lines);
+        Util.writeCSVFile("target", "yakindu_similarity_dist_handcrafted_2021", lines);
     }
 }

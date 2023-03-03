@@ -19,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class Util {
 
-    private static final String BASE_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/obfuscated/2020_assignments";
+    private static final String BASE_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/original/";
     public static final int ORIGINAL_SUBMISSIONS_COUNT_2020 = 21;
+    public static final int ORIGINAL_SUBMISSIONS_COUNT_2021 = 17;
+
 
     public static JPlagResult runJPlag(String lang, String submissionFolder, int minTokenMatch) throws ExitException {
         Language language = LanguageLoader.getLanguage(lang).orElseThrow();
