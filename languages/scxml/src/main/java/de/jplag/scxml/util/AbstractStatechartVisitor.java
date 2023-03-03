@@ -1,5 +1,6 @@
 package de.jplag.scxml.util;
 
+import de.jplag.scxml.parser.ScxmlParserAdapter;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
@@ -9,6 +10,7 @@ import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
 import de.jplag.scxml.parser.model.executable_content.If;
 import de.jplag.scxml.parser.model.executable_content.SimpleExecutableContent;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,8 +21,10 @@ import java.util.List;
 public abstract class AbstractStatechartVisitor {
 
     protected int depth;
+    protected ScxmlParserAdapter adapter;
 
-    protected AbstractStatechartVisitor() {
+    public AbstractStatechartVisitor(ScxmlParserAdapter adapter) {
+        this.adapter = adapter;
     }
 
     /**
@@ -30,6 +34,22 @@ public abstract class AbstractStatechartVisitor {
      */
     public int getCurrentTreeDepth() {
         return depth;
+    }
+
+    private List<Integer> peekTokens(StatechartElement element) {
+        ScxmlParserAdapter prevAdapter = this.adapter;
+        PeekAdapter peekAdapter = new PeekAdapter();
+        // Switch out the main adapter for the peek adapter
+        // so that the main token stream is not affected
+        this.adapter = peekAdapter;
+        visit(element);
+        this.adapter = prevAdapter;
+        return peekAdapter.getTokenTypes();
+    }
+
+    protected <T extends StatechartElement> List<T> sort(List<T> objects) {
+        objects.sort((v1, v2) -> PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2)));
+        return objects;
     }
 
     public final void visit(StatechartElement element) {

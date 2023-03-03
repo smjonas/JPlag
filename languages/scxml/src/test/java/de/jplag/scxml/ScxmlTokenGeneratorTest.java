@@ -21,22 +21,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ScxmlTokenGeneratorTest {
 
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "statecharts");
-    private static final String[] TEST_SUBJECTS = {"statechart.scxml"};
+    private static final String[] TEST_SUBJECTS = {"statechart.scxml", "statechart_reordered.scxml"};
     private final File baseDirectory = BASE_PATH.toFile();
 
     @Test
     void testSimpleTokenExtractionStrategy() throws ParsingException {
-        File testFile = new File(baseDirectory, TEST_SUBJECTS[0]);
+        File originalTestFile = new File(baseDirectory, TEST_SUBJECTS[0]);
         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
-        List<Token> tokens = adapter.parse(Set.of(testFile));
-        List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
+        List<Token> originalTokens = adapter.parse(Set.of(originalTestFile));
+        List<TokenType> originalTokenTypes = originalTokens.stream().map(Token::getType).toList();
 
-        assertEquals(List.of(
+        List<TokenType> expectedTokenTypes = List.of(
                 STATE, STATE, TRANSITION, ASSIGNMENT, TRANSITION_END, STATE_END, STATE, ON_ENTRY, ASSIGNMENT,
                 ACTION_END, TRANSITION, TRANSITION_END, STATE, ON_ENTRY, IF, ASSIGNMENT, IF_END, ACTION_END, TRANSITION,
                 TRANSITION_END, STATE_END, STATE, ON_ENTRY, SEND, ACTION_END, ON_EXIT, CANCEL, ACTION_END, TRANSITION,
                 TRANSITION_END, TRANSITION, TRANSITION_END, STATE_END, STATE_END, STATE_END, FILE_END
-        ), tokenTypes);
+        );
+        assertEquals(expectedTokenTypes, originalTokenTypes);
+
+        File reorderedTestFile = new File(baseDirectory, TEST_SUBJECTS[1]);
+        List<Token> reorderedTokens = adapter.parse(Set.of(reorderedTestFile));
+        List<TokenType> reorderedTokenTypes =  reorderedTokens.stream().map(Token::getType).toList();
+        assertEquals(expectedTokenTypes, reorderedTokenTypes);
     }
 
     @AfterEach

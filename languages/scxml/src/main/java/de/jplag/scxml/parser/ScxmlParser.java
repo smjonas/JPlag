@@ -86,7 +86,7 @@ public class ScxmlParser implements ScxmlElementVisitor {
 
         ArrayList<Action> actions = new ArrayList<>(NodeUtil.getChildNodes(node, Set.of(ONENTRY_ELEMENT, ONEXIT_ELEMENT)).stream().map(this::visitAction).toList());
         ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, TRANSITION_ELEMENT).stream().map(this::visitTransition).toList());
-        List<State> states = NodeUtil.getChildNodes(node, Set.of(STATE_ELEMENT, PARALLEL_STATE_ELEMENT)).stream().map(this::visitState).toList();
+        List<State> states = new ArrayList<>(NodeUtil.getChildNodes(node, Set.of(STATE_ELEMENT, PARALLEL_STATE_ELEMENT)).stream().map(this::visitState).toList());
         return new State(id, transitions, states, actions, initial, parallel);
     }
 

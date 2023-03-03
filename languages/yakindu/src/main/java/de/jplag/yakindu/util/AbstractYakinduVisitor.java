@@ -1,21 +1,20 @@
 package de.jplag.yakindu.util;
 
-import de.jplag.yakindu.parser.PeekAdapter;
 import de.jplag.yakindu.parser.YakinduParserAdapter;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.yakindu.base.types.Declaration;
-import org.yakindu.base.types.Property;
 import org.yakindu.base.types.impl.DeclarationImpl;
 import org.yakindu.sct.model.sgraph.*;
-import org.yakindu.sct.model.sgraph.impl.*;
+import org.yakindu.sct.model.sgraph.impl.ReactionImpl;
+import org.yakindu.sct.model.sgraph.impl.RegionImpl;
+import org.yakindu.sct.model.sgraph.impl.StatechartImpl;
+import org.yakindu.sct.model.sgraph.impl.TransitionImpl;
 
-import java.net.ProtocolException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.

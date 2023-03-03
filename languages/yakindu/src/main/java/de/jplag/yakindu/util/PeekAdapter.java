@@ -1,6 +1,7 @@
-package de.jplag.yakindu.parser;
+package de.jplag.yakindu.util;
 
 import de.jplag.yakindu.YakinduTokenType;
+import de.jplag.yakindu.parser.YakinduParserAdapter;
 import org.eclipse.emf.ecore.EObject;
 
 import java.util.ArrayList;

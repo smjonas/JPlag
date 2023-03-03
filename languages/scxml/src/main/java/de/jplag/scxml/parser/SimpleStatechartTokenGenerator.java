@@ -18,7 +18,6 @@ import static de.jplag.scxml.ScxmlTokenType.*;
  * @author Timur Saglam
  */
 public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
-    protected final ScxmlParserAdapter adapter;
 
     /**
      * Creates the visitor.
@@ -26,22 +25,22 @@ public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
      * @param adapter is the parser adapter which receives the generated tokens.
      */
     public SimpleStatechartTokenGenerator(ScxmlParserAdapter adapter) {
-        this.adapter = adapter;
+        super(adapter);
     }
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (State state : statechart.states()) {
+        for (State state : sort(statechart.states()) ){
             visitState(state);
         }
     }
 
     protected void visitStateContents(State state) {
         visitActions(state.actions());
-        for (Transition transition : state.transitions()) {
+        for (Transition transition : sort(state.transitions())) {
             visitTransition(transition);
         }
-        for (State substate : state.substates()) {
+        for (State substate : sort(state.substates())) {
             visitState(substate);
         }
         depth--;
