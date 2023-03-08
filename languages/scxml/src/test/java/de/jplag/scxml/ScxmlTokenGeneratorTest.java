@@ -45,6 +45,15 @@ public class ScxmlTokenGeneratorTest {
         assertEquals(expectedTokenTypes, reorderedTokenTypes);
     }
 
+    @Test
+    void testJPlagBug() throws ParsingException {
+        File originalTestFile = new File(baseDirectory, "Har_obfuscated.scxml");
+        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+        List<Token> originalTokens = adapter.parse(Set.of(originalTestFile));
+        List<TokenType> originalTokenTypes = originalTokens.stream().map(Token::getType).toList();
+        System.out.println(originalTokenTypes);
+    }
+
     @AfterEach
     public void tearDown() {
         FileUtil.clearFiles(baseDirectory, ScxmlLanguage.VIEW_FILE_SUFFIX);

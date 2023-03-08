@@ -91,6 +91,22 @@ class YakinduParserTest {
         );
         assertThat(tokenTypes).containsAll(expectedTokenTypes);
     }
+
+    @Test
+    public void testAti() throws ParsingException {
+        File testFileOriginal = new File(baseDirectory, "Ati.ysc");
+        File testFileObfuscated = new File(baseDirectory, "Ati_obfuscated.ysc");
+
+        YakinduParserAdapter adapter = new YakinduParserAdapter();
+        List<Token> tokens = adapter.parse(Set.of(testFileOriginal));
+        List<Token> tokensObfuscated = adapter.parse(Set.of(testFileObfuscated));
+        System.out.println(tokens);
+        System.out.println(tokensObfuscated);
+        System.out.println(tokens.size() + ":" + tokensObfuscated.size());
+        for (TokenType x : tokensObfuscated.stream().map(Token::getType).toList()) {
+            System.out.println(x);
+        }
+    }
 }
 
 

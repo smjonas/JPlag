@@ -126,6 +126,6 @@ public class YakinduParserAdapter extends AbstractParser {
      * @return a token generating Yakindu Statecharts visitor
      */
     protected AbstractYakinduVisitor createYakinduVisitor() {
-        return new HandcraftedYakinduTokenGenerator(this);
+        return new SimpleYakinduTokenGenerator(this);
     }
 }

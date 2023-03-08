@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class Util {
 
-    private static final String BASE_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/original/";
+    protected static final String BASE_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/obfuscated/2020_assignments/SCXML";
     public static final int ORIGINAL_SUBMISSIONS_COUNT_2020 = 21;
     public static final int ORIGINAL_SUBMISSIONS_COUNT_2021 = 17;
 
