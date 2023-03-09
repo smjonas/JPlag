@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,8 @@ class MinimalDynamicMetamodelTest {
     private final Logger logger = LoggerFactory.getLogger(MinimalDynamicMetamodelTest.class);
 
     private static final Path BASE_PATH = Path.of("src", "test", "resources", "de", "jplag", "models");
-    private static final String[] TEST_SUBJECTS = {"bookStore.ecore", "bookStoreExtended.ecore", "bookStoreRenamed.ecore"};
+    private static final String[] TEST_SUBJECTS = {"bookStore.ecore", "bookStoreExtended.ecore", "bookStoreExtendedRefactor.ecore",
+            "bookStoreRenamed.ecore"};
 
     private de.jplag.Language language;
     private File baseDirectory;
@@ -41,20 +43,23 @@ class MinimalDynamicMetamodelTest {
     }
 
     @Test
+    @DisplayName("Test tokens generated from example metamodels")
     void testBookstoreMetamodels() throws ParsingException {
         List<File> testFiles = Arrays.stream(TEST_SUBJECTS).map(path -> new File(BASE_PATH.toFile(), path)).toList();
         List<Token> result = language.parse(new HashSet<>(testFiles));
         List<TokenType> tokenTypes = result.stream().map(Token::getType).toList();
         logger.debug(TokenPrinter.printTokens(result, baseDirectory, Optional.of(Language.VIEW_FILE_SUFFIX)));
         logger.info("parsed token types: " + tokenTypes.stream().map(TokenType::getDescription).toList().toString());
-        assertEquals(64, tokenTypes.size());
+        assertEquals(94, tokenTypes.size());
         assertEquals(7, new HashSet<>(tokenTypes.stream().filter(DynamicMetamodelTokenType.class::isInstance).toList()).size());
 
-        var bookstoreTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(0));
-        var bookstoreRenamedTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(2));
-        var bookstoreExtendedTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(1));
-        assertTrue(bookstoreTokens.size() < bookstoreExtendedTokens.size());
-        assertIterableEquals(bookstoreTokens, bookstoreRenamedTokens);
+        var originalTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(0));
+        var renamedTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(3));
+        var extendedTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(1));
+        var renamedRefactorTokens = TokenUtils.tokenTypesByFile(result, testFiles.get(2));
+        assertTrue(originalTokens.size() < extendedTokens.size());
+        assertTrue(renamedTokens.size() < renamedRefactorTokens.size());
+        assertIterableEquals(originalTokens, renamedTokens);
     }
 
     @AfterEach
