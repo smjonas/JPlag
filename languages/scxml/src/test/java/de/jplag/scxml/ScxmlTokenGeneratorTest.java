@@ -54,6 +54,19 @@ public class ScxmlTokenGeneratorTest {
         System.out.println(originalTokenTypes);
     }
 
+    @Test
+    void testSorting() throws ParsingException {
+        File originalTestFile = new File(baseDirectory, "Sen.scxml");
+        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+        List<Token> originalTokens = adapter.parse(Set.of(originalTestFile));
+        List<TokenType> originalTokenTypes = originalTokens.stream().map(Token::getType).toList();
+
+        File reorderedTestFile = new File(baseDirectory, "Sen_obfuscated.scxml");
+        List<Token> reorderedTokens = adapter.parse(Set.of(reorderedTestFile));
+        List<TokenType> reorderedTokenTypes =  reorderedTokens.stream().map(Token::getType).toList();
+        assertEquals(originalTokenTypes, reorderedTokenTypes);
+    }
+
     @AfterEach
     public void tearDown() {
         FileUtil.clearFiles(baseDirectory, ScxmlLanguage.VIEW_FILE_SUFFIX);
