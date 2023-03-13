@@ -4,20 +4,21 @@ import de.jplag.JPlagComparison;
 import de.jplag.JPlagResult;
 import de.jplag.exceptions.ExitException;
 import org.apache.commons.io.FilenameUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 
 import static de.jplag.statecharts_eval.Util.BASE_SUBMISSION_DIR;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class YakinduEval {
 
-    private static final List<String> TOOLS = List.of("scxml");
+    private static final List<String> TOOLS = List.of("scxml", "yakindu");
 
-    private static final String[] PLAGIARISM_TYPES = new String[]{"insert10"};
+    private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5", "move100", /* "rename100" */ };
     private static final List<String> LINES_HEADER = List.of(
             "plag_type", "first", "second", "tuple_type", "tool", "min_token_length", "avg_similarity", "max_similarity"
     );
@@ -35,53 +36,127 @@ class YakinduEval {
         ));
     }
 
-    @Test
-    public void evalMain() throws ExitException {
-        List<List<String>> lines = new ArrayList<>();
-        lines.add(LINES_HEADER);
-        for (String tool : TOOLS) {
-            System.out.println("Current ");
-            for (String plagiarismType : PLAGIARISM_TYPES) {
-                for (int token_len : List.of(2,4,6,8,10,12,14,16,18,20,22,24,26,30,32,34,36)) {
-                    JPlagResult jplagResult = Util.runJPlag(tool, plagiarismType, token_len);
-                    Map<TupleType, DoubleSummaryStatistics> statsAvgSimilarity = new HashMap<>();
-                    Map<TupleType, DoubleSummaryStatistics> statsMaxSimilarity = new HashMap<>();
-
-                    for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
-                        String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
-                        String secondFilename = FilenameUtils.removeExtension(tuple.secondSubmission().getName());
-                        TupleType tupleType = TupleType.of(firstFilename, secondFilename);
-
-                        if (tupleType != TupleType.UNRELATED) {
-                            lines.add(createLine(
-                                    plagiarismType, firstFilename, secondFilename, tupleType,
-                                    tool, token_len, tuple.similarity(), tuple.maximalSimilarity()
-                            ));
-
-                            // statsAvgSimilarity.putIfAbsent(tupleType, new DoubleSummaryStatistics());
-                            // statsMaxSimilarity.putIfAbsent(tupleType, new DoubleSummaryStatistics());
-                            // statsAvgSimilarity.get(tupleType).accept(tuple.similarity());
-                            // statsMaxSimilarity.get(tupleType).accept(tuple.maximalSimilarity());
-                        }
-                    }
-                }
+    private static void deleteViewFiles(String root) {
+        File[] files = new File(root).listFiles();
+        for (File file : files) {
+            String fileName = file.getName();
+            if (fileName.endsWith(".emfatic") || fileName.endsWith("view")) {
+                file.delete();
             }
         }
-        Util.writeCSVFile("target", "experiment1_scxml_simple", lines);
-        // "experiment1_yakindu_simple"
-        // "experiment1_yakindu_handcrafted"
-        //
+    }
+
+    @BeforeAll
+    public static void setup() {
+        for (String subFolder : PLAGIARISM_TYPES) {
+            deleteViewFiles(BASE_SUBMISSION_DIR + "/" + subFolder);
+            deleteViewFiles(BASE_SUBMISSION_DIR + "/SCXML/" + subFolder);
+            deleteViewFiles(BASE_SUBMISSION_DIR + "/EMF_MODEL/" + subFolder);
+        }
     }
 
     @Test
-    public void tearDown() {
-        for (String subFolder : PLAGIARISM_TYPES) {
-            File[] files = Path.of(BASE_SUBMISSION_DIR).resolve(subFolder).toFile().listFiles();
-            for (File file : files) {
-                if (file.getName().endsWith(".emfatic") || file.getName().endsWith(".yakinduview")) {
-                    file.delete();
+    public void evalMain() throws ExitException {
+         for (String tool : TOOLS) {
+             List<List<String>> lines = new ArrayList<>();
+             lines.add(LINES_HEADER);
+
+             for (String plagiarismType : PLAGIARISM_TYPES) {
+                 for (int token_len : List.of(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36)) {
+                     String prefix = "";
+                     if (tool.equals("emf-model")) {
+                         prefix = "EMF_MODEL/";
+                     } else if (tool.equals("scxml")) {
+                         prefix = "SCXML/";
+                     }
+
+                     JPlagResult jplagResult = Util.runJPlag(tool, prefix + plagiarismType, token_len);
+                     int n = 2 * Util.ORIGINAL_SUBMISSIONS_COUNT_2021 + (tool.equals("emf-model") ? 3 : 0);
+                     assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
+                     Map<TupleType, DoubleSummaryStatistics> statsAvgSimilarity = new HashMap<>();
+                     Map<TupleType, DoubleSummaryStatistics> statsMaxSimilarity = new HashMap<>();
+
+                     for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
+                         String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
+                         String secondFilename = FilenameUtils.removeExtension(tuple.secondSubmission().getName());
+                         TupleType tupleType = TupleType.of(firstFilename, secondFilename);
+
+                         if (tupleType != TupleType.UNRELATED) {
+                             lines.add(createLine(
+                                     plagiarismType, firstFilename, secondFilename, tupleType,
+                                     tool, token_len, tuple.similarity(), tuple.maximalSimilarity()
+                             ));
+
+                             // statsAvgSimilarity.putIfAbsent(tupleType, new DoubleSummaryStatistics());
+                             // statsMaxSimilarity.putIfAbsent(tupleType, new DoubleSummaryStatistics());
+                             // statsAvgSimilarity.get(tupleType).accept(tuple.similarity());
+                             // statsMaxSimilarity.get(tupleType).accept(tuple.maximalSimilarity());
+                         }
+                     }
+                     setup();
+                 }
+             }
+             Util.writeCSVFile(
+                     "/home/jonas/Desktop/statecharts-eval/eval/plots/input",
+                     String.format("experiment2_%s_sorting", tool),
+                     lines
+             );
+         }
+        // experiment1_yakindu_simple X
+        // experiment1_yakindu_handcrafted ?
+        // experiment1_scxml_simple X
+        // experiment1_scxml_handcrafted ?
+        // experiment1_emfmodel X
+
+        // experiment2_yakindu_sorting
+        // experiment2_yakindu_no_sorting
+        // experiment2_scxml_sorting
+        // experiment2_scxml_no_sorting
+    }
+
+    @Test
+    public void experiment2() throws ExitException {
+        for (String tool : TOOLS) {
+            List<List<String>> lines = new ArrayList<>();
+            lines.add(LINES_HEADER);
+            final int token_len = 10;
+
+            for (String plagiarismType : PLAGIARISM_TYPES) {
+                String prefix = "";
+                if (tool.equals("emf-model")) {
+                    prefix = "EMF_MODEL/";
+                } else if (tool.equals("scxml")) {
+                    prefix = "SCXML/";
                 }
+
+                JPlagResult jplagResult = Util.runJPlag(tool, prefix + plagiarismType, token_len);
+                int n = 2 * Util.ORIGINAL_SUBMISSIONS_COUNT_2020 + (tool.equals("emf-model") ? 3 : 0);
+                assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
+
+                for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
+                    String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
+                    String secondFilename = FilenameUtils.removeExtension(tuple.secondSubmission().getName());
+                    TupleType tupleType = TupleType.of(firstFilename, secondFilename);
+
+                    if (tupleType != TupleType.UNRELATED) {
+                        lines.add(createLine(
+                                plagiarismType, firstFilename, secondFilename, tupleType,
+                                tool, token_len, tuple.similarity(), tuple.maximalSimilarity()
+                        ));
+                    }
+                }
+                setup();
             }
+            Util.writeCSVFile(
+                    "/home/jonas/Desktop/statecharts-eval/eval/plots/input",
+                    String.format("experiment2_%s_handcrafted_sorting", tool),
+                    lines
+            );
         }
+
+        // experiment2_yakindu_handcrafted_sorting ?
+        // experiment2_yakindu_handcrafted_no_sorting X
+        // experiment2_scxml_handcrafted_sorting ?
+        // experiment2_scxml_handcrafted_no_sorting X
     }
 }
