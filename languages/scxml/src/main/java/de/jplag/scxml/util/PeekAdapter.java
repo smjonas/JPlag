@@ -16,11 +16,6 @@ public class PeekAdapter extends ScxmlParserAdapter {
         tokenTypes.add(type.ordinal());
     }
 
-    private String numberToChar(int n) {
-        assert n >= 0 && n < 26 : "numberToChar: argument is " + n;
-        return String.valueOf((char)(n + 65));
-    }
-
     public List<Integer> getTokenTypes() {
         return tokenTypes;
     }

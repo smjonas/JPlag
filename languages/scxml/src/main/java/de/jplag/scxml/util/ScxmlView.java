@@ -38,7 +38,8 @@ public class ScxmlView {
     public ScxmlToken enhanceToken(ScxmlToken token, int depth) {
         String prefix = "  ".repeat(depth);
         ScxmlTokenType type = (ScxmlTokenType) token.getType();
-        String content = type.isEndToken() ? "}" : token.getStatechartElement().toString();
+        String element = token.getStatechartElement() == null ? "" : token.getStatechartElement().toString();
+        String content = type.isEndToken() ? "}" : element;
         builder.append(prefix).append(content).append("\n");
         return new ScxmlToken(token.getType(), token.getFile(), line++, prefix.length() + 1, content.length(), token.getStatechartElement());
     }

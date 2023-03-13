@@ -9,9 +9,12 @@ import de.jplag.scxml.parser.model.executable_content.Action;
 import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
 import de.jplag.scxml.parser.model.executable_content.If;
 import de.jplag.scxml.parser.model.executable_content.SimpleExecutableContent;
+import org.eclipse.emf.ecore.EObject;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Visitor for the containment tree of an EMF Metamodel.
@@ -53,15 +56,15 @@ public abstract class AbstractStatechartVisitor {
     }
 
     public final void visit(StatechartElement element) {
-        if (element instanceof Statechart statechart) {
-            visitStatechart(statechart);
-        } else if (element instanceof State state) {
-            visitState(state);
-        } else if (element instanceof SimpleExecutableContent simpleContent) {
-            visitSimpleExecutableContent(simpleContent);
-        } else if (element instanceof ExecutableContent content) {
-            visitExecutableContent(content);
-        }
+        Map<Class<? extends StatechartElement>, Consumer<StatechartElement>> visitorMap = Map.of(
+                Statechart.class, e -> visitStatechart((Statechart) e),
+                State.class, e -> visitState((State) e),
+                If.class, e -> visitIf((If) e),
+                SimpleExecutableContent.class, e -> visitSimpleExecutableContent((SimpleExecutableContent) e),
+                ExecutableContent.class, e -> visitExecutableContent((ExecutableContent) e),
+                Transition.class, e -> visitTransition((Transition) e)
+        );
+        visitorMap.get(element.getClass()).accept(element);
     }
 
     protected abstract void visitStatechart(Statechart statechart);
