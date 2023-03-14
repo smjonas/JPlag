@@ -3,11 +3,13 @@ package de.jplag.scxml.parser;
 import de.jplag.ParsingException;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Statechart;
+import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.Action;
 import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
 import de.jplag.scxml.parser.util.NodeUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -53,10 +55,23 @@ public class ScxmlParser implements ScxmlElementVisitor {
     public Statechart parse(File file) throws IOException, SAXException, ParsingException {
         Document document = builder.parse(file);
         try {
-            return visitRoot(document.getDocumentElement());
+            Element element = document.getDocumentElement();
+            // We perform two passes through the document:
+            // In the first pass, we iterate over all <initial> elements within states to resolve initial states.
+            // In the second pass, we visit the whole document.
+            // This approach is necessary because an initial state may occur in the document prior to
+            // the transitions pointing to it.
+            resolveInitialStates(element);
+            return visitRoot(element);
         } catch (IllegalArgumentException e) {
             throw new ParsingException(file, "failed to parse statechart: " + e.getMessage());
         }
+    }
+
+    private void resolveInitialStates(Node root) {
+        List<Node> initialElements = NodeUtil.getNodesRecursive(root, INITIAL_ELEMENT);
+        List<Transition> transitions = initialElements.stream().map(this::visitInitialTransition).toList();
+        initialStateTargets.addAll(transitions.stream().map(Transition::target).toList());
     }
 
     @Override
@@ -77,12 +92,8 @@ public class ScxmlParser implements ScxmlElementVisitor {
         boolean initial = initialStateTargets.contains(id) || NodeUtil.getAttribute(node, INITIAL_ATTRIBUTE) != null;
         boolean parallel = node.getNodeName().equals(PARALLEL_STATE_ELEMENT);
 
-        // Store all encountered initial states for later
         Node child = NodeUtil.getFirstChild(node, INITIAL_ELEMENT);
         assert !(parallel && child != null) : "parallel state " + id + " must not have initial element";
-        if (child != null) {
-            initialStateTargets.add(visitInitialTransition(child).target());
-        }
 
         ArrayList<Action> actions = new ArrayList<>(NodeUtil.getChildNodes(node, Set.of(ONENTRY_ELEMENT, ONEXIT_ELEMENT)).stream().map(this::visitAction).toList());
         ArrayList<Transition> transitions = new ArrayList<>(NodeUtil.getChildNodes(node, TRANSITION_ELEMENT).stream().map(this::visitTransition).toList());
