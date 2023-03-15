@@ -32,12 +32,33 @@ class YakinduParserTest {
     }
 
     @Test
-    public void testSimpleTokenExtractionStrategy() throws ParsingException {
+    public void testEnhancedTokenExtractionStrategy() throws ParsingException {
         File testFileOriginal = new File(baseDirectory, TEST_SUBJECTS[0]);
         YakinduParserAdapter adapter = new YakinduParserAdapter();
         List<Token> tokens = adapter.parse(Set.of(testFileOriginal));
 
         List<TokenType> expectedTokenTypes = List.of(
+                REGION,
+                // Blinking
+                STATE, TRANSITION, VERTEX_END,
+                ORTHOGONAL_COMPOSITE_STATE,
+                // blinking2
+                REGION, STATE, TRANSITION, TRANSITION, VERTEX_END, REGION_END,
+                // blinking1 > Dark
+                REGION, STATE, TRANSITION, TRANSITION, VERTEX_END,
+                // blinking1 > Light
+                STATE, TRANSITION, VERTEX_END,
+                // blinking1 Entry
+                SHALLOW_HISTORY_ENTRY, TRANSITION, VERTEX_END, REGION_END,
+                TRANSITION,
+                VERTEX_END,
+                // main region entry
+                INITIAL_ENTRY, TRANSITION, VERTEX_END,
+                REGION_END, FILE_END
+        );
+
+        // Token types for the simple token extraction strategy
+        /* List<TokenType> expectedTokenTypes = List.of(
             REGION,
             // Blinking
             STATE,

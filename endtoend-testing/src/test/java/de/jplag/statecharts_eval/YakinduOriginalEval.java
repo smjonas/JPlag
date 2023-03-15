@@ -11,6 +11,7 @@ import java.util.*;
 class YakinduOriginalEval {
 
     private static final String LANGUAGE = "yakindu";
+    public static final int YEAR = 2021;
 
     private static final List<String> LINES_HEADER = List.of(
             "first", "second", "language", "extraction_strategy", "min_token_length", "avg_similarity", "max_similarity"
@@ -36,8 +37,8 @@ class YakinduOriginalEval {
         final String EXTRACTION_STRATEGY = "handcrafted";
 
         for (final int min_token_match : Set.of(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30)) {
-            JPlagResult jplagResult = Util.runJPlag("yakindu", "2021_assignments", min_token_match);
-            assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.ORIGINAL_SUBMISSIONS_COUNT_2021);
+            JPlagResult jplagResult = Util.runJPlag(YEAR, "yakindu", "2021_assignments", min_token_match);
+            assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.getSubmissionsCount(YEAR));
 
             for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
                 String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
