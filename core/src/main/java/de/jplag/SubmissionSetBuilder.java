@@ -73,11 +73,11 @@ public class SubmissionSetBuilder {
         // Merge everything in a submission set.
         List<Submission> submissions = new ArrayList<>(foundSubmissions.values());
 
+        // Some languages expect a certain order, which is ensured here:
         if (language.expectsSubmissionOrder()) {
-            List<File> rootFiles = foundSubmissions.values().stream().map(it -> it.getRoot()).collect(toList());
-            // rootFiles = language.customizeSubmissionOrder(rootFiles);
-            customizeSubmissionOrder(rootFiles);
-            submissions = new ArrayList<>(rootFiles.stream().map(it -> foundSubmissions.get(it)).collect(toList()));
+            List<File> rootFiles = foundSubmissions.values().stream().map(it -> it.getRoot()).toList();
+            rootFiles = language.customizeSubmissionOrder(rootFiles);
+            submissions = new ArrayList<>(rootFiles.stream().map(it -> foundSubmissions.get(it)).toList());
         }
         return new SubmissionSet(submissions, baseCodeSubmission.orElse(null), options);
     }
