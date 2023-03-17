@@ -10,46 +10,64 @@ import java.util.*;
 
 class YakinduOriginalEval {
 
-    private static final String LANGUAGE = "yakindu";
-    public static final int YEAR = 2021;
+    private static final List<String> TOOLS = List.of("yakindu", "scxml");
 
     private static final List<String> LINES_HEADER = List.of(
             "first", "second", "language", "extraction_strategy", "min_token_length", "avg_similarity", "max_similarity"
     );
 
     private List<String> createLine(
-            String first, String second, String language, String extractionStrategy,
+            int year, String first, String second, String language, String extractionStrategy,
             int minTokenLength, double similarity, double maxSimilarity
     ) {
         return new ArrayList<>(List.of(
-                first, second, language, extractionStrategy,
+                Integer.toString(year), first, second, language, extractionStrategy,
                 Integer.toString(minTokenLength), Double.toString(similarity), Double.toString(maxSimilarity)
         ));
     }
 
-    // For plotting the min_token_type against the similarity distribution.
-    // Variables: min_token_type, extraction_strategy (simple vs. handcrafted)
+    private String getToolDescriptionStrategy(String tool, String strategy) {
+        assert strategy.equals("simple") || strategy.equals("handcrafted");
+        String result = "";
+        switch (tool) {
+            case "scxml":
+                result = "SCXML";
+                break;
+            case "yakindu":
+                result = "Create";
+                break;
+            default:
+                throw new IllegalStateException("unknown tool " + tool);
+        }
+        return result + (strategy.equals("simple") ? " (simple)" : " (handcrafted)");
+    }
+
+    // For plotting the similarity against the submissions count.
     @Test
     public void evalSimilarityDistribution() throws ExitException {
 
         List<List<String>> lines = new ArrayList<>();
         lines.add(LINES_HEADER);
-        final String EXTRACTION_STRATEGY = "handcrafted";
 
-        for (final int min_token_match : Set.of(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30)) {
-            JPlagResult jplagResult = Util.runJPlag(YEAR, "yakindu", "2021_assignments", min_token_match);
-            assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.getSubmissionsCount(YEAR));
+        final String EXTRACTION_STRATEGY = "simple";
+        final int MIN_TOKEN_MATCH = 10;
 
-            for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
-                String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
-                String secondFilename = FilenameUtils.removeExtension(tuple.secondSubmission().getName());
+        for (int year : new int[]{ 2020, 2021}) {
+            for (String tool : TOOLS) {
+                JPlagResult jplagResult = Util.runJPlagOriginal(year, tool, MIN_TOKEN_MATCH);
+                assert jplagResult.getAllComparisons().size() == Util.getTotalAmountOfUniqueTuples(Util.getSubmissionsCount(year));
 
-                lines.add(createLine(
-                        firstFilename, secondFilename, LANGUAGE, EXTRACTION_STRATEGY,
-                        min_token_match, tuple.similarity(), tuple.maximalSimilarity()
-                ));
+                for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
+                    String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
+                    String secondFilename = FilenameUtils.removeExtension(tuple.secondSubmission().getName());
+
+                    lines.add(createLine(
+                            year, firstFilename, secondFilename, getToolDescriptionStrategy(tool, EXTRACTION_STRATEGY),
+                            EXTRACTION_STRATEGY, MIN_TOKEN_MATCH, tuple.similarity(), tuple.maximalSimilarity()
+                    ));
+                }
             }
         }
-        Util.writeCSVFile("target", "yakindu_similarity_dist_handcrafted_2021", lines);
+        Util.writeCSVFile("target", "similarity_dist", lines);
     }
 }

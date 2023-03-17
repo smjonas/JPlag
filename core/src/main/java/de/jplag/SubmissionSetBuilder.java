@@ -1,27 +1,19 @@
 package de.jplag;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.jplag.exceptions.BasecodeException;
 import de.jplag.exceptions.ExitException;
 import de.jplag.exceptions.RootDirectoryException;
 import de.jplag.exceptions.SubmissionException;
 import de.jplag.options.JPlagOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Builder class for the creation of a {@link SubmissionSet}.
@@ -44,6 +36,11 @@ public class SubmissionSetBuilder {
         this.language = language;
         this.options = options;
         this.excludedFileNames = options.excludedFiles();
+    }
+
+    private List<File> customizeSubmissionOrder(List<File> submissions) {
+        submissions.sort((File first, File second) -> Boolean.compare(second.getName().endsWith(".ecore"), first.getName().endsWith(".ecore")));
+        return submissions;
     }
 
     /**
@@ -75,6 +72,13 @@ public class SubmissionSetBuilder {
 
         // Merge everything in a submission set.
         List<Submission> submissions = new ArrayList<>(foundSubmissions.values());
+
+        if (language.expectsSubmissionOrder()) {
+            List<File> rootFiles = foundSubmissions.values().stream().map(it -> it.getRoot()).collect(toList());
+            // rootFiles = language.customizeSubmissionOrder(rootFiles);
+            customizeSubmissionOrder(rootFiles);
+            submissions = new ArrayList<>(rootFiles.stream().map(it -> foundSubmissions.get(it)).collect(toList()));
+        }
         return new SubmissionSet(submissions, baseCodeSubmission.orElse(null), options);
     }
 

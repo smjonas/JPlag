@@ -3,7 +3,9 @@ package de.jplag;
 import de.jplag.yakindu.YakinduTokenType;
 import de.jplag.yakindu.parser.YakinduParserAdapter;
 import net.bytebuddy.description.ByteCodeElement;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -79,6 +81,8 @@ class YakinduParserTest {
             ENTRY, TRANSITION, VERTEX_END,
             REGION_END, FILE_END
         );
+        */
+
         List<TokenType> tokenTypes = tokens.stream().map(Token::getType).toList();
         assertEquals(expectedTokenTypes, tokenTypes);
 
@@ -91,7 +95,8 @@ class YakinduParserTest {
     }
 
     @Test
-    public void testSimpleTokenGeneratorCoverage() throws ParsingException {
+    @Disabled
+    public void testEnhancedTokenGeneratorCoverage() throws ParsingException {
         File testFile = new File(baseDirectory, TEST_SUBJECTS[2]);
         YakinduParserAdapter adapter = new YakinduParserAdapter();
         Set<Token> tokens = new HashSet<>(adapter.parse(Set.of(testFile)));

@@ -11,20 +11,14 @@ import java.util.List;
 
 import static de.jplag.scxml.ScxmlTokenType.*;
 
-
-/**
- * Visits a metamodel containment tree and extracts the relevant token.
- *
- * @author Timur Saglam
- */
-public class SimpleStatechartTokenGenerator extends AbstractStatechartVisitor {
+public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public SimpleStatechartTokenGenerator(ScxmlParserAdapter adapter) {
+    public SimpleScxmlTokenGenerator(ScxmlParserAdapter adapter) {
         super(adapter);
     }
 

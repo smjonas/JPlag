@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class Util {
 
+    private static final String ORIGINAL_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/obfuscated/%d_assignments/original/";
     protected static final String BASE_SUBMISSION_DIR = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/obfuscated/%d_assignments";
 
     private static final int ORIGINAL_SUBMISSIONS_COUNT_2020 = 21;
@@ -32,6 +33,14 @@ public class Util {
     public static JPlagResult runJPlag(int year, String lang, String submissionFolder, int minTokenMatch) throws ExitException {
         Language language = LanguageLoader.getLanguage(lang).orElseThrow();
         File submissionDir = Path.of(String.format(BASE_SUBMISSION_DIR, year)).resolve(submissionFolder).toFile();
+        JPlagOptions jplagOptions = new JPlagOptions(language, Set.of(submissionDir), Set.of())
+                .withMinimumTokenMatch(minTokenMatch);
+        return new JPlag(jplagOptions).run();
+    }
+
+    public static JPlagResult runJPlagOriginal(int year, String lang, int minTokenMatch) throws ExitException {
+        Language language = LanguageLoader.getLanguage(lang).orElseThrow();
+        File submissionDir = new File(String.format(ORIGINAL_SUBMISSION_DIR, year));
         JPlagOptions jplagOptions = new JPlagOptions(language, Set.of(submissionDir), Set.of())
                 .withMinimumTokenMatch(minTokenMatch);
         return new JPlag(jplagOptions).run();

@@ -258,10 +258,10 @@ public class Submission implements Comparable<Submission> {
         }
 
         if (tokenList.size() < 3) {
-            logger.error("Submission \"{}\" is too short!", name);
-            tokenList = null;
-            hasErrors = true; // invalidate submission
-            return false;
+            // logger.error("Submission \"{}\" is too short!", name);
+            // tokenList = null;
+            // hasErrors = true; // invalidate submission
+            // return false;
         }
         return true;
     }

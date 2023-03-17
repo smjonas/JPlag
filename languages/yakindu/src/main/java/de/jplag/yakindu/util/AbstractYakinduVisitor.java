@@ -16,11 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * Visitor for the containment tree of an EMF Metamodel.
- *
- * @author Timur Saglam
- */
 public abstract class AbstractYakinduVisitor {
 
     protected int depth;
@@ -75,7 +70,6 @@ public abstract class AbstractYakinduVisitor {
         Map<Class<? extends EObject>, Consumer<EObject>> visitorMap = Map.of(
             StatechartImpl.class, e -> visitStatechart((Statechart) e),
             RegionImpl.class, e -> visitRegion((Region) e),
-            DeclarationImpl.class, e -> visitDeclaration((Declaration) e),
             TransitionImpl.class, e -> visitTransition((Transition) e),
             ReactionImpl.class, e -> visitReaction((Reaction) e)
         );
@@ -85,8 +79,6 @@ public abstract class AbstractYakinduVisitor {
     public abstract void visitStatechart(Statechart statechart);
 
     protected abstract void visitRegion(Region region);
-
-    protected abstract void visitDeclaration(Declaration declaration);
 
     protected abstract void visitState(State state);
 

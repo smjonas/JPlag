@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
+import de.jplag.ParsingException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
@@ -62,10 +63,14 @@ public final class EMFUtil {
      */
     public static Resource loadModelResource(File file) {
         final ResourceSet resourceSet = new ResourceSetImpl();
+        URI uri = URI.createFileURI(file.getAbsolutePath());
         try {
-            return resourceSet.getResource(URI.createFileURI(file.getAbsolutePath()), true);
-        } catch (WrappedException exception) {
-            logger.error("Could not load {}: {}", file, exception.getCause().getMessage());
+            return resourceSet.getResource(uri, true);
+        } catch (WrappedException e) {
+            logger.trace("{}: failed to load (parts of) statechart model:\n {}", file, e.getMessage());
+            return resourceSet.getResource(uri, false);
+        } catch (RuntimeException e) {
+            logger.error("Could not load {}: {}", file, e.getCause().getMessage());
         }
         return null;
     }

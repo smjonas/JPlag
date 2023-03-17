@@ -47,6 +47,7 @@ public abstract class AbstractStatechartVisitor {
         this.adapter = peekAdapter;
         visit(element);
         this.adapter = prevAdapter;
+        // System.out.println("SORTING");
         return peekAdapter.getTokenTypes();
     }
 

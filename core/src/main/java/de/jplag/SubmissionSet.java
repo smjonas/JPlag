@@ -138,7 +138,8 @@ public class SubmissionSet {
         long startTime = System.currentTimeMillis();
 
         int tooShort = 0;
-        for (Submission submission : submissions) {
+        for (int i = 0; i < submissions.size(); i++) {
+            Submission submission = submissions.get(i);
             boolean ok;
 
             logger.trace("------ Parsing submission: " + submission.getName());
@@ -149,11 +150,11 @@ public class SubmissionSet {
             }
 
             if (submission.getTokenList() != null && submission.getNumberOfTokens() < options.minimumTokenMatch()) {
-                logger.error("Submission {} contains fewer tokens than minimum match length allows!", currentSubmissionName);
-                submission.setTokenList(null);
-                tooShort++;
-                ok = false;
-                submission.markAsErroneous();
+                // logger.error("Submission {} contains fewer tokens than minimum match length allows!", currentSubmissionName);
+                // submission.setTokenList(null);
+                // tooShort++;
+                // ok = false;
+                // submission.markAsErroneous();
             }
 
             if (ok) {

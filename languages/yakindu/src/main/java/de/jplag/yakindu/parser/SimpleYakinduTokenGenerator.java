@@ -50,15 +50,6 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
     }
 
     @Override
-    protected void visitDeclaration(Declaration declaration) {
-        if (declaration instanceof Property) {
-            adapter.addToken(PROPERTY, declaration);
-        } else if (declaration instanceof Event) {
-            adapter.addToken(EVENT, declaration);
-        }
-    }
-
-    @Override
     public void visitRegion(Region region) {
         adapter.addToken(REGION, region);
         depth++;

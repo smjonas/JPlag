@@ -10,13 +10,17 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.jplag.SharedTokenType.FILE_END;
 import static de.jplag.scxml.ScxmlTokenType.*;
 import static de.jplag.scxml.ScxmlTokenType.STATE_END;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import de.jplag.scxml.parser.model.StatechartElement;
 
 public class ScxmlTokenGeneratorTest {
 
@@ -54,16 +58,40 @@ public class ScxmlTokenGeneratorTest {
         System.out.println(originalTokenTypes);
     }
 
+    private <T> List<T> getDifferences(List<T> list1, List<T> list2) {
+        List<T> differences = new ArrayList<>();
+
+        int i = 0;
+        int j = 0;
+
+        while (i < list1.size() && j < list2.size()) {
+            if (!list1.get(i).equals(list2.get(j))) {
+                differences.add(list1.get(i));
+                i++;
+            } else {
+                i++;
+                j++;
+            }
+        }
+
+        while (i < list1.size()) {
+            differences.add(list1.get(i));
+            i++;
+        }
+        return differences;
+    }
+
     @Test
     void testSorting() throws ParsingException {
-        File originalTestFile = new File(baseDirectory, "Sen.scxml");
+        File originalTestFile = new File(baseDirectory, "Mic.scxml");
+        File reorderedTestFile = new File(baseDirectory, "Mic_obfuscated.scxml");
+
         ScxmlParserAdapter adapter = new ScxmlParserAdapter();
         List<Token> originalTokens = adapter.parse(Set.of(originalTestFile));
         List<TokenType> originalTokenTypes = originalTokens.stream().map(Token::getType).toList();
 
-        File reorderedTestFile = new File(baseDirectory, "Sen_obfuscated.scxml");
         List<Token> reorderedTokens = adapter.parse(Set.of(reorderedTestFile));
-        List<TokenType> reorderedTokenTypes =  reorderedTokens.stream().map(Token::getType).toList();
+        List<TokenType> reorderedTokenTypes = reorderedTokens.stream().map(Token::getType).toList();
         assertEquals(originalTokenTypes, reorderedTokenTypes);
     }
 

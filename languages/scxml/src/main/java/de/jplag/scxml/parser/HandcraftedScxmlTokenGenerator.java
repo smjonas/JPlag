@@ -2,7 +2,7 @@ package de.jplag.statecharts.parser;
 
 import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.ScxmlParserAdapter;
-import de.jplag.scxml.parser.SimpleStatechartTokenGenerator;
+import de.jplag.scxml.parser.SimpleScxmlTokenGenerator;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.Action;
@@ -17,14 +17,14 @@ import static de.jplag.scxml.ScxmlTokenType.*;
  *
  * @author Timur Saglam
  */
-public class EnhancedStatechartTokenGenerator extends SimpleStatechartTokenGenerator {
+public class HandcraftedScxmlTokenGenerator extends SimpleScxmlTokenGenerator {
 
     /**
      * Creates the visitor.
      *
      * @param adapter is the parser adapter which receives the generated tokens.
      */
-    public EnhancedStatechartTokenGenerator(ScxmlParserAdapter adapter) {
+    public HandcraftedScxmlTokenGenerator(ScxmlParserAdapter adapter) {
         super(adapter);
     }
 
