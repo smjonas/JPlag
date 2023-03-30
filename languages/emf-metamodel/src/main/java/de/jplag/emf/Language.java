@@ -61,7 +61,7 @@ public class Language implements de.jplag.Language {
 
     @Override
     public boolean useViewFiles() {
-        return false;
+        return true;
     }
 
     @Override
