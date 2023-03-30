@@ -17,7 +17,8 @@ class YakinduEval {
     private static final List<String> TOOLS = List.of("emf-model");
     // private static final List<String> TOOLS = List.of("scxml", "yakindu");
 
-    private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5", "move100", "rename100" };
+    // private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5", "move100", "rename100" };
+    private static final String[] PLAGIARISM_TYPES = new String[]{"rename100" };
 
     private static final List<String> EXPERIMENT1_LINES_HEADER = List.of(
             "plag_type", "first", "second", "tuple_type", "tool", "min_token_length", "avg_similarity", "max_similarity"
@@ -248,10 +249,10 @@ class YakinduEval {
                     setup();
                 }
             }
-            Util.writeCSVFile(
-                    "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
-                    String.format("experiment3_%s", STRATEGY),
-                    lines            );
+            // Util.writeCSVFile(
+            //         "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
+            //         String.format("experiment3_%s", STRATEGY),
+            //         lines            );
         }
     }
 }

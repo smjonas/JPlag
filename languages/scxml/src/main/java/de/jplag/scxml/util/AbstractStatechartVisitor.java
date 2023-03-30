@@ -52,7 +52,9 @@ public abstract class AbstractStatechartVisitor {
     }
 
     protected <T extends StatechartElement> List<T> sort(List<T> objects) {
-        objects.sort((v1, v2) -> PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2)));
+        objects.sort((v1, v2) -> {
+            return PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2));
+        });
         return objects;
     }
 

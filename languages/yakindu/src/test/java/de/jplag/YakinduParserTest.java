@@ -10,10 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.jplag.SharedTokenType.FILE_END;
@@ -132,6 +129,21 @@ class YakinduParserTest {
         for (TokenType x : tokensObfuscated.stream().map(Token::getType).toList()) {
             System.out.println(x);
         }
+    }
+
+    @Test
+    void testNumberOfTokensExtracted() throws ParsingException {
+        List<Integer> tokenCounts = new ArrayList<>();
+        YakinduParserAdapter adapter = new YakinduParserAdapter();
+        String inputFolder = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/original/2021_assignments/";
+        for (File file : new File(inputFolder).listFiles()) {
+            if (!file.getName().contains("tmp") && !file.getName().contains("scxml") && !file.getName().contains("yakinduview")) {
+                List<Token> tokens = adapter.parse(Set.of(file));
+                System.out.println(file.getName() + ":" + tokens.size());
+                tokenCounts.add(tokens.size());
+            }
+        }
+        System.out.println(tokenCounts);
     }
 }
 

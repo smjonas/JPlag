@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.jplag.SharedTokenType.FILE_END;
@@ -95,8 +93,31 @@ public class ScxmlTokenGeneratorTest {
         assertEquals(originalTokenTypes, reorderedTokenTypes);
     }
 
+    @Test
+    void testNumberOfTokensExtracted() throws ParsingException {
+        List<Integer> tokenCounts = new ArrayList<>();
+        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+        String inputFolder = "/home/jonas/Desktop/statecharts-eval/eval/src/test/resources/original/2021_assignments/scxml";
+        for (File file : new File(inputFolder).listFiles()) {
+            if (!file.getName().contains("view")) {
+                List<Token> tokens = adapter.parse(Set.of(file));
+                System.out.println(file.getName() + ":" + tokens.size());
+                tokenCounts.add(tokens.size());
+            }
+        }
+        System.out.println(tokenCounts);
+    }
+
+    @Test
+    void testFromProposal() throws ParsingException {
+        File testFile = new File(baseDirectory, "FromProposal.scxml");
+        ScxmlParserAdapter adapter = new ScxmlParserAdapter();
+        List<Token> tokens = adapter.parse(Set.of(testFile));
+        // System.out.println(tokens.stream().map(r -> ((ScxmlToken) r).getStatechartElement()).toList());
+    }
+
     @AfterEach
     public void tearDown() {
-        FileUtil.clearFiles(baseDirectory, ScxmlLanguage.VIEW_FILE_SUFFIX);
+        // FileUtil.clearFiles(baseDirectory, ScxmlLanguage.VIEW_FILE_SUFFIX);
     }
 }

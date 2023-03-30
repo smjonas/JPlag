@@ -43,7 +43,10 @@ public class Util {
         File submissionDir = new File(String.format(ORIGINAL_SUBMISSION_DIR, year));
         JPlagOptions jplagOptions = new JPlagOptions(language, Set.of(submissionDir), Set.of())
                 .withMinimumTokenMatch(minTokenMatch);
-        return new JPlag(jplagOptions).run();
+        long before = System.currentTimeMillis();
+        var result = new JPlag(jplagOptions).run();
+        long duration = System.currentTimeMillis() - before;
+        return new JPlagResult(result.getAllComparisons(), result.getSubmissions(), duration, result.getOptions());
     }
 
     public static void writeCSVFile(String path, String fileName, List<List<String>> results) {
