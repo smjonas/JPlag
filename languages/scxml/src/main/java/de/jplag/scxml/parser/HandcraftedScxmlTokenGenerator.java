@@ -8,6 +8,7 @@ import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.Action;
 import de.jplag.scxml.parser.model.executable_content.ExecutableContent;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static de.jplag.scxml.ScxmlTokenType.*;
@@ -38,6 +39,12 @@ public class HandcraftedScxmlTokenGenerator extends SimpleScxmlTokenGenerator {
     }
 
     @Override
+    protected List<State> sortStates(List<State> states) {
+        states.sort((s1, s2) -> Boolean.compare(s1.isRegion(), s2.isRegion()));
+        return states;
+    }
+
+    @Override
     public void visitState(State state) {
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
         depth++;
@@ -46,26 +53,16 @@ public class HandcraftedScxmlTokenGenerator extends SimpleScxmlTokenGenerator {
     }
 
     @Override
-    public void visitActions(List<Action> actions) {
-        List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
-        List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
-        visitActions(onEntries, ON_ENTRY);
-        visitActions(onExits, ON_EXIT);
-    }
-
-    private void visitActions(List<Action> actions, ScxmlTokenType tokenType) {
-        if (!actions.isEmpty()) {
-            // Only extract a single ON_ENTRY token even if the state contains multiple.
-            // Functionally, this makes no difference.
-            adapter.addToken(tokenType, null);
-            List<ExecutableContent> onEntryContents = actions.stream().flatMap(a -> a.contents().stream()).toList();
-            depth++;
-            for (ExecutableContent content : onEntryContents) {
-                visitExecutableContent(content);
+    public List<Transition> sortTransitions(List<Transition> transitions) {
+        // Sorts the transitions based on the isGuarded and isTimed attributes
+        // that determine the type of the first extracted token.
+        transitions.sort((t1, t2) -> {
+            if (t1.isTimed() == t2.isTimed()) {
+                return Boolean.compare(t1.isGuarded(), t2.isGuarded());
             }
-            depth--;
-            adapter.addToken(ACTION_END, null);
-        }
+            return Boolean.compare(t1.isTimed(), t2.isTimed());
+        });
+        return transitions;
     }
 
     @Override

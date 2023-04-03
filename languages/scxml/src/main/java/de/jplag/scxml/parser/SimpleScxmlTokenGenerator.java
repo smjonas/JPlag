@@ -22,19 +22,29 @@ public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
         super(adapter);
     }
 
+    protected List<State> sortStates(List<State> states) {
+        // Return states unchanged but allow overriding by subclass
+        return states;
+    }
+
+    protected List<Transition> sortTransitions(List<Transition> transitions) {
+        // Return transitions unchanged but allow overriding by subclass
+        return transitions;
+    }
+
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (State state : sort(statechart.states()) ){
+        for (State state : sortStates(statechart.states()) ){
             visitState(state);
         }
     }
 
     protected void visitStateContents(State state) {
         visitActions(state.actions());
-        for (Transition transition : sort(state.transitions())) {
+        for (Transition transition : sortTransitions(state.transitions())) {
             visitTransition(transition);
         }
-        for (State substate : sort(state.substates())) {
+        for (State substate : sortStates(state.substates())) {
             visitState(substate);
         }
         depth--;
@@ -50,14 +60,26 @@ public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitActions(List<Action> actions) {
-        for (Action action : actions) {
-            adapter.addToken(action.type() == Action.Type.ON_ENTRY ? ON_ENTRY : ON_EXIT, action);
+        // Group actions by their type, effectively sorting them
+        List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
+        List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
+        visitActions(onEntries, ON_ENTRY);
+        visitActions(onExits, ON_EXIT);
+    }
+
+    private void visitActions(List<Action> actions, ScxmlTokenType tokenType) {
+        if (!actions.isEmpty()) {
+            // Only extract a single ENTRY / EXIT token even if the state contains multiple.
+            // Functionally, this makes no difference.
+            adapter.addToken(tokenType, null);
+            List<ExecutableContent> actionContents = actions.stream().flatMap(a -> a.contents().stream()).toList();
             depth++;
-            for (ExecutableContent content : action.contents()) {
+            // Do not sort executable content because the order is important
+            for (ExecutableContent content : actionContents) {
                 visitExecutableContent(content);
             }
             depth--;
-            adapter.addToken(ACTION_END);
+            adapter.addToken(ACTION_END, null);
         }
     }
 
@@ -65,6 +87,7 @@ public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
     public void visitTransition(Transition transition) {
         adapter.addToken(TRANSITION, transition);
         depth++;
+        // Do not sort executable content because the order is important
         for (ExecutableContent content : transition.contents()) {
             visitExecutableContent(content);
         }

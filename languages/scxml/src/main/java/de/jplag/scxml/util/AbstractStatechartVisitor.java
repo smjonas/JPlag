@@ -39,7 +39,7 @@ public abstract class AbstractStatechartVisitor {
         return depth;
     }
 
-    private List<Integer> peekTokens(StatechartElement element) {
+/*    private List<Integer> peekTokens(StatechartElement element) {
         ScxmlParserAdapter prevAdapter = this.adapter;
         PeekAdapter peekAdapter = new PeekAdapter();
         // Switch out the main adapter for the peek adapter
@@ -56,7 +56,7 @@ public abstract class AbstractStatechartVisitor {
             return PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2));
         });
         return objects;
-    }
+    }*/
 
     public final void visit(StatechartElement element) {
         Map<Class<? extends StatechartElement>, Consumer<StatechartElement>> visitorMap = Map.of(
