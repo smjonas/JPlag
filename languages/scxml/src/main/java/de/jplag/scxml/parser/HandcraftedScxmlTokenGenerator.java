@@ -39,30 +39,11 @@ public class HandcraftedScxmlTokenGenerator extends SimpleScxmlTokenGenerator {
     }
 
     @Override
-    protected List<State> sortStates(List<State> states) {
-        states.sort((s1, s2) -> Boolean.compare(s1.isRegion(), s2.isRegion()));
-        return states;
-    }
-
-    @Override
     public void visitState(State state) {
         adapter.addToken(state.isRegion() ? REGION : STATE, state);
         depth++;
         visitStateAttributes(state);
         visitStateContents(state);
-    }
-
-    @Override
-    public List<Transition> sortTransitions(List<Transition> transitions) {
-        // Sorts the transitions based on the isGuarded and isTimed attributes
-        // that determine the type of the first extracted token.
-        transitions.sort((t1, t2) -> {
-            if (t1.isTimed() == t2.isTimed()) {
-                return Boolean.compare(t1.isGuarded(), t2.isGuarded());
-            }
-            return Boolean.compare(t1.isTimed(), t2.isTimed());
-        });
-        return transitions;
     }
 
     @Override

@@ -23,23 +23,14 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractStatechartVisitor {
 
-    protected int depth;
     protected ScxmlParserAdapter adapter;
+    protected int depth;
 
     public AbstractStatechartVisitor(ScxmlParserAdapter adapter) {
         this.adapter = adapter;
     }
 
-    /**
-     * Returns the current depth in the containment tree from the starting point.
-     *
-     * @return the depth in tree node levels.
-     */
-    public int getCurrentTreeDepth() {
-        return depth;
-    }
-
-/*    private List<Integer> peekTokens(StatechartElement element) {
+    public List<Integer> peekTokens(StatechartElement element) {
         ScxmlParserAdapter prevAdapter = this.adapter;
         PeekAdapter peekAdapter = new PeekAdapter();
         // Switch out the main adapter for the peek adapter
@@ -51,12 +42,14 @@ public abstract class AbstractStatechartVisitor {
         return peekAdapter.getTokenTypes();
     }
 
-    protected <T extends StatechartElement> List<T> sort(List<T> objects) {
-        objects.sort((v1, v2) -> {
-            return PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2));
-        });
-        return objects;
-    }*/
+    /**
+     * Returns the current depth in the containment tree from the starting point.
+     *
+     * @return the depth in tree node levels.
+     */
+    public int getCurrentTreeDepth() {
+        return depth;
+    }
 
     public final void visit(StatechartElement element) {
         Map<Class<? extends StatechartElement>, Consumer<StatechartElement>> visitorMap = Map.of(

@@ -3,15 +3,21 @@ package de.jplag.scxml.parser;
 import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.model.State;
 import de.jplag.scxml.parser.model.Statechart;
+import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.*;
+import de.jplag.scxml.sorting.SimpleSorter;
+import de.jplag.scxml.sorting.Sorter;
 import de.jplag.scxml.util.AbstractStatechartVisitor;
+import de.jplag.scxml.util.PeekAdapter;
 
 import java.util.List;
 
 import static de.jplag.scxml.ScxmlTokenType.*;
 
 public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
+
+    protected Sorter sorter;
 
     /**
      * Creates the visitor.
@@ -20,31 +26,33 @@ public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
      */
     public SimpleScxmlTokenGenerator(ScxmlParserAdapter adapter) {
         super(adapter);
+        this.sorter = new SimpleSorter(this);
     }
 
-    protected List<State> sortStates(List<State> states) {
-        // Return states unchanged but allow overriding by subclass
-        return states;
-    }
-
-    protected List<Transition> sortTransitions(List<Transition> transitions) {
-        // Return transitions unchanged but allow overriding by subclass
-        return transitions;
+    public List<Integer> peekTokens(StatechartElement element) {
+        ScxmlParserAdapter prevAdapter = this.adapter;
+        PeekAdapter peekAdapter = new PeekAdapter();
+        // Switch out the main adapter for the peek adapter
+        // so that the main token stream is not affected
+        this.adapter = peekAdapter;
+        visit(element);
+        this.adapter = prevAdapter;
+        return peekAdapter.getTokenTypes();
     }
 
     @Override
     public void visitStatechart(Statechart statechart) {
-        for (State state : sortStates(statechart.states()) ){
+        for (State state : sorter.sort(statechart.states()) ){
             visitState(state);
         }
     }
 
     protected void visitStateContents(State state) {
         visitActions(state.actions());
-        for (Transition transition : sortTransitions(state.transitions())) {
+        for (Transition transition : sorter.sort(state.transitions())) {
             visitTransition(transition);
         }
-        for (State substate : sortStates(state.substates())) {
+        for (State substate : sorter.sort(state.substates())) {
             visitState(substate);
         }
         depth--;
@@ -60,7 +68,7 @@ public class SimpleScxmlTokenGenerator extends AbstractStatechartVisitor {
 
     @Override
     public void visitActions(List<Action> actions) {
-        // Group actions by their type, effectively sorting them
+        // Group actions by their type
         List<Action> onEntries = actions.stream().filter(a -> a.type() == Action.Type.ON_ENTRY).toList();
         List<Action> onExits = actions.stream().filter(a -> a.type() == Action.Type.ON_EXIT).toList();
         visitActions(onEntries, ON_ENTRY);
