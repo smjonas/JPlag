@@ -1,40 +1,14 @@
 package de.jplag.yakindu.parser;
 
-import de.jplag.TokenType;
 import de.jplag.yakindu.YakinduTokenType;
+import de.jplag.yakindu.sorting.NoOpSorter;
+import de.jplag.yakindu.sorting.RecursiveSorter;
+import de.jplag.yakindu.sorting.SimpleSorter;
+import de.jplag.yakindu.sorting.Sorter;
 import de.jplag.yakindu.util.AbstractYakinduVisitor;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.xtext.EcoreUtil2;
-import org.yakindu.base.types.Declaration;
-import org.yakindu.base.types.Event;
-import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
 
-import java.util.Comparator;
-import java.util.List;
-
 import static de.jplag.yakindu.YakinduTokenType.*;
-
-/*
-a
-  b
-    c
-  b
-=> Sorting the child elements of a by comparing their string representations,
-(here: bc, b), so the first element b would come before the second because b < bc
-
-vs.
-a
-  b
-  b
-    c
-=> a b b c
-
-*/
 
 /**
  * Visits a metamodel containment tree and extracts the relevant token.
@@ -43,8 +17,24 @@ a
  */
 public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
 
+    private Sorter sorter;
+
     public SimpleYakinduTokenGenerator(YakinduParserAdapter adapter) {
         super(adapter);
+        this.sorter = new NoOpSorter();
+    }
+
+
+    protected void visitCompositeElement(CompositeElement element) {
+        for (Region region : element.getRegions()) {
+            visitRegion(region);
+        }
+    }
+
+    protected void visitReactiveElement(ReactiveElement element) {
+        for (Reaction reaction : sorter.sort(element.getLocalReactions())) {
+            visitReaction(reaction);
+        }
     }
 
     @Override
@@ -53,33 +43,11 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
         visitCompositeElement(statechart);
     }
 
-    protected List<Vertex> sortVertices(EList<Vertex> vertices) {
-        ECollections.sort(vertices, Comparator.comparing(v -> v.getClass().getName()));
-        return vertices;
-    }
-
-    @Override
-    protected List<Reaction> sortReactions(List<Reaction> reactions) {
-        // Sorts the reactions based on the hasTrigger and hasEffect attributes
-        reactions.sort((r1, r2) -> {
-            boolean r1HasTrigger = r1.getTrigger() != null;
-            boolean r1HasEffect = r1.getEffect() != null;
-            boolean r2HasTrigger = r2.getTrigger() != null;
-            boolean r2HasEffect = r2.getEffect() != null;
-
-            if (r1HasTrigger == r2HasTrigger) {
-                return Boolean.compare(r1HasEffect, r2HasEffect);
-            }
-            return Boolean.compare(r1HasTrigger, r2HasTrigger);
-        });
-        return reactions;
-    }
-
     @Override
     public void visitRegion(Region region) {
         adapter.addToken(REGION, region);
         depth++;
-        for (Vertex vertex : sortVertices(region.getVertices())) {
+        for (Vertex vertex : sorter.sort(region.getVertices())) {
             visitVertex(vertex);
         }
         depth--;

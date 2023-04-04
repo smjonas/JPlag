@@ -30,34 +30,15 @@ public abstract class AbstractYakinduVisitor {
         return depth;
     }
 
-/*    private List<Integer> peekTokens(EObject object) {
+    public List<Integer> peekTokens(EObject object) {
         YakinduParserAdapter prevAdapter = this.adapter;
         PeekAdapter peekAdapter = new PeekAdapter();
-        // Switch out the main adapter for the peek adapter
+        // Swap out the main adapter for the peek adapter
         // so that the main token stream is not affected
         this.adapter = peekAdapter;
         visit(object);
         this.adapter = prevAdapter;
         return peekAdapter.getTokenTypes();
-    }
-
-    protected <T extends EObject> EList<T> sort(EList<T> objects) {
-        ECollections.sort(objects, (v1, v2) -> PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2)));
-        return objects;
-    }*/
-
-    protected abstract List<Reaction> sortReactions(List<Reaction> reactions);
-
-    protected void visitReactiveElement(ReactiveElement element) {
-        for (Reaction reaction : sortReactions(element.getLocalReactions())) {
-            visitReaction(reaction);
-        }
-    }
-
-    protected void visitCompositeElement(CompositeElement element) {
-        for (Region region : element.getRegions()) {
-            visitRegion(region);
-        }
     }
 
     protected void visit(EObject object) {
