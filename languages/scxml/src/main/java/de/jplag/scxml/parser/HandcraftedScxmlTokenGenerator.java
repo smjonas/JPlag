@@ -1,4 +1,4 @@
-package de.jplag.statecharts.parser;
+package de.jplag.scxml.parser;
 
 import de.jplag.scxml.ScxmlTokenType;
 import de.jplag.scxml.parser.ScxmlParserAdapter;

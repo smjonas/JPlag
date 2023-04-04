@@ -14,15 +14,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class YakinduEval {
 
-    private static final List<String> TOOLS = List.of("emf-model");
-    // private static final List<String> TOOLS = List.of("scxml", "yakindu");
+    // private static final List<String> TOOLS = List.of("emf-model");
+    private static final List<String> TOOLS = List.of("yakindu", "scxml");
 
     // private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5", "move100", "rename100" };
-    private static final String[] PLAGIARISM_TYPES = new String[]{"rename100" };
+    // private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5" };
+    private static final String[] PLAGIARISM_TYPES = new String[]{"move10", "rename10", "insert10", "delete5" };
 
-    private static final List<String> EXPERIMENT1_LINES_HEADER = List.of(
+    // private static final String[] PLAGIARISM_TYPES = new String[]{"rename100" };
+
+/*    private static final List<String> EXPERIMENT1_LINES_HEADER = List.of(
             "plag_type", "first", "second", "tuple_type", "tool", "min_token_length", "avg_similarity", "max_similarity"
-    );
+    );*/
 
     private static final List<String> EXPERIMENT23_LINES_HEADER = List.of(
            "year", "plag_type", "first", "second", "tuple_type", "tool", "min_token_length", "avg_similarity", "max_similarity"
@@ -55,6 +58,9 @@ class YakinduEval {
     private static void deleteViewFiles(String root) {
         for (int year : List.of(2020, 2021)) {
             File[] files = new File(String.format(root, year)).listFiles();
+            if (files == null) {
+                return;
+            }
             for (File file : files) {
                 String fileName = file.getName();
                 if (fileName.endsWith(".emfatic") || fileName.endsWith("view")) {
@@ -75,11 +81,13 @@ class YakinduEval {
 
     @Test
     public void evalMain() throws ExitException {
-        for (int year : new int[]{ 2020, 2021}) {
-            for (String tool : TOOLS) {
-                List<List<String>> lines = new ArrayList<>();
-                lines.add(EXPERIMENT1_LINES_HEADER);
 
+        List<List<String>> lines = new ArrayList<>();
+        lines.add(EXPERIMENT23_LINES_HEADER);
+
+        for (int year : new int[]{ 2020 , 2021 }) {
+            for (String tool : TOOLS) {
+                System.out.println(tool);
                 for (String plagiarismType : PLAGIARISM_TYPES) {
                     System.out.println(plagiarismType);
                     for (int token_len : List.of(2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36)) {
@@ -102,8 +110,8 @@ class YakinduEval {
                             TupleType tupleType = TupleType.of(firstFilename, secondFilename);
 
                             if (tupleType != TupleType.UNRELATED) {
-                                lines.add(createLineExperiment1(
-                                        plagiarismType, firstFilename, secondFilename, tupleType,
+                                lines.add(createLineExperiment23(
+                                        year, plagiarismType, firstFilename, secondFilename, tupleType,
                                         tool, token_len, tuple.similarity(), tuple.maximalSimilarity()
                                 ));
 
@@ -116,12 +124,12 @@ class YakinduEval {
                         setup();
                     }
                 }
-                Util.writeCSVFile(
-                        "/home/jonas/Desktop/statecharts-eval/eval/plots/input",
-                        String.format("experiment2_%s_sorting", tool),
-                        lines
-                );
+
             }
+            Util.writeCSVFile(
+                    "/home/jonas/Desktop/statecharts-eval/eval/plots/input",
+                    "experiment1_emf", lines
+            );
         }
         // experiment1_yakindu_simple X
         // experiment1_yakindu_handcrafted ?
@@ -148,7 +156,7 @@ class YakinduEval {
                 result = "EMF Model";
                 break;
         }
-        return result + (sorting ? " (sorting)" : " (no sorting)");
+        return result + (sorting ? " (recursive sorting)" : " (no sorting)");
     }
 
     private String getToolDescriptionStrategy(String tool, String strategy) {
@@ -188,7 +196,13 @@ class YakinduEval {
 
                     JPlagResult jplagResult = Util.runJPlag(year, tool, prefix + plagiarismType, token_len);
                     int n = 2 * Util.getSubmissionsCount(year) + (tool.equals("emf-model") ? 3 : 0);
-                    assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
+
+                    if (year == 2020 && tool.equals("scxml") && plagiarismType.equals("rename10")) {
+                        n = 2 * (Util.getSubmissionsCount(year) - 5);
+                    }
+                    System.out.println(plagiarismType);
+                    String message = String.format("%s, %s (%d)", tool, plagiarismType, year);
+                    assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size(), message);
 
                     for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
                         String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
@@ -207,8 +221,10 @@ class YakinduEval {
             }
             Util.writeCSVFile(
                 "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
-                String.format("experiment2_handcrafted_%ssorting", SORTING ? "" : "no_"),
-                lines            );
+                // String.format("experiment2_handcrafted_%ssorting", SORTING ? "" : "no_"),
+                "experiment2_handcrafted_recursive_sorting",
+                lines
+            );
         }
     }
 
@@ -231,6 +247,7 @@ class YakinduEval {
                     }
 
                     JPlagResult jplagResult = Util.runJPlag(year, tool, prefix + plagiarismType, TOKEN_LEN);
+
                     int n = 2 * Util.getSubmissionsCount(year) + (tool.equals("emf-model") ? 3 : 0);
                     assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
 

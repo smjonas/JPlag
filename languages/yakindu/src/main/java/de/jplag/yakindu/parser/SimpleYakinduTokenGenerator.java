@@ -6,11 +6,15 @@ import de.jplag.yakindu.util.AbstractYakinduVisitor;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.xtext.EcoreUtil2;
 import org.yakindu.base.types.Declaration;
 import org.yakindu.base.types.Event;
 import org.yakindu.base.types.Property;
 import org.yakindu.sct.model.sgraph.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static de.jplag.yakindu.YakinduTokenType.*;
@@ -49,11 +53,33 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
         visitCompositeElement(statechart);
     }
 
+    protected List<Vertex> sortVertices(EList<Vertex> vertices) {
+        ECollections.sort(vertices, Comparator.comparing(v -> v.getClass().getName()));
+        return vertices;
+    }
+
+    @Override
+    protected List<Reaction> sortReactions(List<Reaction> reactions) {
+        // Sorts the reactions based on the hasTrigger and hasEffect attributes
+        reactions.sort((r1, r2) -> {
+            boolean r1HasTrigger = r1.getTrigger() != null;
+            boolean r1HasEffect = r1.getEffect() != null;
+            boolean r2HasTrigger = r2.getTrigger() != null;
+            boolean r2HasEffect = r2.getEffect() != null;
+
+            if (r1HasTrigger == r2HasTrigger) {
+                return Boolean.compare(r1HasEffect, r2HasEffect);
+            }
+            return Boolean.compare(r1HasTrigger, r2HasTrigger);
+        });
+        return reactions;
+    }
+
     @Override
     public void visitRegion(Region region) {
         adapter.addToken(REGION, region);
         depth++;
-        for (Vertex vertex : sort(region.getVertices())) {
+        for (Vertex vertex : sortVertices(region.getVertices())) {
             visitVertex(vertex);
         }
         depth--;
@@ -92,7 +118,7 @@ public class SimpleYakinduTokenGenerator extends AbstractYakinduVisitor {
 
         depth++;
         if (vertex.getOutgoingTransitions() != null) {
-            for (Transition transition : sort(vertex.getOutgoingTransitions())) {
+            for (Transition transition : vertex.getOutgoingTransitions()) {
                 visitTransition(transition);
             }
         }

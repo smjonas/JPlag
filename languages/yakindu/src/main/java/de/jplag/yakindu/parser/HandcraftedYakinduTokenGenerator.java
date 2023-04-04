@@ -3,6 +3,8 @@ package de.jplag.yakindu.parser;
 import de.jplag.yakindu.YakinduTokenType;
 import org.yakindu.sct.model.sgraph.*;
 
+import java.util.List;
+
 import static de.jplag.yakindu.YakinduTokenType.*;
 
 

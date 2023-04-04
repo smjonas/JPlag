@@ -10,7 +10,7 @@ import de.jplag.scxml.parser.model.Statechart;
 import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.util.AbstractStatechartVisitor;
 import de.jplag.scxml.util.ScxmlView;
-import de.jplag.statecharts.parser.HandcraftedScxmlTokenGenerator;
+import de.jplag.scxml.parser.HandcraftedScxmlTokenGenerator;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

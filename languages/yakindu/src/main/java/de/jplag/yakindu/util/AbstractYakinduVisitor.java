@@ -1,11 +1,7 @@
 package de.jplag.yakindu.util;
 
 import de.jplag.yakindu.parser.YakinduParserAdapter;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.yakindu.base.types.Declaration;
-import org.yakindu.base.types.impl.DeclarationImpl;
 import org.yakindu.sct.model.sgraph.*;
 import org.yakindu.sct.model.sgraph.impl.ReactionImpl;
 import org.yakindu.sct.model.sgraph.impl.RegionImpl;
@@ -34,7 +30,7 @@ public abstract class AbstractYakinduVisitor {
         return depth;
     }
 
-    private List<Integer> peekTokens(EObject object) {
+/*    private List<Integer> peekTokens(EObject object) {
         YakinduParserAdapter prevAdapter = this.adapter;
         PeekAdapter peekAdapter = new PeekAdapter();
         // Switch out the main adapter for the peek adapter
@@ -48,16 +44,18 @@ public abstract class AbstractYakinduVisitor {
     protected <T extends EObject> EList<T> sort(EList<T> objects) {
         ECollections.sort(objects, (v1, v2) -> PeekAdapter.compareTokenTypeLists(peekTokens(v1), peekTokens(v2)));
         return objects;
-    }
+    }*/
+
+    protected abstract List<Reaction> sortReactions(List<Reaction> reactions);
 
     protected void visitReactiveElement(ReactiveElement element) {
-        for (Reaction reaction : sort(element.getLocalReactions())) {
+        for (Reaction reaction : sortReactions(element.getLocalReactions())) {
             visitReaction(reaction);
         }
     }
 
     protected void visitCompositeElement(CompositeElement element) {
-        for (Region region : sort(element.getRegions())) {
+        for (Region region : element.getRegions()) {
             visitRegion(region);
         }
     }
