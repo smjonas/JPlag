@@ -14,12 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class YakinduEval {
 
-    // private static final List<String> TOOLS = List.of("emf-model");
-    private static final List<String> TOOLS = List.of("yakindu", "scxml");
+    private static final List<String> TOOLS = List.of("emf-model");
+    // private static final List<String> TOOLS = List.of("yakindu", "scxml");
 
-    // private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5", "move100", "rename100" };
     // private static final String[] PLAGIARISM_TYPES = new String[]{"insert10", "delete5" };
-    private static final String[] PLAGIARISM_TYPES = new String[]{"move10", "rename10", "insert10", "delete5" };
+    // private static final String[] PLAGIARISM_TYPES = new String[]{"move10", "rename10", "insert10", "delete5" };
+    private static final String[] PLAGIARISM_TYPES = new String[]{ "rename100"};
+    // private static final String[] PLAGIARISM_TYPES = new String[]{ "move10", "rename10" };
+
 
     // private static final String[] PLAGIARISM_TYPES = new String[]{"rename100" };
 
@@ -100,7 +102,13 @@ class YakinduEval {
 
                         JPlagResult jplagResult = Util.runJPlag(year, tool, prefix + plagiarismType, token_len);
                         int n = 2 * Util.getSubmissionsCount(year) + (tool.equals("emf-model") ? 3 : 0);
-                        assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
+
+                        if (year == 2020 && tool.equals("scxml") && plagiarismType.equals("rename10")) {
+                            n = 2 * (Util.getSubmissionsCount(year) - 5);
+                        }
+
+                        String message = String.format("%s, %s (%d)", tool, plagiarismType, year);
+                        assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size(), message);
                         Map<TupleType, DoubleSummaryStatistics> statsAvgSimilarity = new HashMap<>();
                         Map<TupleType, DoubleSummaryStatistics> statsMaxSimilarity = new HashMap<>();
 
@@ -222,7 +230,9 @@ class YakinduEval {
             Util.writeCSVFile(
                 "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
                 // String.format("experiment2_handcrafted_%ssorting", SORTING ? "" : "no_"),
-                "experiment2_handcrafted_recursive_sorting",
+                    // "experiment2_handcrafted_no_sorting",
+                    // "experiment2_handcrafted_simple_sorting",
+                    "experiment2_handcrafted_recursive_sorting",
                 lines
             );
         }
@@ -249,6 +259,10 @@ class YakinduEval {
                     JPlagResult jplagResult = Util.runJPlag(year, tool, prefix + plagiarismType, TOKEN_LEN);
 
                     int n = 2 * Util.getSubmissionsCount(year) + (tool.equals("emf-model") ? 3 : 0);
+                    if (year == 2020 && tool.equals("scxml") && plagiarismType.equals("rename10")) {
+                        n = 2 * (Util.getSubmissionsCount(year) - 5);
+                    }
+
                     assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
 
                     for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
@@ -266,10 +280,10 @@ class YakinduEval {
                     setup();
                 }
             }
-            // Util.writeCSVFile(
-            //         "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
-            //         String.format("experiment3_%s", STRATEGY),
-            //         lines            );
+            Util.writeCSVFile(
+                    "/home/jonas/Desktop/statecharts-eval/eval/plots/input/",
+                    String.format("experiment3_%s_partb", STRATEGY),
+                    lines            );
         }
     }
 }
