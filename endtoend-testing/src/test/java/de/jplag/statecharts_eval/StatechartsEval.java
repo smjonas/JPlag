@@ -31,20 +31,21 @@ class StatechartsEval {
     // <=== EXPERIMENT 2 ===>
 
     // Tools for experiment 2:
-    private static final List<String> TOOLS = List.of("scxml", "yakindu");
+    // private static final List<String> TOOLS = List.of("scxml", "yakindu");
 
     // Attacks for experiment 2 (Sorting strategy vs. avg. similarity)
-    private static final String[] PLAGIARISM_TYPES = new String[] {"insert10", "delete5", "move10", "rename10"};
+    // private static final String[] PLAGIARISM_TYPES = new String[] {"insert10", "delete5", "move10", "rename10"};
 
 
 
     // <=== EXPERIMENT 3 ===>
 
     // Tools for experiment 3:
-    // private static final List<String> TOOLS = List.of("scxml", "yakindu");
+    private static final List<String> TOOLS = List.of("scxml", "yakindu");
+    // private static final List<String> TOOLS = List.of("emf-model");
 
     // Attacks for experiment 3 (Token extraction strategy vs. avg. similarity)
-    // private static final String[] PLAGIARISM_TYPES = new String[] {"insert10", "delete5", "move100", "rename100"};
+    private static final String[] PLAGIARISM_TYPES = new String[] {"insert10", "delete5", "move100", "rename100"};
 
 
 
@@ -244,11 +245,24 @@ class StatechartsEval {
         }
     }
 
+         /** This experiment collects the average similarity values for the "yakindu", "scxml" and "emf-model"
+            * language modules as the minimum token match parameter is varied.
+            * There might be errors when running this experiment for all tools at once.
+            * In that case, try running it for {"scxml", "yakindu"} and {"emf-model"} separately and then merge the output
+     * files into a single file.
+
     /**
      * This experiment collects the average and maximum similarity values as the active token extraction strategy is
-     * varied. Required steps: set TOOLS to {"scxml", "create"}. Set the active sorting strategy in the constructor of
-     * AbstractScxmlVisitor (for the SCXML language module), and in the constructor of SimpleYakinduTokenGenerator
-     * (for the Yakindu language module). Also set the SORTING_STRATEGY variable in this function.
+     * varied.
+     * There might be errors when running this experiment for all tools at once.*
+     * In that case, try running it for {"scxml", "yakindu"} and {"emf-model"} separately and then merge the output
+     * files into a single file.
+     * Set the active sorting strategy in the constructor of AbstractScxmlVisitor (for the SCXML language module),
+     * and in the constructor of SimpleYakinduTokenGenerator (for the Yakindu language module) to the recursive strategy.
+     * Set the active token extraction strategy in ScxmlParserAdapter (for the SCXML language module) and in
+     * YakinduParserAdapter#createYakinduVisitor (for the Yakindu Language Module) to either
+     * HandcraftedScxmlTokenGenerator or SimpleScxmlTokenGenerator.
+     * Also set the TOKEN_EXTRACTION_STRATEGY variable in this function.
      * Then recompile the language modules and set the correct file path for the output file at the end of this function.
      */
     @Test
@@ -256,7 +270,9 @@ class StatechartsEval {
         List<List<String>> lines = new ArrayList<>();
         lines.add(LINES_HEADER);
 
-        final String STRATEGY = "simple";
+        final String TOKEN_EXTRACTION_STRATEGY = "simple";
+        // final String TOKEN_EXTRACTION_STRATEGY = "handcrafted";
+
         for (int year : new int[] {2020, 2021}) {
             for (String tool : TOOLS) {
                 final int TOKEN_LEN = 10;
@@ -272,11 +288,12 @@ class StatechartsEval {
                     JPlagResult jplagResult = Util.runJPlag(year, tool, prefix + plagiarismType, TOKEN_LEN);
 
                     int n = 2 * Util.getSubmissionsCount(year) + (tool.equals("emf-model") ? 3 : 0);
-                    if (year == 2020 && tool.equals("scxml") && plagiarismType.equals("rename10")) {
-                        n = 2 * (Util.getSubmissionsCount(year) - 5);
+                    if (year == 2020 && tool.equals("scxml") && plagiarismType.equals("rename100")) {
+                        n = 2 * (Util.getSubmissionsCount(year) - 6);
                     }
 
-                    assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size());
+                    String message = String.format("%s, %s (%d)", tool, plagiarismType, year);
+                    assertEquals(Util.getTotalAmountOfUniqueTuples(n), jplagResult.getAllComparisons().size(), message);
 
                     for (JPlagComparison tuple : jplagResult.getAllComparisons()) {
                         String firstFilename = FilenameUtils.removeExtension(tuple.firstSubmission().getName());
@@ -285,13 +302,13 @@ class StatechartsEval {
 
                         if (tupleType != TupleType.UNRELATED) {
                             lines.add(createLine(year, plagiarismType, firstFilename, secondFilename, tupleType,
-                                    getToolDescriptionStrategy(tool, STRATEGY), TOKEN_LEN, tuple.similarity(), tuple.maximalSimilarity()));
+                                    getToolDescriptionStrategy(tool, TOKEN_EXTRACTION_STRATEGY), TOKEN_LEN, tuple.similarity(), tuple.maximalSimilarity()));
                         }
                     }
                     deleteViewFiles();
                 }
             }
-            Util.writeCSVFile("/home/jonas/Desktop/statecharts-eval/eval/plots/input/", String.format("experiment3_%s_partb", STRATEGY), lines);
+            Util.writeCSVFile("target", String.format("experiment3_%s", TOKEN_EXTRACTION_STRATEGY), lines);
         }
     }
 }

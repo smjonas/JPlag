@@ -42,6 +42,7 @@ public class ScxmlParserAdapter extends AbstractParser {
 
     public ScxmlParserAdapter() {
         this.visitor = new HandcraftedScxmlTokenGenerator(this);
+        // this.visitor = new SimpleScxmlTokenGenerator(this);
     }
 
     /**
