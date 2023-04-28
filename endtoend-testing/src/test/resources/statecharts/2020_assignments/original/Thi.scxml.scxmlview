@@ -1,0 +1,351 @@
+main_region: Region {
+  WorkingManSim: Region {
+    Action (type=OnEntry) {
+      Script
+    }
+    AtHomeState: State {
+      Transition (-> AtWorkState) (event='employee.goToWork') {
+        Assignment
+        Script
+        Script
+      }
+    }
+    EnergyDrainState: Region {
+      Energy: Region {
+        decreaseEnergyState: State {
+          Transition (-> break) (event='break') {
+          }
+          Timed transition (-> decreaseEnergyState)  {
+            Script
+          }
+        }
+        break: State {
+          Transition (-> decreaseEnergyState) (event='stopbreak') {
+          }
+        }
+      }
+      Work: Region {
+        LoadShift: Region {
+          Timed transition (-> AtWorkState)  {
+            Assignment
+            Assignment
+            Assignment
+            Script
+            Script
+          }
+          AtStock: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Toilet Break'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Pick up' && getFinished(); > 0') {
+              Assignment
+              Assignment
+            }
+          }
+          AtTruckLoaded: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Drop'') {
+              Assignment
+              Assignment
+            }
+          }
+          ToiletBreak: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Done'') {
+              Assignment
+              Assignment
+            }
+          }
+          AtStockLoaded: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+          }
+          AtTruck: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+          }
+          ActionCounter: State {
+            Action (type=OnEntry) {
+              Send (event='doAlwaysTransition', delay='null') {
+            }
+            Timed transition (-> ActionCounter)  {
+              Assignment
+            }
+            Transition (-> AtStock) (event='ui.actionReleased', cond='(((action == 'walkStock') && actionTimer >= 500) || ((action == 'walkTruck' || action == 'pickup' || action == 'break') && actionTimer < 500)) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtStockLoaded) (event='ui.actionReleased', cond='(((action == 'walkStock') && actionTimer >= 500) || ((action == 'walkTruck' || action == 'break') && actionTimer < 500)) && carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruck) (event='ui.actionReleased', cond='(((action == 'walkTruck') && actionTimer >= 500) || ((action == 'walkStock') && actionTimer < 500)) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruckLoaded) (event='ui.actionReleased', cond='(((action == 'walkTruck') && actionTimer >= 500) || ((action == 'walkStock' || action == 'drop') && actionTimer < 500)) && carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtStockLoaded) (event='ui.actionReleased', cond='(action == 'pickup' && actionTimer >= 500)') {
+              Assignment
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruck) (event='ui.actionReleased', cond='(((action == 'drop') && actionTimer >= 500)) && carryingStockMaterial') {
+              Assignment
+              Assignment
+              Assignment
+              Script
+            }
+            Transition (-> ToiletBreak) (event='ui.actionReleased', cond='((action == 'stopbreak' && actionTimer < 500) || (action == 'break' && actionTimer >= 500))') {
+              Assignment
+              Assignment
+              Send (event='break', delay='null') {
+            }
+            Transition (-> AtStock) (event='ui.actionReleased', cond='(((action == 'stopbreak') && actionTimer >= 500)) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+              Send (event='stopbreak', delay='null') {
+            }
+          }
+        }
+        UnloadShift: Region {
+          Timed transition (-> AtWorkState)  {
+            Assignment
+            Assignment
+            Assignment
+            Script
+            Script
+          }
+          AtStock: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Toilet break'') {
+              Assignment
+              Assignment
+            }
+          }
+          AtTruck: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Pick up'') {
+              Assignment
+              Assignment
+            }
+          }
+          AtStockCarrying: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Drop'') {
+              Assignment
+              Assignment
+            }
+          }
+          AtTruckLoaded: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Walk'') {
+              Assignment
+              Assignment
+            }
+          }
+          ToiletBreak: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Done'') {
+              Assignment
+              Assignment
+            }
+          }
+          ActionCounter: State {
+            Action (type=OnEntry) {
+              Send (event='doAlwaysTransition', delay='null') {
+            }
+            Timed transition (-> ActionCounter)  {
+              Assignment
+            }
+            Transition (-> AtStock) (event='ui.actionReleased', cond='(((action == 'walkTruck' || action == 'break') && actionTimer < 500) || ((action == 'walkStock') && actionTimer >= 500)) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruck) (event='ui.actionReleased', cond='((action == 'walkTruck' && actionTimer >= 500) || ((action == 'walkStock' || action == 'pickup') && actionTimer < 500)) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtStockCarrying) (event='ui.actionReleased', cond='((action == 'walkTruck' && actionTimer < 500) || (action == 'walkStock' && actionTimer >= 500)) && carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruckLoaded) (event='ui.actionReleased', cond='((action == 'walkTruck' && actionTimer >= 500) || (action == 'walkStock' && actionTimer < 500)) && carryingStockMaterial') {
+              Assignment
+              Assignment
+            }
+            Transition (-> AtTruckLoaded) (event='ui.actionReleased', cond='(action == 'pickup' && actionTimer >= 500)') {
+              Assignment
+              Assignment
+              Assignment
+            }
+            Transition (-> AtStock) (event='ui.actionReleased', cond='(action == 'Drop' && actionTimer >= 500)') {
+              Assignment
+              Assignment
+              Assignment
+              Script
+            }
+            Transition (-> ToiletBreak) (event='ui.actionReleased', cond='((action == 'stopbreak' && actionTimer < 500) || (action == 'break' && actionTimer >= 500))') {
+              Assignment
+              Assignment
+              Send (event='break', delay='null') {
+            }
+            Transition (-> AtStock) (event='ui.actionReleased', cond='((action == 'stopbreak') && actionTimer >= 500) && !carryingStockMaterial') {
+              Assignment
+              Assignment
+              Send (event='stopbreak', delay='null') {
+            }
+          }
+        }
+        AssemblyShift: Region {
+          Timed transition (-> AtWorkState)  {
+            Assignment
+            Script
+            Script
+          }
+          ActionCounter: State {
+            Timed transition (-> ActionCounter)  {
+              Assignment
+            }
+            Transition (-> AssembleState) (event='ui.actionReleased', cond='actionTimer <= 500') {
+              Assignment
+            }
+            Transition (-> AssembleState) (event='ui.actionReleased', cond='actionTimer > 500') {
+              Assignment
+              Script
+              Script
+            }
+          }
+          AssembleState: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> ActionCounter) (event='ui.actionPressed', cond='_event.data == 'Assemble' && getMaterial(); > 0') {
+              Assignment
+            }
+          }
+        }
+        GoToShiftState: State {
+          Action (type=OnEntry) {
+            Send (event='doAlwaysTransition', delay='null') {
+          }
+          Transition (-> AssemblyShift) (cond='shiftChoice == 1') {
+            Assignment
+            Script
+          }
+          Transition (-> LoadShift) (cond='shiftChoice == 2') {
+            Assignment
+            Script
+          }
+          Transition (-> UnloadShift) (cond='shiftChoice == 0') {
+            Assignment
+            Script
+          }
+        }
+      }
+    }
+    AtWorkState: State {
+      Action (type=OnEntry) {
+        Script
+        Send (event='doAlwaysTransition', delay='null') {
+      }
+      Transition (-> ChooseShiftState)  {
+        Assignment
+        Script
+      }
+    }
+    ChooseShiftState: State {
+      Action (type=OnEntry) {
+        Send (event='doAlwaysTransition', delay='null') {
+      }
+      Timed transition (-> ChooseShiftState)  {
+        Assignment
+      }
+      Transition (-> ChooseShiftState) (event='employee.shiftClicked') {
+        Assignment
+        Script
+        Script
+      }
+      Transition (-> increaseEnergyState) (event='employee.goHome') {
+        Assignment
+        Script
+        Script
+      }
+      Transition (-> EnergyDrainState) (cond='shiftGraceTimer <= 0 && getEnergy(); >= 25') {
+        Script
+      }
+    }
+    increaseEnergyState: State {
+      Action (type=OnEntry) {
+        Send (event='doAlwaysTransition', delay='null') {
+      }
+      Transition (-> AtHomeState) (cond='getEnergy(); < 51') {
+        Script
+      }
+      Transition (-> AtHomeState) (cond='getEnergy(); > 50') {
+        Script
+      }
+    }
+  }
+}

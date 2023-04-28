@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sgraph:Statechart xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0" xmi:id="_Vw-ccMDDEe2AvpP2PETKhQ" specification="// You are only allowed to edit the&#xA;// &quot;internal&quot; section, see below&#xA;&#xA;// DO NOT EDIT THESE OPTIONS&#xA;@EventDriven&#xA;@SuperSteps(no) &#xA;&#xA;interface:&#xA;&#x9;// DO NOT EDIT THE INTERFACE&#xA;&#x9;&#xA;&#x9;in event approachingStation: integer&#xA;&#x9;out event openDoors&#xA;&#x9;out event closeDoors&#xA;&#x9;out event startDoorsSignal&#xA;&#x9;out event stopDoorsSignal&#xA;&#x9;in event board&#xA;&#x9;in event unboard&#xA;&#x9;in event requestStop: integer&#xA;&#x9;out event setTargetSpeed: real&#xA;&#x9;in event atTargetSpeed&#xA;&#x9;&#xA;&#x9;in event startEmergency&#xA;&#x9;in event stopEmergency&#xA;&#xA;&#x9;var stopsAt: integer = 0&#xA;&#x9;var remainingCapacity: integer = 6&#xA;&#x9;var numPassengers: integer = 0&#xA;&#xA;&#x9;out event refreshUI&#xA;&#xA;internal:&#xA;&#x9;// FEEL FREE TO EDIT&#xA;&#x9;// e.g. add internal variables,&#xA;&#x9;//       internal events, ...&#xA;&#x9;&#xA;&#x9;// Variable to verify if the trolley is currently at a station.&#xA;&#x9;var atStation : boolean = true&#xA;&#x9;&#xA;&#x9;// Lock for the emergency switch to prevent stopping the emergency before the trolley has slowed down completely.&#xA;&#x9;var emergencyLock = false&#xA;&#xA;&#x9;// True at start. Is used to initialise the simulation at the correct arrival step. Set to false immediately after.&#xA;&#x9;var initial = true&#xA;&#x9;&#xA;&#x9;// Internal events to trigger the door &amp; boarding system. Since the out events can't be used.&#xA;&#x9;event openDoors_in&#xA;&#x9;event closeDoors_in&#xA;&#xA;&#x9;// Used to check internally if the doorSignal has been started.&#xA;&#x9;event doorSignal_in&#xA;&#xA;&#x9;// Used to check if the door is currently obstructed or not.&#xA;&#x9;event obstruction&#xA;&#x9;event obstruction_clear&#xA;&#x9;&#xA;&#x9;// Dummy event to force a stopsAt guarded transition.&#xA;&#x9;event checkStopsAt&#xA;&#x9;&#xA;&#x9;// Used to set the stopsAt bitmap.&#xA;&#x9;requestStop / stopsAt |= (1 &lt;&lt; valueof(requestStop));&#xA;&#x9;raise refreshUI" name="Max">
+  <regions xmi:type="sgraph:Region" xmi:id="_Vw-cccDDEe2AvpP2PETKhQ" name="main region">
+    <vertices xmi:type="sgraph:State" xmi:id="_Vw-ccsDDEe2AvpP2PETKhQ" name="Trolley" incomingTransitions="_Vw-c3MDDEe2AvpP2PETKhQ">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cc8DDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-c2sDDEe2AvpP2PETKhQ"/>
+      <regions xmi:type="sgraph:Region" xmi:id="_Vw-cdMDDEe2AvpP2PETKhQ" name="Operation">
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-cdcDDEe2AvpP2PETKhQ" name="Normal Operation" incomingTransitions="_Vw-co8DDEe2AvpP2PETKhQ _Vw-cpcDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cdsDDEe2AvpP2PETKhQ" specification="startEmergency" target="_Vw-cpMDDEe2AvpP2PETKhQ"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_Vw-cd8DDEe2AvpP2PETKhQ" name="r1">
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-ceMDDEe2AvpP2PETKhQ" specification="entry / atStation = false" name="Departure" incomingTransitions="_Vw-cjMDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cecDDEe2AvpP2PETKhQ" specification="" target="_Vw-ci8DDEe2AvpP2PETKhQ"/>
+              <regions xmi:type="sgraph:Region" xmi:id="_Vw-cesDDEe2AvpP2PETKhQ" name="r1">
+                <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-ce8DDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cfMDDEe2AvpP2PETKhQ" specification="" target="_Vw-cfcDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cfcDDEe2AvpP2PETKhQ" specification="entry / raise startDoorsSignal;&#xD;&#xA;raise refreshUI; raise doorSignal_in" name="ClosingDoors" incomingTransitions="_Vw-cfMDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cfsDDEe2AvpP2PETKhQ" specification="closeDoors_in" target="_Vw-cf8DDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cf8DDEe2AvpP2PETKhQ" specification="" name="Wait" incomingTransitions="_Vw-cfsDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cgMDDEe2AvpP2PETKhQ" specification="after 1s" target="_Vw-cgcDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cgcDDEe2AvpP2PETKhQ" specification="entry / raise setTargetSpeed: 24;&#xD;&#xA;raise refreshUI" name="Accelerate" incomingTransitions="_Vw-cgMDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cgsDDEe2AvpP2PETKhQ" specification="atTargetSpeed" target="_Vw-cg8DDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cg8DDEe2AvpP2PETKhQ" name="HandleApproaching" incomingTransitions="_Vw-cgsDDEe2AvpP2PETKhQ _Vw-cicDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-chMDDEe2AvpP2PETKhQ" specification="approachingStation" target="_Vw-ch8DDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-chcDDEe2AvpP2PETKhQ" specification="entry / raise setTargetSpeed: 0;&#xD;&#xA;raise refreshUI" name="Brake" incomingTransitions="_Vw-ciMDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-chsDDEe2AvpP2PETKhQ" specification="atTargetSpeed" target="_Vw-cisDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Choice" xmi:id="_Vw-ch8DDEe2AvpP2PETKhQ" incomingTransitions="_Vw-chMDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-ciMDDEe2AvpP2PETKhQ" specification="[(stopsAt &amp; (1 &lt;&lt; valueof(approachingStation))) != 0] /&#xD;&#xA;stopsAt &amp;= ~(1 &lt;&lt; valueof(approachingStation))" target="_Vw-chcDDEe2AvpP2PETKhQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cicDDEe2AvpP2PETKhQ" specification="" target="_Vw-cg8DDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Exit" xmi:id="_Vw-cisDDEe2AvpP2PETKhQ" incomingTransitions="_Vw-chsDDEe2AvpP2PETKhQ"/>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-ci8DDEe2AvpP2PETKhQ" specification="" name="Arrival" incomingTransitions="_Vw-cecDDEe2AvpP2PETKhQ _Vw-coMDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cjMDDEe2AvpP2PETKhQ" specification="" target="_Vw-ceMDDEe2AvpP2PETKhQ"/>
+              <regions xmi:type="sgraph:Region" xmi:id="_Vw-cjcDDEe2AvpP2PETKhQ" name="r1">
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cjsDDEe2AvpP2PETKhQ" name="BLG1RFNrRM" incomingTransitions="_Vw-clcDDEe2AvpP2PETKhQ"/>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cj8DDEe2AvpP2PETKhQ" specification="entry / atStation = true" name="Wait" incomingTransitions="_Vw-cncDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-ckMDDEe2AvpP2PETKhQ" specification="after 1s" target="_Vw-ck8DDEe2AvpP2PETKhQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-ckcDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cksDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-cksDDEe2AvpP2PETKhQ" name="Tc36RVrGn3" incomingTransitions="_Vw-ckcDDEe2AvpP2PETKhQ"/>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-ck8DDEe2AvpP2PETKhQ" specification="entry / raise openDoors; raise openDoors_in;&#xD;&#xA;raise refreshUI" name="OpenDoors" incomingTransitions="_Vw-ckMDDEe2AvpP2PETKhQ _Vw-cnsDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-clMDDEe2AvpP2PETKhQ" specification="after 2s" target="_Vw-clsDDEe2AvpP2PETKhQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-clcDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cjsDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Vw-clsDDEe2AvpP2PETKhQ" specification="entry / raise checkStopsAt" name="CheckStops" incomingTransitions="_Vw-clMDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cl8DDEe2AvpP2PETKhQ" specification="requestStop" target="_Vw-cmcDDEe2AvpP2PETKhQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cmMDDEe2AvpP2PETKhQ" specification="checkStopsAt [stopsAt > 0]" target="_Vw-cmcDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Exit" xmi:id="_Vw-cmcDDEe2AvpP2PETKhQ" incomingTransitions="_Vw-cl8DDEe2AvpP2PETKhQ _Vw-cmMDDEe2AvpP2PETKhQ"/>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cmsDDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cm8DDEe2AvpP2PETKhQ" specification="" target="_Vw-cnMDDEe2AvpP2PETKhQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Choice" xmi:id="_Vw-cnMDDEe2AvpP2PETKhQ" incomingTransitions="_Vw-cm8DDEe2AvpP2PETKhQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cncDDEe2AvpP2PETKhQ" specification="" target="_Vw-cj8DDEe2AvpP2PETKhQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cnsDDEe2AvpP2PETKhQ" specification="[initial] / initial = false" target="_Vw-ck8DDEe2AvpP2PETKhQ"/>
+                </vertices>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cn8DDEe2AvpP2PETKhQ" kind="SHALLOW_HISTORY">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-coMDDEe2AvpP2PETKhQ" specification="" target="_Vw-ci8DDEe2AvpP2PETKhQ"/>
+            </vertices>
+          </regions>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-cocDDEe2AvpP2PETKhQ" name="WkhIKLhsBP" incomingTransitions="_Vw-cpsDDEe2AvpP2PETKhQ"/>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cosDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-co8DDEe2AvpP2PETKhQ" specification="" target="_Vw-cdcDDEe2AvpP2PETKhQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-cpMDDEe2AvpP2PETKhQ" name="Emergency Operation" incomingTransitions="_Vw-cdsDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cpcDDEe2AvpP2PETKhQ" specification="stopEmergency [emergencyLock == false]" target="_Vw-cdcDDEe2AvpP2PETKhQ"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cpsDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cocDDEe2AvpP2PETKhQ"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_Vw-cp8DDEe2AvpP2PETKhQ" name="r1">
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cqMDDEe2AvpP2PETKhQ" name="xBaBwv4fb9" incomingTransitions="_Vw-cscDDEe2AvpP2PETKhQ"/>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cqcDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cqsDDEe2AvpP2PETKhQ" specification="" target="_Vw-cq8DDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:Choice" xmi:id="_Vw-cq8DDEe2AvpP2PETKhQ" incomingTransitions="_Vw-cqsDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-crMDDEe2AvpP2PETKhQ" specification="[!atStation] / emergencyLock = true" target="_Vw-crsDDEe2AvpP2PETKhQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-crcDDEe2AvpP2PETKhQ" specification="" target="_Vw-csMDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-crsDDEe2AvpP2PETKhQ" specification="entry / raise setTargetSpeed: 0;&#xD;&#xA;raise refreshUI" name="SlowDown" incomingTransitions="_Vw-crMDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cr8DDEe2AvpP2PETKhQ" specification="atTargetSpeed /&#xD;&#xA;emergencyLock = false" target="_Vw-csMDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-csMDDEe2AvpP2PETKhQ" specification="entry / raise openDoors;&#xD;&#xA;raise openDoors_in;&#xD;&#xA;raise refreshUI" name="OpenDoors" incomingTransitions="_Vw-crcDDEe2AvpP2PETKhQ _Vw-cr8DDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cscDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cqMDDEe2AvpP2PETKhQ"/>
+            </vertices>
+          </regions>
+        </vertices>
+      </regions>
+      <regions xmi:type="sgraph:Region" xmi:id="_Vw-cssDDEe2AvpP2PETKhQ" name="Boarding">
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-cs8DDEe2AvpP2PETKhQ" name="q75yGWAiPS" incomingTransitions="_Vw-cucDDEe2AvpP2PETKhQ"/>
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-ctMDDEe2AvpP2PETKhQ" name="offRHXmaEp" incomingTransitions="_Vw-c2cDDEe2AvpP2PETKhQ"/>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-ctcDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-ctsDDEe2AvpP2PETKhQ" specification="" target="_Vw-c18DDEe2AvpP2PETKhQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-ct8DDEe2AvpP2PETKhQ" name="DoorsOpen" incomingTransitions="_Vw-c2MDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cuMDDEe2AvpP2PETKhQ" specification="closeDoors_in" target="_Vw-c18DDEe2AvpP2PETKhQ"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cucDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cs8DDEe2AvpP2PETKhQ"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_Vw-cusDDEe2AvpP2PETKhQ" name="Boarding">
+            <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cu8DDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cvMDDEe2AvpP2PETKhQ" specification="" target="_Vw-cvcDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cvcDDEe2AvpP2PETKhQ" name="NoObstruction" incomingTransitions="_Vw-cvMDDEe2AvpP2PETKhQ _Vw-cw8DDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cvsDDEe2AvpP2PETKhQ" specification="board [remainingCapacity > 0]" target="_Vw-cwMDDEe2AvpP2PETKhQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cv8DDEe2AvpP2PETKhQ" specification="unboard [numPassengers > 0]" target="_Vw-cxMDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cwMDDEe2AvpP2PETKhQ" specification="entry&#xD;&#xA;[remainingCapacity > 0] /&#xD;&#xA;numPassengers += 1;&#xD;&#xA;remainingCapacity -= 1;&#xD;&#xA;raise refreshUI;&#xD;&#xA;raise obstruction" name="Board" incomingTransitions="_Vw-cvsDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cwcDDEe2AvpP2PETKhQ" specification="obstruction" target="_Vw-cwsDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cwsDDEe2AvpP2PETKhQ" name="Obstruction" incomingTransitions="_Vw-cwcDDEe2AvpP2PETKhQ _Vw-cxcDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cw8DDEe2AvpP2PETKhQ" specification="after 1s / raise obstruction_clear" target="_Vw-cvcDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cxMDDEe2AvpP2PETKhQ" specification="entry&#xD;&#xA;[numPassengers > 0] /&#xD;&#xA;numPassengers -= 1;&#xD;&#xA;remainingCapacity += 1;&#xD;&#xA;raise refreshUI;&#xD;&#xA;raise obstruction" name="Unboard" incomingTransitions="_Vw-cv8DDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cxcDDEe2AvpP2PETKhQ" specification="obstruction" target="_Vw-cwsDDEe2AvpP2PETKhQ"/>
+            </vertices>
+          </regions>
+          <regions xmi:type="sgraph:Region" xmi:id="_Vw-cxsDDEe2AvpP2PETKhQ" name="TimeOut">
+            <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-cx8DDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cyMDDEe2AvpP2PETKhQ" specification="" target="_Vw-cycDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cycDDEe2AvpP2PETKhQ" name="NoSignal" incomingTransitions="_Vw-cyMDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-cysDDEe2AvpP2PETKhQ" specification="doorSignal_in" target="_Vw-cy8DDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cy8DDEe2AvpP2PETKhQ" name="Signal" incomingTransitions="_Vw-cysDDEe2AvpP2PETKhQ _Vw-c1sDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-czMDDEe2AvpP2PETKhQ" specification="after 1s" target="_Vw-c0MDDEe2AvpP2PETKhQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-czcDDEe2AvpP2PETKhQ" specification="obstruction" target="_Vw-c1cDDEe2AvpP2PETKhQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-czsDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-c1MDDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-cz8DDEe2AvpP2PETKhQ" name="tFw35lc9RC" incomingTransitions="_Vw-c0sDDEe2AvpP2PETKhQ"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-c0MDDEe2AvpP2PETKhQ" specification="entry / raise closeDoors;&#xD;&#xA;raise stopDoorsSignal;&#xD;&#xA;raise refreshUI;&#xD;&#xA;raise closeDoors_in" name="CloseDoors" incomingTransitions="_Vw-czMDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c0cDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-c08DDEe2AvpP2PETKhQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c0sDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-cz8DDEe2AvpP2PETKhQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-c08DDEe2AvpP2PETKhQ" name="vWmG5BsVzP" incomingTransitions="_Vw-c0cDDEe2AvpP2PETKhQ"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-c1MDDEe2AvpP2PETKhQ" name="r207Lut89I" incomingTransitions="_Vw-czsDDEe2AvpP2PETKhQ"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_Vw-c1cDDEe2AvpP2PETKhQ" name="Obstruction" incomingTransitions="_Vw-czcDDEe2AvpP2PETKhQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c1sDDEe2AvpP2PETKhQ" specification="obstruction_clear" target="_Vw-cy8DDEe2AvpP2PETKhQ"/>
+            </vertices>
+          </regions>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Vw-c18DDEe2AvpP2PETKhQ" name="DoorsClosed" incomingTransitions="_Vw-ctsDDEe2AvpP2PETKhQ _Vw-cuMDDEe2AvpP2PETKhQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c2MDDEe2AvpP2PETKhQ" specification="openDoors_in" target="_Vw-ct8DDEe2AvpP2PETKhQ"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c2cDDEe2AvpP2PETKhQ" specification="[true]" target="_Vw-ctMDDEe2AvpP2PETKhQ"/>
+        </vertices>
+      </regions>
+    </vertices>
+    <vertices xmi:type="sgraph:State" xmi:id="_Vw-c2sDDEe2AvpP2PETKhQ" name="dGMsIxwBoi" incomingTransitions="_Vw-cc8DDEe2AvpP2PETKhQ"/>
+    <vertices xmi:type="sgraph:Entry" xmi:id="_Vw-c28DDEe2AvpP2PETKhQ">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Vw-c3MDDEe2AvpP2PETKhQ" specification="" target="_Vw-ccsDDEe2AvpP2PETKhQ"/>
+    </vertices>
+  </regions>
+</sgraph:Statechart>

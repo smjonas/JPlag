@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Max">
+	<datamodel>
+		<data expr="0" id="stopsAt" />
+		<data expr="6" id="remainingCapacity" />
+		<data expr="0" id="numPassengers" />
+		<data expr="true" id="atStation" />
+		<data expr="false" id="emergencyLock" />
+		<data expr="true" id="initial" />
+	</datamodel>
+	<state id="RhZWGuxLhO">
+		<initial>
+			<transition target="Dw9TbM3exG" type="internal">
+			</transition>
+		</initial>
+		<parallel id="Dw9TbM3exG">
+			<state id="g7ocyAwkBQ">
+				<initial>
+					<transition target="Fl2gjzCiPx" type="internal">
+					</transition>
+				</initial>
+				<state id="Fl2gjzCiPx">
+					<initial>
+						<transition target="Fl2gjzCiPx.entry_0" type="internal">
+						</transition>
+					</initial>
+					<state id="tM7DggROLO">
+						<onentry>
+							 <assign location="atStation" expr="false"/>
+						</onentry>
+						<initial>
+							<transition target="pEjmLI4DcS" type="internal">
+							</transition>
+						</initial>
+						<state id="pEjmLI4DcS">
+							<onentry>
+								<send event="startDoorsSignal">
+								</send>
+								<send event="refreshUI">
+								</send>
+								<send event="doorSignal_in">
+								</send>
+							</onentry>
+							<transition event="closeDoors_in"  target="TLLODGX7IA">
+							</transition>
+						</state>
+						<state id="TLLODGX7IA">
+							<onentry>
+								<send event="TLLODGX7IA_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="TLLODGX7IA_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="TLLODGX7IA_t_0_timeEvent_0"  target="d2jABv15Tx">
+							</transition>
+						</state>
+						<state id="d2jABv15Tx">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="24" />
+								</send>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="atTargetSpeed"  target="uMsI32rlZ1">
+							</transition>
+						</state>
+						<state id="uMsI32rlZ1">
+							<transition event="approachingStation"  target="tM7DggROLO.choice_0">
+							</transition>
+						</state>
+						<state id="JpTxjhgiao">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="0" />
+								</send>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="atTargetSpeed"  target="z5fAdd8DrQ">
+							</transition>
+						</state>
+						<state id="tM7DggROLO.choice_0">
+							<transition  cond="(stopsAt &amp; (1 &lt;&lt; _event.data)) != 0" target="JpTxjhgiao">
+								 <assign location="stopsAt" expr="stopsAt &amp; ~(1 &lt;&lt; _event.data)"/>
+							</transition>
+							<transition   target="uMsI32rlZ1">
+							</transition>
+						</state>
+					</state>
+					<state id="z5fAdd8DrQ">
+						<initial>
+							<transition target="z5fAdd8DrQ.choice_0" type="internal">
+							</transition>
+						</initial>
+						<state id="OXxDnyvcza">
+							<onentry>
+								<send event="OXxDnyvcza_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="OXxDnyvcza_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								 <assign location="atStation" expr="true"/>
+							</onentry>
+							<transition event="OXxDnyvcza_t_0_timeEvent_0"  target="MGup9Z7txF">
+							</transition>
+						</state>
+						<state id="MGup9Z7txF">
+							<onentry>
+								<send event="MGup9Z7txF_t_0_timeEvent_0" delay="2s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="MGup9Z7txF_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="openDoors">
+								</send>
+								<send event="openDoors_in">
+								</send>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="MGup9Z7txF_t_0_timeEvent_0"  target="UXUDMu4ymq">
+							</transition>
+						</state>
+						<state id="UXUDMu4ymq">
+							<onentry>
+								<send event="checkStopsAt">
+								</send>
+							</onentry>
+							<transition event="requestStop"  target="tM7DggROLO">
+							</transition>
+							<transition event="checkStopsAt" cond="stopsAt &gt; 0" target="tM7DggROLO">
+							</transition>
+						</state>
+						<state id="z5fAdd8DrQ.choice_0">
+							<transition  cond="initial" target="MGup9Z7txF">
+								 <assign location="initial" expr="false"/>
+							</transition>
+							<transition   target="OXxDnyvcza">
+							</transition>
+						</state>
+					</state>
+					<history type = "shallow" id="Fl2gjzCiPx.entry_0">
+						<transition   target="z5fAdd8DrQ">
+						</transition>
+					</history>
+					<transition event="startEmergency"  target="sRLSmSvXU4">
+					</transition>
+				</state>
+				<state id="sRLSmSvXU4">
+					<initial>
+						<transition target="sRLSmSvXU4.choice_0" type="internal">
+						</transition>
+					</initial>
+					<state id="sRLSmSvXU4.choice_0">
+						<transition  cond="!atStation" target="ddFDTI3ig9">
+							 <assign location="emergencyLock" expr="true"/>
+						</transition>
+						<transition   target="KaH57fq70q">
+						</transition>
+					</state>
+					<state id="ddFDTI3ig9">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="0" />
+							</send>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+						<transition event="atTargetSpeed"  target="KaH57fq70q">
+							 <assign location="emergencyLock" expr="false"/>
+						</transition>
+					</state>
+					<state id="KaH57fq70q">
+						<onentry>
+							<send event="openDoors">
+							</send>
+							<send event="openDoors_in">
+							</send>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+					</state>
+					<transition event="stopEmergency" cond="emergencyLock == false" target="Fl2gjzCiPx">
+					</transition>
+				</state>
+			</state>
+			<state id="NnhPNSQBJF">
+				<initial>
+					<transition target="KJoFEb3y06" type="internal">
+					</transition>
+				</initial>
+				<parallel id="jrdar47ovj">
+					<state id="zdY1quZHP8">
+						<initial>
+							<transition target="ajuxtSxbeX" type="internal">
+							</transition>
+						</initial>
+						<state id="ajuxtSxbeX">
+							<transition event="board" cond="remainingCapacity &gt; 0" target="lRxWzb5xRE">
+							</transition>
+							<transition event="unboard" cond="numPassengers &gt; 0" target="yZ0SZsEJ2L">
+							</transition>
+						</state>
+						<state id="lRxWzb5xRE">
+							<onentry>
+								<if cond="remainingCapacity &gt; 0">
+								 <assign location="numPassengers" expr="numPassengers + 1"/>
+								 <assign location="remainingCapacity" expr="remainingCapacity - 1"/>
+								<send event="refreshUI">
+								</send>
+								<send event="obstruction">
+								</send>
+								</if>
+							</onentry>
+							<transition event="obstruction"  target="ulnF7ijrlz">
+							</transition>
+						</state>
+						<state id="ulnF7ijrlz">
+							<onentry>
+								<send event="ulnF7ijrlz_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="ulnF7ijrlz_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="ulnF7ijrlz_t_0_timeEvent_0"  target="ajuxtSxbeX">
+								<send event="obstruction_clear">
+								</send>
+							</transition>
+						</state>
+						<state id="yZ0SZsEJ2L">
+							<onentry>
+								<if cond="numPassengers &gt; 0">
+								 <assign location="numPassengers" expr="numPassengers - 1"/>
+								 <assign location="remainingCapacity" expr="remainingCapacity + 1"/>
+								<send event="refreshUI">
+								</send>
+								<send event="obstruction">
+								</send>
+								</if>
+							</onentry>
+							<transition event="obstruction"  target="ulnF7ijrlz">
+							</transition>
+						</state>
+					</state>
+					<state id="sVFbvBhLM1">
+						<initial>
+							<transition target="lN5bzlh8RE" type="internal">
+							</transition>
+						</initial>
+						<state id="lN5bzlh8RE">
+							<transition event="doorSignal_in"  target="jbn91q4C3R">
+							</transition>
+						</state>
+						<state id="jbn91q4C3R">
+							<onentry>
+								<send event="jbn91q4C3R_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="jbn91q4C3R_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="jbn91q4C3R_t_0_timeEvent_0"  target="y999yogzqT">
+							</transition>
+							<transition event="obstruction"  target="mMfECrrxEw">
+							</transition>
+						</state>
+						<state id="y999yogzqT">
+							<onentry>
+								<send event="closeDoors">
+								</send>
+								<send event="stopDoorsSignal">
+								</send>
+								<send event="refreshUI">
+								</send>
+								<send event="closeDoors_in">
+								</send>
+							</onentry>
+						</state>
+						<state id="mMfECrrxEw">
+							<transition event="obstruction_clear"  target="jbn91q4C3R">
+							</transition>
+						</state>
+					</state>
+					<transition event="closeDoors_in"  target="KJoFEb3y06">
+					</transition>
+				</parallel>
+				<state id="KJoFEb3y06">
+					<transition event="openDoors_in"  target="jrdar47ovj">
+					</transition>
+				</state>
+			</state>
+		</parallel>
+		<transition event ="requestStop"  type="internal" >
+			 <assign location="stopsAt" expr="stopsAt | (1 &lt;&lt; _event.data)"/>
+			<send event="refreshUI">
+			</send>
+		</transition>
+	</state>
+</scxml>

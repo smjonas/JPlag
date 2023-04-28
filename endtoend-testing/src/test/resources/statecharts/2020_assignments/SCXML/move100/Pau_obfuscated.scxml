@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Pau">
+	<datamodel>
+		<data expr="0" id="numb" />
+		<data expr="false" id="atToilet" />
+		<data expr="" id="txt" />
+	</datamodel>
+	<state id="main_region">
+		<initial>
+			<transition target="AtHome" type="internal">
+			<script>
+				setMsg('At home');
+			</script>
+			</transition>
+		</initial>
+		<state id="AtHome">
+			<transition event="employee.goHome"  target="AtHome">
+				<script>
+					setMsg('Already at home.');
+				</script>
+			</transition>
+			<transition event="employee.goToWork"  target="AtWork">
+				<script>
+					setMsg('At work');
+				</script>
+				<script>
+					shiftsShow();
+				</script>
+				 <assign location="numb" expr="getRandomInteger(3);"/>
+			</transition>
+		</state>
+		<state id="AtWork">
+			<onentry>
+				<script>
+					setMsg('At Work:');
+				</script>
+				<script>
+					pushMsg();
+				</script>
+			</onentry>
+			<initial>
+				<transition target="GracePeriod" type="internal">
+				</transition>
+			</initial>
+			<state id="GracePeriod">
+				<onentry>
+					<send event="GracePeriod_t_2_timeEvent_0" delay="4s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="GracePeriod_t_2_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<script>
+						shiftHighlightAssigned(numb);
+					</script>
+					 <assign location="txt" expr="getEnergy(); &gt;= 25 ? 'Selected shift will start soon...' : 'Not enough energy left. Go home'"/>
+					<script>
+						setMsg(txt);
+					</script>
+				</onentry>
+				<transition event="employee.shiftClicked"  target="GracePeriod">
+					 <assign location="numb" expr="_event.data"/>
+				</transition>
+				<transition event="employee.goHome"  target="AtHome">
+					<script>
+						popMsg();
+					</script>
+					<script>
+						setMsg('At home');
+					</script>
+					<script>
+						shiftsHide();
+					</script>
+					<script>
+						increaseEnergy(50);
+					</script>
+				</transition>
+				<transition event="GracePeriod_t_2_timeEvent_0" cond="getEnergy(); &gt;= 25" target="ShiftAssigned">
+				</transition>
+			</state>
+			<parallel id="ShiftAssigned">
+				<onentry>
+					<send event="ShiftAssigned_t_0_timeEvent_0" delay="10s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="ShiftAssigned_t_0_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<script>
+						shiftHighlightActive(numb);
+					</script>
+					 <assign location="atToilet" expr="false"/>
+					<script>
+						setMsg('Working shift');
+					</script>
+					<script>
+						pushMsg();
+					</script>
+				</onentry>
+				<state id="EnergyTimer">
+					<initial>
+						<transition target="energy" type="internal">
+						</transition>
+					</initial>
+					<state id="energy">
+						<onentry>
+							<send event="energy_t_0_timeEvent_0" delay="1s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="energy_t_0_timeEvent_0" />
+						</onexit>
+						<transition event="energy_t_0_timeEvent_0" cond="atToilet == false" target="energy">
+							<script>
+								increaseEnergy(-2);
+							</script>
+						</transition>
+					</state>
+				</state>
+				<state id="AssemblyTimer">
+					<initial>
+						<transition target="Start" type="internal">
+						</transition>
+					</initial>
+					<state id="Time">
+						<onentry>
+							<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="Time_t_1_timeEvent_0" />
+						</onexit>
+						<transition event="ui.actionReleased" cond="_event.data == 'Assemble'" target="Start">
+						</transition>
+						<transition event="Time_t_1_timeEvent_0"  target="Start">
+							<send event="assemble">
+							</send>
+						</transition>
+					</state>
+					<state id="Start">
+						<transition event="ui.actionPressed" cond="_event.data == 'Assemble'" target="Time">
+						</transition>
+					</state>
+				</state>
+				<state id="Shifts">
+					<initial>
+						<transition target="entry" type="internal">
+						</transition>
+					</initial>
+					<state id="entry">
+						<onentry>
+							<send event="entry_t_0_timeEvent_0" delay="0ms"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="entry_t_0_timeEvent_0" />
+						</onexit>
+						<onentry>
+							<send event="entry_t_1_timeEvent_0" delay="0ms"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="entry_t_1_timeEvent_0" />
+						</onexit>
+						<transition event="entry_t_0_timeEvent_0" cond="numb == 0 || numb == 2" target="unloading/loading/timers">
+						</transition>
+						<transition event="entry_t_1_timeEvent_0" cond="numb == 1" target="assemble">
+						</transition>
+					</state>
+					<state id="assemble">
+						<onentry>
+							<script>
+								setActions('Assemble');
+							</script>
+							 <assign location="txt" expr="getMaterial(); &gt; 0 ? 'You can assemble' : 'Not enough materials left'"/>
+							<script>
+								setMsg(txt);
+							</script>
+						</onentry>
+						<transition event="assemble" cond="getMaterial(); &gt; 0" target="assemble">
+							<script>
+								increaseMaterial(-1);
+							</script>
+							<script>
+								increaseFinished(1);
+							</script>
+						</transition>
+					</state>
+					<parallel id="unloading/loading/timers">
+						<state id="timers">
+							<initial>
+								<transition target="Timers" type="internal">
+								</transition>
+							</initial>
+							<parallel id="Timers">
+								<state id="Walk">
+									<initial>
+										<transition target="Start" type="internal">
+										</transition>
+									</initial>
+									<state id="Time">
+										<onentry>
+											<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Time_t_1_timeEvent_0" />
+										</onexit>
+										<transition event="ui.actionReleased" cond="_event.data == 'Walk'" target="Start">
+										</transition>
+										<transition event="Time_t_1_timeEvent_0"  target="Start">
+											<send event="walk">
+											</send>
+										</transition>
+									</state>
+									<state id="Start">
+										<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="Time">
+										</transition>
+									</state>
+								</state>
+								<state id="Pickup">
+									<initial>
+										<transition target="Start" type="internal">
+										</transition>
+									</initial>
+									<state id="Start">
+										<transition event="ui.actionPressed" cond="_event.data == 'Pickup'" target="Time">
+										</transition>
+									</state>
+									<state id="Time">
+										<onentry>
+											<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Time_t_1_timeEvent_0" />
+										</onexit>
+										<transition event="ui.actionReleased" cond="_event.data == 'Pickup'" target="Start">
+										</transition>
+										<transition event="Time_t_1_timeEvent_0"  target="Start">
+											<send event="pickup">
+											</send>
+										</transition>
+									</state>
+								</state>
+								<state id="Drop">
+									<initial>
+										<transition target="Start" type="internal">
+										</transition>
+									</initial>
+									<state id="Start">
+										<transition event="ui.actionPressed" cond="_event.data == 'Drop'" target="Time">
+										</transition>
+									</state>
+									<state id="Time">
+										<onentry>
+											<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Time_t_1_timeEvent_0" />
+										</onexit>
+										<transition event="ui.actionReleased" cond="_event.data == 'Drop'" target="Start">
+										</transition>
+										<transition event="Time_t_1_timeEvent_0"  target="Start">
+											<send event="drop">
+											</send>
+										</transition>
+									</state>
+								</state>
+								<state id="Done">
+									<initial>
+										<transition target="Start" type="internal">
+										</transition>
+									</initial>
+									<state id="Start">
+										<onentry>
+											<send event="Start_t_0_timeEvent_0" delay="10ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Start_t_0_timeEvent_0" />
+										</onexit>
+										<transition event="Start_t_0_timeEvent_0" cond="_event.data == 'Done'" target="Time">
+										</transition>
+										<transition event="ui.actionPressed" cond="_event.data == 'Done'" target="Time">
+										</transition>
+									</state>
+									<state id="Time">
+										<onentry>
+											<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Time_t_1_timeEvent_0" />
+										</onexit>
+										<transition event="ui.actionReleased" cond="_event.data == 'Done'" target="Start">
+										</transition>
+										<transition event="Time_t_1_timeEvent_0"  target="Start">
+											<send event="done">
+											</send>
+										</transition>
+									</state>
+								</state>
+								<state id="ToiletBreak">
+									<initial>
+										<transition target="Start" type="internal">
+										</transition>
+									</initial>
+									<state id="Start">
+										<transition event="ui.actionPressed" cond="_event.data == 'Toilet break'" target="Time">
+										</transition>
+									</state>
+									<state id="Time">
+										<onentry>
+											<send event="Time_t_1_timeEvent_0" delay="500ms"/>
+										</onentry>
+										<onexit>
+											<cancel sendid="Time_t_1_timeEvent_0" />
+										</onexit>
+										<transition event="ui.actionReleased" cond="_event.data == 'Toilet break'" target="Start">
+										</transition>
+										<transition event="Time_t_1_timeEvent_0"  target="Start">
+											<send event="toilet">
+											</send>
+										</transition>
+									</state>
+								</state>
+							</parallel>
+						</state>
+						<state id="unloading/loading">
+							<initial>
+								<transition target="AtStock" type="internal">
+								</transition>
+							</initial>
+							<state id="AtTruckCarrying">
+								<initial>
+									<transition target="entry" type="internal">
+									</transition>
+								</initial>
+								<state id="case_load">
+									<onentry>
+										<script>
+											setActions('Walk,Drop');
+										</script>
+										<script>
+											setMsg('At truck, carrying finished product.');
+										</script>
+									</onentry>
+									<transition event="drop"  target="case_load">
+										<script>
+											increaseFinished(-1);
+										</script>
+									</transition>
+								</state>
+								<state id="case_unload">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At truck, carrying material.');
+										</script>
+									</onentry>
+								</state>
+								<state id="entry">
+									<onentry>
+										<send event="entry_t_0_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_0_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="entry_t_1_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_1_timeEvent_0" />
+									</onexit>
+									<transition event="entry_t_0_timeEvent_0" cond="numb == 2" target="case_load">
+									</transition>
+									<transition event="entry_t_1_timeEvent_0" cond="numb == 0" target="case_unload">
+									</transition>
+								</state>
+								<transition event="walk"  target="AtStockCarrying">
+								</transition>
+							</state>
+							<state id="AtStock">
+								<initial>
+									<transition target="entry" type="internal">
+									</transition>
+								</initial>
+								<state id="case_unload">
+									<onentry>
+										<script>
+											setActions('Walk,Toilet break');
+										</script>
+										<script>
+											setMsg('At stock');
+										</script>
+									</onentry>
+								</state>
+								<state id="entry">
+									<onentry>
+										<send event="entry_t_0_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_0_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="entry_t_1_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_1_timeEvent_0" />
+									</onexit>
+									<transition event="entry_t_0_timeEvent_0" cond="numb == 2" target="case_load">
+									</transition>
+									<transition event="entry_t_1_timeEvent_0" cond="numb == 0" target="case_unload">
+									</transition>
+								</state>
+								<state id="case_load">
+									<onentry>
+										<script>
+											setActions('Walk,Toilet break,Pickup');
+										</script>
+										<script>
+											setMsg('At stock');
+										</script>
+									</onentry>
+									<transition event="pickup"  target="case_load">
+									</transition>
+								</state>
+								<transition event="toilet"  target="AtToilet">
+								</transition>
+								<transition event="walk"  target="AtTruck">
+								</transition>
+							</state>
+							<state id="AtStockCarrying">
+								<initial>
+									<transition target="entry" type="internal">
+									</transition>
+								</initial>
+								<state id="case_unload">
+									<onentry>
+										<script>
+											setActions('Walk,Drop');
+										</script>
+										<script>
+											setMsg('At stock, carrying material.');
+										</script>
+									</onentry>
+									<transition event="drop"  target="case_unload">
+										<script>
+											increaseMaterial(1);
+										</script>
+									</transition>
+								</state>
+								<state id="case_load">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At stock, carrying finished product.');
+										</script>
+									</onentry>
+								</state>
+								<state id="entry">
+									<onentry>
+										<send event="entry_t_0_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_0_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="entry_t_1_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_1_timeEvent_0" />
+									</onexit>
+									<transition event="entry_t_0_timeEvent_0" cond="numb == 2" target="case_load">
+									</transition>
+									<transition event="entry_t_1_timeEvent_0" cond="numb == 0" target="case_unload">
+									</transition>
+								</state>
+								<transition event="walk"  target="AtTruckCarrying">
+								</transition>
+							</state>
+							<state id="AtToilet">
+								<onentry>
+									<script>
+										setActions('');
+									</script>
+									<script>
+										setActions('Done');
+									</script>
+									 <assign location="atToilet" expr="true"/>
+									<script>
+										setMsg('At toilet.');
+									</script>
+								</onentry>
+								<transition event="done"  target="AtStock">
+									 <assign location="atToilet" expr="false"/>
+								</transition>
+							</state>
+							<state id="AtTruck">
+								<initial>
+									<transition target="entry" type="internal">
+									</transition>
+								</initial>
+								<state id="entry">
+									<onentry>
+										<send event="entry_t_0_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_0_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="entry_t_1_timeEvent_0" delay="0ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="entry_t_1_timeEvent_0" />
+									</onexit>
+									<transition event="entry_t_0_timeEvent_0" cond="numb == 0" target="case_unload">
+									</transition>
+									<transition event="entry_t_1_timeEvent_0" cond="numb == 2" target="case_load">
+									</transition>
+								</state>
+								<state id="case_unload">
+									<onentry>
+										<script>
+											setActions('Walk,Pickup');
+										</script>
+										<script>
+											setMsg('At Truck');
+										</script>
+									</onentry>
+									<transition event="pickup"  target="case_unload">
+									</transition>
+								</state>
+								<state id="case_load">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At Truck');
+										</script>
+									</onentry>
+								</state>
+								<transition event="walk"  target="AtStock">
+								</transition>
+							</state>
+						</state>
+					</parallel>
+				</state>
+				<transition event="ShiftAssigned_t_0_timeEvent_0"  target="GracePeriod">
+					<script>
+						setActions('');
+					</script>
+					<script>
+						shiftsShow();
+					</script>
+					<script>
+						increasePay(10);
+					</script>
+					 <assign location="numb" expr="getRandomInteger(3);"/>
+					<script>
+						popMsg();
+					</script>
+				</transition>
+			</parallel>
+		</state>
+	</state>
+</scxml>

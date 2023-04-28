@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sgraph:Statechart xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0" xmi:id="_hz1AYMBtEe2Mc7U_W-ye0Q" specification="// Don't change these options&#xA;@EventDriven&#xA;@SuperSteps(no)&#xA;&#xA;// You can make use of these interfaces in the statechart&#xA;// Do not change the interfaces&#xA;&#xA;interface util:&#xA;&#x9;// generates a uniformly pseudo-randomly distributed integer equal to 0 and smaller than the parameter.&#xA;&#x9;operation getRandomInteger(smallerThan: integer): integer&#xA;&#xA;interface employee:&#xA;&#x9;in event goToWork // received when 'go to work' button is clicked&#xA;&#x9;in event goHome // received when 'go home' button is clicked&#xA;&#x9;in event shiftClicked: integer // received when a shift button is clicked&#xA;&#x9;&#xA;&#x9;// employee's energy, as shown in UI&#xA;&#x9;operation getEnergy(): integer&#xA;&#x9;operation increaseEnergy(delta: integer) // use negative delta to decrease&#xA;&#x9;&#xA;&#x9;// employee's pay, as shown in UI&#xA;&#x9;operation getPay(): integer&#xA;&#x9;operation increasePay(delta: integer) // use negative delta to decrease&#xA;&#xA;interface factory:&#xA;&#x9;// number of material in stock&#xA;&#x9;operation getMaterial(): integer&#xA;&#x9;operation increaseMaterial(delta: integer) // use negative delta to decrease&#xA;&#x9;&#xA;&#x9;// number of finished product in stock&#xA;&#x9;operation getFinished(): integer&#xA;&#x9;operation increaseFinished(delta: integer) // use negative delta to decrease&#xA;&#xA;interface ui:&#xA;&#x9;// set visible action-buttons at the bottom of the window&#xA;&#x9;// comma-separated string, e.g. &quot;Eat,Sleep,Work&quot; will create 3 buttons.&#xA;&#x9;// empty string will remove all buttons&#xA;&#x9;operation setActions(actions: string)&#xA;&#x9;&#xA;&#x9;// received when the left mouse button is pressed or released&#xA;&#x9;// on one of the action-buttons&#xA;&#x9;// the event value (sometimes called &quot;event parameter&quot;) is equal&#xA;&#x9;// to the string displayed on the button, e.g. &quot;Eat&quot;&#xA;&#x9;in event actionPressed: string&#xA;&#x9;in event actionReleased: string&#xA;&#x9;&#xA;&#x9;// Control the status messages in the middle of the window&#xA;&#x9;// At most 6 lines of text can be displayed.&#xA;&#x9;operation pushMsg() // increases line number to write at&#xA;&#x9;operation popMsg() // decreases line number, and removes the message below the new line number&#xA;&#x9;operation setMsg(msg: string) // sets the message at the current line number&#xA;&#x9;&#xA;&#x9;operation shiftsHide() // hides the shift type-buttons&#xA;&#x9;operation shiftsShow() // shows the shift type-buttons&#xA;&#x9;operation shiftHighlightAssigned(n: integer) // clears previous highlights and highlights the n-th shift blue&#xA;&#x9;operation shiftHighlightActive(n: integer) // clear previous highlights and highlights the n-th shift green&#xA;&#x9;operation shiftHighlightClear() // clears previous highlights&#xA;&#xA;internal:&#xA;&#x9;// Feel free to declare internal events and variables, if needed&#xA;&#x9;event startWorking&#xA;&#x9;event stopWorking&#xA;&#x9;&#xA;&#x9;// Shift events&#xA;&#x9;event walk&#xA;&#x9;event drop&#xA;&#x9;event pickup&#xA;&#x9;event assemble&#xA;&#x9;event toilet&#xA;&#x9;event done &#xA;&#x9;&#xA;    var assignedShift: integer =  0&#xA;&#x9;&#xA;" name="Daw">
+  <regions xmi:type="sgraph:Region" xmi:id="_hz1AYcBtEe2Mc7U_W-ye0Q" name="main region">
+    <vertices xmi:type="sgraph:State" xmi:id="_hz1AYsBtEe2Mc7U_W-ye0Q" specification="entry / ui.setMsg(&quot;At home&quot;)&#xD;&#xA;entry / ui.shiftsHide()" name="AtHome" incomingTransitions="_hz1AasBtEe2Mc7U_W-ye0Q _hz1AbMBtEe2Mc7U_W-ye0Q">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AY8BtEe2Mc7U_W-ye0Q" specification="employee.goToWork" target="_hz1Aa8BtEe2Mc7U_W-ye0Q"/>
+      <regions xmi:type="sgraph:Region" xmi:id="_hz1AZMBtEe2Mc7U_W-ye0Q" name="r1">
+        <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AZcBtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AZsBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AZ8BtEe2Mc7U_W-ye0Q"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_hz1AZ8BtEe2Mc7U_W-ye0Q" name="EnergyCap" incomingTransitions="_hz1AZsBtEe2Mc7U_W-ye0Q _hz1AaMBtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AaMBtEe2Mc7U_W-ye0Q" specification="always [employee.getEnergy() > 100] / &#xD;&#xA;employee.increaseEnergy(100-employee.getEnergy())" target="_hz1AZ8BtEe2Mc7U_W-ye0Q"/>
+        </vertices>
+      </regions>
+    </vertices>
+    <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AacBtEe2Mc7U_W-ye0Q">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AasBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AYsBtEe2Mc7U_W-ye0Q"/>
+    </vertices>
+    <vertices xmi:type="sgraph:State" xmi:id="_hz1Aa8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setMsg(&quot;At work.&quot;)&#xD;&#xA;entry / ui.pushMsg()&#xD;&#xA;entry / ui.shiftsShow()&#xD;&#xA;exit / ui.shiftsHide()&#xD;&#xA;exit / ui.popMsg()" name="AtWork" incomingTransitions="_hz1AY8BtEe2Mc7U_W-ye0Q">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AbMBtEe2Mc7U_W-ye0Q" specification="employee.goHome [!active(AtWork.r2.Working)] /&#xD;&#xA;employee.increaseEnergy(50)" target="_hz1AYsBtEe2Mc7U_W-ye0Q"/>
+      <regions xmi:type="sgraph:Region" xmi:id="_hz1AbcBtEe2Mc7U_W-ye0Q" name="r1">
+        <vertices xmi:type="sgraph:State" xmi:id="_hz1AbsBtEe2Mc7U_W-ye0Q" name="AtWorkShifts" incomingTransitions="_hz1AyMBtEe2Mc7U_W-ye0Q">
+          <regions xmi:type="sgraph:Region" xmi:id="_hz1Ab8BtEe2Mc7U_W-ye0Q" name="r1">
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AcMBtEe2Mc7U_W-ye0Q" specification="exit / ui.setActions(&quot;&quot;)" name="Loading" incomingTransitions="_hz1Ag8BtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AccBtEe2Mc7U_W-ye0Q" specification="stopWorking" target="_hz1AhsBtEe2Mc7U_W-ye0Q"/>
+              <regions xmi:type="sgraph:Region" xmi:id="_hz1AcsBtEe2Mc7U_W-ye0Q" name="r1">
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Ac8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk,Pick up,Toilet break&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;In stock.&quot;)" name="AtStock" incomingTransitions="_hz1AeMBtEe2Mc7U_W-ye0Q _hz1AesBtEe2Mc7U_W-ye0Q _hz1AgMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AdMBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1Ad8BtEe2Mc7U_W-ye0Q"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AdcBtEe2Mc7U_W-ye0Q" specification="pickup [factory.getFinished() > 0]" target="_hz1Ae8BtEe2Mc7U_W-ye0Q"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AdsBtEe2Mc7U_W-ye0Q" specification="toilet" target="_hz1Af8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Ad8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk&quot;)&#xD;&#xA;entry /  ui.setMsg(&quot;At truck.&quot;)" name="AtTruck" incomingTransitions="_hz1AdMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AeMBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1Ac8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AecBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AesBtEe2Mc7U_W-ye0Q" specification="" target="_hz1Ac8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Ae8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;At stock, carrying material.&quot;)" name="AtStockCarrying" incomingTransitions="_hz1AfsBtEe2Mc7U_W-ye0Q _hz1AdcBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AfMBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1AfcBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1AfcBtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk,Drop&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;At truck, carrying material.&quot;)" name="AtTruckCarrying" incomingTransitions="_hz1AfMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AfsBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1Ae8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Af8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Done&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;Toilet break&quot;)" name="ToiletBreak" incomingTransitions="_hz1AdsBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AgMBtEe2Mc7U_W-ye0Q" specification="done" target="_hz1Ac8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AgcBtEe2Mc7U_W-ye0Q" specification="&#xD;&#xA;entry / ui.shiftHighlightAssigned(assignedShift)&#xD;&#xA;exit / ui.shiftHighlightActive(assignedShift)&#xD;&#xA;" name="ReadyToWork" incomingTransitions="_hz1Ah8BtEe2Mc7U_W-ye0Q _hz1AhMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AgsBtEe2Mc7U_W-ye0Q" specification="startWorking [assignedShift == 1]" target="_hz1AisBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Ag8BtEe2Mc7U_W-ye0Q" specification="startWorking [assignedShift == 2]" target="_hz1AcMBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AhMBtEe2Mc7U_W-ye0Q" specification="employee.shiftClicked / assignedShift = valueof(employee.shiftClicked)" target="_hz1AgcBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AhcBtEe2Mc7U_W-ye0Q" specification="startWorking [assignedShift == 0]" target="_hz1AkMBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AhsBtEe2Mc7U_W-ye0Q" specification="entry / assignedShift = util.getRandomInteger(3)&#xD;&#xA;entry / ui.setMsg(&quot;Selected shift will start soon...&quot;)" name="ArrivedAtWork" incomingTransitions="_hz1AicBtEe2Mc7U_W-ye0Q _hz1AccBtEe2Mc7U_W-ye0Q _hz1AkcBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Ah8BtEe2Mc7U_W-ye0Q" specification="after 1ms" target="_hz1AgcBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AiMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AicBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AhsBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AisBtEe2Mc7U_W-ye0Q" specification="exit / ui.setActions(&quot;&quot;)" name="Assembly" incomingTransitions="_hz1AgsBtEe2Mc7U_W-ye0Q">
+              <regions xmi:type="sgraph:Region" xmi:id="_hz1Ai8BtEe2Mc7U_W-ye0Q" name="r1">
+                <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AjMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AjcBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AjsBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1AjsBtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Assemble&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;Assembling&quot;)" name="Assemble" incomingTransitions="_hz1AjcBtEe2Mc7U_W-ye0Q _hz1Aj8BtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Aj8BtEe2Mc7U_W-ye0Q" specification="assemble [factory.getMaterial() > 0] / factory.increaseMaterial(-1);&#xD;&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;factory.increaseFinished(1)" target="_hz1AjsBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AkMBtEe2Mc7U_W-ye0Q" specification="exit / ui.setActions(&quot;&quot;)" name="Unloading" incomingTransitions="_hz1AhcBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AkcBtEe2Mc7U_W-ye0Q" specification="stopWorking" target="_hz1AhsBtEe2Mc7U_W-ye0Q"/>
+              <regions xmi:type="sgraph:Region" xmi:id="_hz1AksBtEe2Mc7U_W-ye0Q" name="r1">
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Ak8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk,Toilet break&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;In stock.&quot;)" name="AtStock" incomingTransitions="_hz1Al8BtEe2Mc7U_W-ye0Q _hz1AmsBtEe2Mc7U_W-ye0Q _hz1AnMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AlMBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1AlsBtEe2Mc7U_W-ye0Q"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AlcBtEe2Mc7U_W-ye0Q" specification="toilet" target="_hz1AoMBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1AlsBtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk,Pick up&quot;)&#xD;&#xA;entry /  ui.setMsg(&quot;At truck.&quot;)" name="AtTruck" incomingTransitions="_hz1AlMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Al8BtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1Ak8BtEe2Mc7U_W-ye0Q"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AmMBtEe2Mc7U_W-ye0Q" specification="pickup" target="_hz1AnsBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AmcBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AmsBtEe2Mc7U_W-ye0Q" specification="" target="_hz1Ak8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1Am8BtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk,Drop&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;At stock, carrying material.&quot;)" name="AtStockCarrying" incomingTransitions="_hz1An8BtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AnMBtEe2Mc7U_W-ye0Q" specification="drop / factory.increaseMaterial(1)" target="_hz1Ak8BtEe2Mc7U_W-ye0Q"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AncBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1AnsBtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1AnsBtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Walk&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;At truck, carrying material.&quot;)" name="AtTruckCarrying" incomingTransitions="_hz1AncBtEe2Mc7U_W-ye0Q _hz1AmMBtEe2Mc7U_W-ye0Q">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1An8BtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1Am8BtEe2Mc7U_W-ye0Q"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_hz1AoMBtEe2Mc7U_W-ye0Q" specification="entry / ui.setActions(&quot;Done&quot;)&#xD;&#xA;entry / ui.setMsg(&quot;Toilet break&quot;)" name="ToiletBreak" incomingTransitions="_hz1AlcBtEe2Mc7U_W-ye0Q"/>
+              </regions>
+            </vertices>
+          </regions>
+          <regions xmi:type="sgraph:Region" xmi:id="_hz1AocBtEe2Mc7U_W-ye0Q" name="r2">
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AosBtEe2Mc7U_W-ye0Q" name="Default" incomingTransitions="_hz1AqsBtEe2Mc7U_W-ye0Q _hz1ArcBtEe2Mc7U_W-ye0Q _hz1AscBtEe2Mc7U_W-ye0Q _hz1As8BtEe2Mc7U_W-ye0Q _hz1AtsBtEe2Mc7U_W-ye0Q _hz1AuMBtEe2Mc7U_W-ye0Q _hz1Au8BtEe2Mc7U_W-ye0Q _hz1AvcBtEe2Mc7U_W-ye0Q _hz1AwMBtEe2Mc7U_W-ye0Q _hz1AxsBtEe2Mc7U_W-ye0Q _hz1AxMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Ao8BtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Drop&quot;]" target="_hz1Aq8BtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1ApMBtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Pick up&quot;]" target="_hz1Ar8BtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1ApcBtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Assemble&quot;]" target="_hz1AtMBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1ApsBtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Toilet break&quot;]" target="_hz1AucBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Ap8BtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Done&quot;]" target="_hz1AvsBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AqMBtEe2Mc7U_W-ye0Q" specification="ui.actionPressed [valueof(ui.actionPressed) == &quot;Walk&quot;]" target="_hz1AwsBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_hz1AqcBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AqsBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1Aq8BtEe2Mc7U_W-ye0Q" name="DropHolding" incomingTransitions="_hz1Ao8BtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1ArMBtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1ArsBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1ArcBtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1ArsBtEe2Mc7U_W-ye0Q" specification="entry / raise drop" name="DropComplete" incomingTransitions="_hz1ArMBtEe2Mc7U_W-ye0Q"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1Ar8BtEe2Mc7U_W-ye0Q" name="PickupHolding" incomingTransitions="_hz1ApMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AsMBtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1AssBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AscBtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AssBtEe2Mc7U_W-ye0Q" specification="entry / raise pickup" name="PickupComplete" incomingTransitions="_hz1AsMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1As8BtEe2Mc7U_W-ye0Q" specification="pickup" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AtMBtEe2Mc7U_W-ye0Q" name="AssembleHolding" incomingTransitions="_hz1ApcBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AtcBtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1At8BtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AtsBtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1At8BtEe2Mc7U_W-ye0Q" specification="entry / raise assemble" name="AssembleComplete" incomingTransitions="_hz1AtcBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AuMBtEe2Mc7U_W-ye0Q" specification="assemble" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AucBtEe2Mc7U_W-ye0Q" name="ToiletHolding" incomingTransitions="_hz1ApsBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AusBtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1AvMBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Au8BtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AvMBtEe2Mc7U_W-ye0Q" specification="entry / raise toilet" name="ToiletComplete" incomingTransitions="_hz1AusBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AvcBtEe2Mc7U_W-ye0Q" specification="toilet" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AvsBtEe2Mc7U_W-ye0Q" name="DoneHolding" incomingTransitions="_hz1Ap8BtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Av8BtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1AwcBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AwMBtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AwcBtEe2Mc7U_W-ye0Q" specification="entry / raise done" name="DoneComplete" incomingTransitions="_hz1Av8BtEe2Mc7U_W-ye0Q"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AwsBtEe2Mc7U_W-ye0Q" name="WalkHolding" incomingTransitions="_hz1AqMBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Aw8BtEe2Mc7U_W-ye0Q" specification="after 500ms" target="_hz1AxcBtEe2Mc7U_W-ye0Q"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AxMBtEe2Mc7U_W-ye0Q" specification="ui.actionReleased" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1AxcBtEe2Mc7U_W-ye0Q" specification="entry / raise walk" name="WalkComplete" incomingTransitions="_hz1Aw8BtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AxsBtEe2Mc7U_W-ye0Q" specification="walk" target="_hz1AosBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+          </regions>
+        </vertices>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_hz1Ax8BtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AyMBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AbsBtEe2Mc7U_W-ye0Q"/>
+        </vertices>
+      </regions>
+      <regions xmi:type="sgraph:Region" xmi:id="_hz1AycBtEe2Mc7U_W-ye0Q" name="r2">
+        <vertices xmi:type="sgraph:State" xmi:id="_hz1AysBtEe2Mc7U_W-ye0Q" specification="entry / raise stopWorking" name="NotWorking" incomingTransitions="_hz1A1cBtEe2Mc7U_W-ye0Q _hz1AzsBtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1Ay8BtEe2Mc7U_W-ye0Q" specification="after 4s [employee.getEnergy > 24]" target="_hz1AzcBtEe2Mc7U_W-ye0Q"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AzMBtEe2Mc7U_W-ye0Q" specification="after 1ms [employee.getEnergy &lt; 25]" target="_hz1ncMBtEe2Mc7U_W-ye0Q"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_hz1AzcBtEe2Mc7U_W-ye0Q" specification="entry / ui.setMsg(&quot;Working shift.&quot;)&#xD;&#xA;entry / raise startWorking&#xD;&#xA;entry / ui.pushMsg()&#xD;&#xA;exit / ui.popMsg()" name="Working" incomingTransitions="_hz1Ay8BtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1AzsBtEe2Mc7U_W-ye0Q" specification="after 10s / employee.increasePay(10)" target="_hz1AysBtEe2Mc7U_W-ye0Q"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_hz1Az8BtEe2Mc7U_W-ye0Q" name="r1">
+            <vertices xmi:type="sgraph:State" xmi:id="_hz1A0MBtEe2Mc7U_W-ye0Q" name="Energy" incomingTransitions="_hz1A08BtEe2Mc7U_W-ye0Q _hz1A0cBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1A0cBtEe2Mc7U_W-ye0Q" specification="after 1s [!active (AtWork.r1.AtWorkShifts.r1.Unloading.r1.ToiletBreak) &amp;&amp; &#xD;&#xA;&#x9;&#x9;&#x9; !active (AtWork.r1.AtWorkShifts.r1.Loading.r1.ToiletBreak)] /&#xD;&#xA;&#x9;&#x9;&#x9; employee.increaseEnergy(-2)" target="_hz1A0MBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_hz1A0sBtEe2Mc7U_W-ye0Q">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1A08BtEe2Mc7U_W-ye0Q" specification="" target="_hz1A0MBtEe2Mc7U_W-ye0Q"/>
+            </vertices>
+          </regions>
+        </vertices>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_hz1A1MBtEe2Mc7U_W-ye0Q">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_hz1A1cBtEe2Mc7U_W-ye0Q" specification="" target="_hz1AysBtEe2Mc7U_W-ye0Q"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_hz1ncMBtEe2Mc7U_W-ye0Q" specification="entry / ui.setMsg(&quot;Energy too low to work a shift&quot;)" name="NoEnergy" incomingTransitions="_hz1AzMBtEe2Mc7U_W-ye0Q"/>
+      </regions>
+    </vertices>
+  </regions>
+</sgraph:Statechart>

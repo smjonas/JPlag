@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Gee">
+	<datamodel>
+		<data expr="0" id="shiftTypeUnload" />
+		<data expr="1" id="shiftTypeAssembly" />
+		<data expr="3" id="shiftTypes" />
+		<data expr="0" id="selectedShiftType" />
+	</datamodel>
+	<state id="main_region">
+		<initial>
+			<transition target="AtHome" type="internal">
+			</transition>
+		</initial>
+		<state id="AtWork">
+			<onentry>
+				<script>
+					shiftsShow();
+				</script>
+				<script>
+					setMsg('At work.');
+				</script>
+				<script>
+					pushMsg();
+				</script>
+			</onentry>
+			<onexit>
+				<script>
+					popMsg();
+				</script>
+				<script>
+					shiftsHide();
+				</script>
+			</onexit>
+			<initial>
+				<transition target="AssignShift" type="internal">
+				</transition>
+			</initial>
+			<state id="AssignShift">
+				<onentry>
+					<send event="AssignShift_t_1_timeEvent_0" delay="4s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="AssignShift_t_1_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<script>
+						setMsg('Selected shift will start soon...');
+					</script>
+				</onentry>
+				<initial>
+					<transition target="SelectRandom" type="internal">
+					</transition>
+				</initial>
+				<state id="SelectRandom">
+					<onentry>
+						 <assign location="selectedShiftType" expr="getRandomInteger(shiftTypes);"/>
+						<script>
+							shiftHighlightAssigned(selectedShiftType);
+						</script>
+					</onentry>
+					<transition event="employee.shiftClicked"  target="SelectOverride">
+					</transition>
+				</state>
+				<state id="SelectOverride">
+					<onentry>
+						 <assign location="selectedShiftType" expr="_event.data"/>
+						<script>
+							shiftHighlightAssigned(selectedShiftType);
+						</script>
+					</onentry>
+					<transition event="employee.shiftClicked"  target="SelectOverride">
+					</transition>
+				</state>
+				<transition event="employee.goHome"  target="Rest">
+				</transition>
+				<transition event="AssignShift_t_1_timeEvent_0"  target="Shift">
+				</transition>
+			</state>
+			<parallel id="Shift">
+				<onentry>
+					<send event="Shift_t_0_timeEvent_0" delay="10s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="Shift_t_0_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<script>
+						shiftHighlightActive(selectedShiftType);
+					</script>
+					<script>
+						setMsg('Working shift.');
+					</script>
+					<script>
+						pushMsg();
+					</script>
+				</onentry>
+				<onexit>
+					<script>
+						increasePay(10);
+					</script>
+					<script>
+						setActions('');
+					</script>
+					<script>
+						popMsg();
+					</script>
+				</onexit>
+				<state id="r1">
+					<initial>
+						<transition target="ButtonBehavior" type="internal">
+						</transition>
+					</initial>
+					<state id="ButtonBehavior">
+						<initial>
+							<transition target="ActionNotPressed" type="internal">
+							</transition>
+						</initial>
+						<state id="ActionNotPressed">
+							<transition event="ui.actionPressed"  target="ActionPressed">
+							</transition>
+						</state>
+						<state id="ActionLongPressed">
+							<transition event="ui.actionReleased"  target="ButtonBehavior.choice_0">
+							</transition>
+						</state>
+						<state id="ActionPressed">
+							<onentry>
+								<send event="ActionPressed_t_0_timeEvent_0" delay="500ms"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="ActionPressed_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="ActionPressed_t_0_timeEvent_0"  target="ActionLongPressed">
+							</transition>
+							<transition event="ui.actionReleased"  target="ActionNotPressed">
+							</transition>
+						</state>
+						<state id="ButtonBehavior.choice_0">
+							<transition  cond="_event.data == 'Walk'" target="ActionNotPressed">
+								<send event="walk">
+								</send>
+							</transition>
+							<transition  cond="_event.data == 'Drop'" target="ActionNotPressed">
+								<send event="drop">
+								</send>
+							</transition>
+							<transition  cond="_event.data == 'Pick up'" target="ActionNotPressed">
+								<send event="pickup">
+								</send>
+							</transition>
+							<transition  cond="_event.data == 'Assemble'" target="ActionNotPressed">
+								<send event="assemble">
+								</send>
+							</transition>
+							<transition  cond="_event.data == 'Toilet break'" target="ActionNotPressed">
+								<send event="toiletbreak">
+								</send>
+							</transition>
+							<transition  cond="_event.data == 'Done'" target="ActionNotPressed">
+								<send event="done">
+								</send>
+							</transition>
+							<transition   target="ActionNotPressed">
+								<send event="other">
+								</send>
+							</transition>
+						</state>
+					</state>
+				</state>
+				<state id="r2">
+					<initial>
+						<transition target="Working" type="internal">
+						</transition>
+					</initial>
+					<parallel id="Working">
+						<state id="r1">
+							<initial>
+								<transition target="EnergyDecreasing" type="internal">
+								</transition>
+							</initial>
+							<state id="EnergyDecreasing">
+								<onentry>
+									<send event="EnergyDecreasing_t_0_timeEvent_0" delay="1s"/>
+								</onentry>
+								<onexit>
+									<cancel sendid="EnergyDecreasing_t_0_timeEvent_0" />
+								</onexit>
+								<onexit>
+									<script>
+										increaseEnergy(-2);
+									</script>
+								</onexit>
+								<transition event="EnergyDecreasing_t_0_timeEvent_0"  target="EnergyDecreasing">
+								</transition>
+							</state>
+						</state>
+						<state id="r2">
+							<initial>
+								<transition target="Working.r2.choice_0" type="internal">
+								</transition>
+							</initial>
+							<state id="UnLoading">
+								<onentry>
+									<script>
+										setMsg('Unloading.');
+									</script>
+									<script>
+										pushMsg();
+									</script>
+								</onentry>
+								<onexit>
+									<script>
+										setActions('');
+									</script>
+									<script>
+										popMsg();
+									</script>
+								</onexit>
+								<initial>
+									<transition target="AtStock" type="internal">
+									</transition>
+								</initial>
+								<state id="AtStock">
+									<onentry>
+										<script>
+											setActions('Walk,Toilet break');
+										</script>
+										<script>
+											setMsg('At stock.');
+										</script>
+									</onentry>
+									<transition event="toiletbreak"  target="ToiletBreak">
+									</transition>
+									<transition event="walk"  target="AtTruck">
+									</transition>
+								</state>
+								<state id="AtTruck">
+									<onentry>
+										<script>
+											setActions('Walk,Pick up');
+										</script>
+										<script>
+											setMsg('At truck.');
+										</script>
+									</onentry>
+									<transition event="pickup"  target="AtTruckCarrying">
+									</transition>
+								</state>
+								<state id="AtStockCarrying">
+									<onentry>
+										<script>
+											setActions('Walk,Drop');
+										</script>
+										<script>
+											setMsg('At stock, carrying material.');
+										</script>
+									</onentry>
+									<transition event="walk"  target="AtTruckCarrying">
+									</transition>
+								</state>
+								<state id="AtTruckCarrying">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At truck, carrying material.');
+										</script>
+									</onentry>
+									<transition event="walk"  target="AtStockCarrying">
+									</transition>
+								</state>
+							</state>
+							<state id="Assembling">
+								<onentry>
+									<script>
+										setMsg('Assembling.');
+									</script>
+									<script>
+										setActions('Assemble');
+									</script>
+									<script>
+										pushMsg();
+									</script>
+								</onentry>
+								<onexit>
+									<script>
+										setActions('');
+									</script>
+									<script>
+										popMsg();
+									</script>
+								</onexit>
+								<initial>
+									<transition target="AtStock" type="internal">
+									</transition>
+								</initial>
+								<state id="AtStock">
+									<transition event="assemble" cond="getMaterial(); &gt; 0" target="AtStock">
+										<script>
+											increaseMaterial(-1);
+										</script>
+										<script>
+											increaseFinished(1);
+										</script>
+									</transition>
+								</state>
+							</state>
+							<history type="deep" id="history">
+								<transition target="Working.r2.choice_0">
+								</transition>
+							</history>
+							<state id="Loading">
+								<onentry>
+									<script>
+										setMsg('Loading.');
+									</script>
+									<script>
+										pushMsg();
+									</script>
+								</onentry>
+								<onexit>
+									<script>
+										setActions('');
+									</script>
+									<script>
+										popMsg();
+									</script>
+								</onexit>
+								<initial>
+									<transition target="AtStock" type="internal">
+									</transition>
+								</initial>
+								<state id="AtStock">
+									<onentry>
+										<script>
+											setActions('Walk,Pick up,Toilet break');
+										</script>
+										<script>
+											setMsg('At stock.');
+										</script>
+									</onentry>
+									<transition event="pickup" cond="getFinished(); &gt; 0" target="AtStockCarrying">
+									</transition>
+									<transition event="walk"  target="AtTruck">
+									</transition>
+								</state>
+								<state id="AtTruck">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At truck.');
+										</script>
+									</onentry>
+								</state>
+								<state id="AtStockCarrying">
+									<onentry>
+										<script>
+											setActions('Walk');
+										</script>
+										<script>
+											setMsg('At stock, carrying material.');
+										</script>
+									</onentry>
+									<transition event="walk"  target="AtTruckCarrying">
+									</transition>
+								</state>
+								<state id="AtTruckCarrying">
+									<onentry>
+										<script>
+											setActions('Walk,Drop');
+										</script>
+										<script>
+											setMsg('At truck, carrying material.');
+										</script>
+									</onentry>
+									<transition event="drop"  target="AtTruck">
+										<script>
+											increaseFinished(-1);
+										</script>
+									</transition>
+								</state>
+							</state>
+							<state id="Working.r2.choice_0">
+								<transition  cond="selectedShiftType == shiftTypeAssembly" target="Assembling">
+								</transition>
+								<transition  cond="selectedShiftType == shiftTypeUnload" target="UnLoading">
+								</transition>
+								<transition   target="Loading">
+								</transition>
+							</state>
+						</state>
+					</parallel>
+					<state id="ToiletBreak">
+						<onentry>
+							<script>
+								setActions('Done');
+							</script>
+							<script>
+								setMsg('At toilet.');
+							</script>
+						</onentry>
+						<onexit>
+							<script>
+								setActions('');
+							</script>
+						</onexit>
+						<transition event="done"  target="history">
+						</transition>
+					</state>
+				</state>
+				<transition event="Shift_t_0_timeEvent_0"  target="AtWork.choice_0">
+				</transition>
+			</parallel>
+			<state id="LowOnEnergy">
+				<onentry>
+					<script>
+						setMsg('Too low energy to work a shift.');
+					</script>
+				</onentry>
+				<transition event="employee.goHome"  target="Rest">
+				</transition>
+			</state>
+			<state id="AtWork.choice_0">
+				<transition  cond="getEnergy(); &lt; 25" target="LowOnEnergy">
+				</transition>
+				<transition   target="AssignShift">
+				</transition>
+			</state>
+		</state>
+		<state id="AtHome">
+			<onentry>
+				<script>
+					setMsg('At home.');
+				</script>
+			</onentry>
+			<initial>
+				<transition target="Init" type="internal">
+				</transition>
+			</initial>
+			<state id="Init">
+			</state>
+			<state id="Rest">
+				<onexit>
+					<script>
+						increaseEnergy(50);
+					</script>
+				</onexit>
+			</state>
+			<transition event="employee.goToWork"  target="AtWork">
+			</transition>
+		</state>
+	</state>
+</scxml>

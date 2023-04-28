@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sgraph:Statechart xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0" xmi:id="_LfkooMDEEe23fImYxN3qyQ" specification="// You are only allowed to edit the&#xA;// &quot;internal&quot; section, see below&#xA;&#xA;// DO NOT EDIT THESE OPTIONS&#xA;@EventDriven&#xA;@SuperSteps(no) &#xA;&#xA;interface:&#xA;&#x9;// DO NOT EDIT THE INTERFACE&#xA;&#x9;&#xA;&#x9;in event approachingStation: integer&#xA;&#x9;out event openDoors&#xA;&#x9;out event closeDoors&#xA;&#x9;out event startDoorsSignal&#xA;&#x9;out event stopDoorsSignal&#xA;&#x9;in event board&#xA;&#x9;in event unboard&#xA;&#x9;in event requestStop: integer&#xA;&#x9;out event setTargetSpeed: real&#xA;&#x9;in event atTargetSpeed&#xA;&#x9;&#xA;&#x9;in event startEmergency&#xA;&#x9;in event stopEmergency&#xA;&#xA;&#x9;var stopsAt: integer = 1&#xA;&#x9;var remainingCapacity: integer = 6&#xA;&#x9;var numPassengers: integer = 0&#xA;&#xA;&#x9;out event refreshUI&#xA;&#xA;internal:&#xA;&#x9;var currentSpeed: real&#xA;&#x9;var stop: integer&#xA;&#x9;var arrivingStation: integer&#xA;&#x9;var check: integer&#xA;&#x9;event setTimer: integer&#xA;&#x9;var timer: integer&#xA;&#x9;event timerOver&#xA;&#x9;event allowBoarding&#xA;&#x9;event blockBoarding&#xA;&#x9;// FEEL FREE TO EDIT&#xA;&#x9;// e.g. add internal variables,&#xA;&#x9;//       internal events, ..." name="Kat">
+  <regions xmi:type="sgraph:Region" xmi:id="_LfkoocDEEe23fImYxN3qyQ" name="main region">
+    <vertices xmi:type="sgraph:Entry" xmi:id="_LfkoosDEEe23fImYxN3qyQ">
+      <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkoo8DEEe23fImYxN3qyQ" specification="" target="_LfkopMDEEe23fImYxN3qyQ"/>
+    </vertices>
+    <vertices xmi:type="sgraph:State" xmi:id="_LfkopMDEEe23fImYxN3qyQ" name="Trolley" incomingTransitions="_Lfkoo8DEEe23fImYxN3qyQ">
+      <regions xmi:type="sgraph:Region" xmi:id="_LfkopcDEEe23fImYxN3qyQ" name="Stops">
+        <vertices xmi:type="sgraph:State" xmi:id="_LfkopsDEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;stop = valueof(requestStop);&#xD;&#xA;stopsAt |= (1 &lt;&lt; stop);&#xD;&#xA;raise refreshUI" name="StopRequest" incomingTransitions="_LfkoqcDEEe23fImYxN3qyQ _Lfkop8DEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkop8DEEe23fImYxN3qyQ" specification="requestStop" target="_LfkopsDEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_LfkoqMDEEe23fImYxN3qyQ" name="NoRequests" incomingTransitions="_Lfkoq8DEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkoqcDEEe23fImYxN3qyQ" specification="requestStop" target="_LfkopsDEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_LfkoqsDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkoq8DEEe23fImYxN3qyQ" target="_LfkoqMDEEe23fImYxN3qyQ"/>
+        </vertices>
+      </regions>
+      <regions xmi:type="sgraph:Region" xmi:id="_LfkorMDEEe23fImYxN3qyQ" name="Timer">
+        <vertices xmi:type="sgraph:Entry" xmi:id="_LfkorcDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkorsDEEe23fImYxN3qyQ" specification="" target="_Lfkor8DEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfkor8DEEe23fImYxN3qyQ" name="BoardTimer" incomingTransitions="_LfkorsDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkosMDEEe23fImYxN3qyQ" specification="setTimer /&#xA;timer= valueof(setTimer)" target="_LfkossDEEe23fImYxN3qyQ"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_LfkoscDEEe23fImYxN3qyQ" name="r1">
+            <vertices xmi:type="sgraph:State" xmi:id="_LfkossDEEe23fImYxN3qyQ" name="On" incomingTransitions="_LfkosMDEEe23fImYxN3qyQ">
+              <regions xmi:type="sgraph:Region" xmi:id="_Lfkos8DEEe23fImYxN3qyQ" name="r1">
+                <vertices xmi:type="sgraph:State" xmi:id="_LfkotMDEEe23fImYxN3qyQ" specification="" name="Counting" incomingTransitions="_LfkotsDEEe23fImYxN3qyQ _LfkouMDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkotcDEEe23fImYxN3qyQ" specification="[ timer  == 0 ] / raise timerOver" target="_LfkoucDEEe23fImYxN3qyQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkotsDEEe23fImYxN3qyQ" specification="after 10ms [timer > 0] /&#xA;timer -= 10" target="_LfkotMDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_Lfkot8DEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkouMDEEe23fImYxN3qyQ" specification="" target="_LfkotMDEEe23fImYxN3qyQ"/>
+                </vertices>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_LfkoucDEEe23fImYxN3qyQ" specification="" name="Off" incomingTransitions="_Lfkou8DEEe23fImYxN3qyQ _LfkotcDEEe23fImYxN3qyQ"/>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_LfkousDEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkou8DEEe23fImYxN3qyQ" specification="" target="_LfkoucDEEe23fImYxN3qyQ"/>
+            </vertices>
+          </regions>
+        </vertices>
+      </regions>
+      <regions xmi:type="sgraph:Region" xmi:id="_LfkovMDEEe23fImYxN3qyQ" name="Route">
+        <vertices xmi:type="sgraph:Entry" xmi:id="_LfkovcDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkovsDEEe23fImYxN3qyQ" target="_LfkoysDEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfkov8DEEe23fImYxN3qyQ" name="Emergency" incomingTransitions="_Lfkoy8DEEe23fImYxN3qyQ">
+          <regions xmi:type="sgraph:Region" xmi:id="_LfkowMDEEe23fImYxN3qyQ" name="r1">
+            <vertices xmi:type="sgraph:Choice" xmi:id="_LfkowcDEEe23fImYxN3qyQ" incomingTransitions="_LfkoxcDEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkowsDEEe23fImYxN3qyQ" specification="else" target="_LfkoxsDEEe23fImYxN3qyQ"/>
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkow8DEEe23fImYxN3qyQ" specification="[currentSpeed == 0.0] " target="_LfkoyMDEEe23fImYxN3qyQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_LfkoxMDEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkoxcDEEe23fImYxN3qyQ" specification="" target="_LfkowcDEEe23fImYxN3qyQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_LfkoxsDEEe23fImYxN3qyQ" specification="entry /&#xD;&#xA;raise setTargetSpeed: 0;&#xD;&#xA;raise refreshUI " name="OnTheWay" incomingTransitions="_LfkowsDEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkox8DEEe23fImYxN3qyQ" specification="atTargetSpeed" target="_LfkoyMDEEe23fImYxN3qyQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_LfkoyMDEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;raise openDoors;&#xD;&#xA;raise allowBoarding&#xD;&#xA;" name="EmergencyStop" incomingTransitions="_Lfkox8DEEe23fImYxN3qyQ _Lfkow8DEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_LfkoycDEEe23fImYxN3qyQ" specification="stopEmergency" target="_LfkozcDEEe23fImYxN3qyQ"/>
+            </vertices>
+          </regions>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_LfkoysDEEe23fImYxN3qyQ" name="Normal" incomingTransitions="_LfkovsDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfkoy8DEEe23fImYxN3qyQ" specification="startEmergency" target="_Lfkov8DEEe23fImYxN3qyQ"/>
+          <regions xmi:type="sgraph:Region" xmi:id="_LfkozMDEEe23fImYxN3qyQ" name="r1">
+            <vertices xmi:type="sgraph:Entry" xmi:id="_LfkozcDEEe23fImYxN3qyQ" name="h" incomingTransitions="_LfkoycDEEe23fImYxN3qyQ" kind="SHALLOW_HISTORY"/>
+            <vertices xmi:type="sgraph:State" xmi:id="_LfkozsDEEe23fImYxN3qyQ" name="OpenedDoors" incomingTransitions="_Lfko2sDEEe23fImYxN3qyQ _Lfko6sDEEe23fImYxN3qyQ">
+              <regions xmi:type="sgraph:Region" xmi:id="_Lfkoz8DEEe23fImYxN3qyQ" name="r1">
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko0MDEEe23fImYxN3qyQ" specification="" name="DoorsOpen" incomingTransitions="_Lfko1sDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko0cDEEe23fImYxN3qyQ" specification="after 2s /&#xD;&#xA; stopsAt &amp;= ~(1 &lt;&lt; arrivingStation)" target="_Lfko0sDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Choice" xmi:id="_Lfko0sDEEe23fImYxN3qyQ" incomingTransitions="_Lfko0cDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko08DEEe23fImYxN3qyQ" specification="else" target="_Lfko18DEEe23fImYxN3qyQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko1MDEEe23fImYxN3qyQ" specification="[stopsAt > 0] " target="_Lfko3cDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_Lfko1cDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko1sDEEe23fImYxN3qyQ" specification="" target="_Lfko0MDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko18DEEe23fImYxN3qyQ" name="Waiting" incomingTransitions="_Lfko08DEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko2MDEEe23fImYxN3qyQ" specification="[stopsAt > 0 &amp;&amp; stop != arrivingStation] " target="_Lfko3cDEEe23fImYxN3qyQ"/>
+                </vertices>
+              </regions>
+            </vertices>
+            <vertices xmi:type="sgraph:Entry" xmi:id="_Lfko2cDEEe23fImYxN3qyQ">
+              <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko2sDEEe23fImYxN3qyQ" specification="/arrivingStation = 0" target="_LfkozsDEEe23fImYxN3qyQ"/>
+            </vertices>
+            <vertices xmi:type="sgraph:State" xmi:id="_Lfko28DEEe23fImYxN3qyQ" name="ClosedDoors">
+              <regions xmi:type="sgraph:Region" xmi:id="_Lfko3MDEEe23fImYxN3qyQ" name="s">
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko3cDEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;raise startDoorsSignal;&#xD;&#xA;raise refreshUI;&#xD;&#xA;raise setTimer:1000" name="Signaling" incomingTransitions="_Lfko1MDEEe23fImYxN3qyQ _Lfko78DEEe23fImYxN3qyQ _Lfko2MDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko3sDEEe23fImYxN3qyQ" specification="timerOver " target="_Lfko58DEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko38DEEe23fImYxN3qyQ" specification="entry /&#xD;&#xA;currentSpeed = 24;&#xD;&#xA;raise setTargetSpeed: currentSpeed" name="SetTime" incomingTransitions="_Lfko6MDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko4MDEEe23fImYxN3qyQ" specification="atTargetSpeed" target="_Lfko5cDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko4cDEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;arrivingStation = &#xD;&#xA;valueof(approachingStation);&#xD;&#xA;check = stopsAt &amp; (1 &lt;&lt; arrivingStation);&#xD;&#xA;raise refreshUI&#xD;&#xA;" name="checkStation" incomingTransitions="_Lfko5sDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko4sDEEe23fImYxN3qyQ" specification="after 1ms" target="_Lfko68DEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko48DEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;raise setTargetSpeed:0" name="Arrival" incomingTransitions="_Lfko7cDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko5MDEEe23fImYxN3qyQ" specification="atTargetSpeed" target="_Lfko6cDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko5cDEEe23fImYxN3qyQ" specification="" name="GoNormal" incomingTransitions="_Lfko7MDEEe23fImYxN3qyQ _Lfko4MDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko5sDEEe23fImYxN3qyQ" specification="approachingStation" target="_Lfko4cDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko58DEEe23fImYxN3qyQ" specification="entry /  &#xD;&#xA;raise closeDoors;&#xD;&#xA;raise blockBoarding;&#xD;&#xA;raise stopDoorsSignal; &#xD;&#xA;raise refreshUI" name="DoorsClose" incomingTransitions="_Lfko3sDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko6MDEEe23fImYxN3qyQ" specification="after 1s" target="_Lfko38DEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:State" xmi:id="_Lfko6cDEEe23fImYxN3qyQ" specification="entry /&#xD;&#xA;currentSpeed = 0" name="Arrived" incomingTransitions="_Lfko5MDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko6sDEEe23fImYxN3qyQ" specification="after 1s / raise openDoors; &#xD;&#xA;raise refreshUI;&#xD;&#xA;raise allowBoarding&#xD;&#xA;" target="_LfkozsDEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Choice" xmi:id="_Lfko68DEEe23fImYxN3qyQ" incomingTransitions="_Lfko4sDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko7MDEEe23fImYxN3qyQ" specification="else" target="_Lfko5cDEEe23fImYxN3qyQ"/>
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko7cDEEe23fImYxN3qyQ" specification="[check != 0] " target="_Lfko48DEEe23fImYxN3qyQ"/>
+                </vertices>
+                <vertices xmi:type="sgraph:Entry" xmi:id="_Lfko7sDEEe23fImYxN3qyQ">
+                  <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko78DEEe23fImYxN3qyQ" specification="" target="_Lfko3cDEEe23fImYxN3qyQ"/>
+                </vertices>
+              </regions>
+            </vertices>
+          </regions>
+        </vertices>
+      </regions>
+      <regions xmi:type="sgraph:Region" xmi:id="_Lfko8MDEEe23fImYxN3qyQ" name="Boarding">
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfko8cDEEe23fImYxN3qyQ" specification="entry/&#xA;raise setTimer:1000" name=" obstructed" incomingTransitions="_Lfko-MDEEe23fImYxN3qyQ _Lfko9MDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko8sDEEe23fImYxN3qyQ" specification="always" target="_Lfko-8DEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfko88DEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;remainingCapacity -= 1;&#xD;&#xA;numPassengers +=1;&#xD;&#xA;raise refreshUI&#xD;&#xA;" name="Board" incomingTransitions="_Lfko_sDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko9MDEEe23fImYxN3qyQ" specification="after 1s" target="_Lfko8cDEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfko9cDEEe23fImYxN3qyQ" specification="" name="NoBoarding" incomingTransitions="_Lfko_MDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko9sDEEe23fImYxN3qyQ" specification="allowBoarding" target="_Lfko-8DEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfko98DEEe23fImYxN3qyQ" specification="entry / &#xD;&#xA;remainingCapacity += 1;&#xD;&#xA;numPassengers -=1;&#xD;&#xA;raise refreshUI" name="Unboard" incomingTransitions="_Lfko_cDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko-MDEEe23fImYxN3qyQ" specification="after 1s" target="_Lfko8cDEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:Entry" xmi:id="_Lfko-cDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko-sDEEe23fImYxN3qyQ" specification="" target="_Lfko-8DEEe23fImYxN3qyQ"/>
+        </vertices>
+        <vertices xmi:type="sgraph:State" xmi:id="_Lfko-8DEEe23fImYxN3qyQ" specification="" name="Boarding" incomingTransitions="_Lfko9sDEEe23fImYxN3qyQ _Lfko-sDEEe23fImYxN3qyQ _Lfko8sDEEe23fImYxN3qyQ">
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko_MDEEe23fImYxN3qyQ" specification="blockBoarding" target="_Lfko9cDEEe23fImYxN3qyQ"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko_cDEEe23fImYxN3qyQ" specification="unboard [numPassengers > 0] / raise setTimer:1000" target="_Lfko98DEEe23fImYxN3qyQ"/>
+          <outgoingTransitions xmi:type="sgraph:Transition" xmi:id="_Lfko_sDEEe23fImYxN3qyQ" specification="board [remainingCapacity > 0] / raise setTimer:1000" target="_Lfko88DEEe23fImYxN3qyQ"/>
+        </vertices>
+      </regions>
+    </vertices>
+  </regions>
+</sgraph:Statechart>

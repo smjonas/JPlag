@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Bur">
+	<datamodel>
+		<data expr="1" id="stopsAt" />
+		<data expr="6" id="remainingCapacity" />
+		<data expr="0" id="numPassengers" />
+		<data expr="0" id="station" />
+		<data expr="true" id="doorsOpen" />
+	</datamodel>
+	<state id="yAjaksn4nU">
+		<initial>
+			<transition target="VXTPs08REZ" type="internal">
+			</transition>
+		</initial>
+		<parallel id="VXTPs08REZ">
+			<state id="PIkwHjWSEt">
+				<initial>
+					<transition target="t8B1RbZlwa" type="internal">
+					</transition>
+				</initial>
+				<state id="gjAYzGfjGx">
+					<initial>
+						<transition target="mFQYrpEW9v" type="internal">
+						</transition>
+					</initial>
+					<state id="mFQYrpEW9v">
+						<onentry>
+							<send event="mFQYrpEW9v_t_0_timeEvent_0" delay="1s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="mFQYrpEW9v_t_0_timeEvent_0" />
+						</onexit>
+						<transition event="mFQYrpEW9v_t_0_timeEvent_0"  target="t8B1RbZlwa">
+						</transition>
+					</state>
+					<state id="t8B1RbZlwa">
+						<onentry>
+							<send event="t8B1RbZlwa_t_0_timeEvent_0" delay="2s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="t8B1RbZlwa_t_0_timeEvent_0" />
+						</onexit>
+						<onentry>
+							<send event="openDoors">
+							</send>
+							 <assign location="doorsOpen" expr="true"/>
+						</onentry>
+						<transition event="t8B1RbZlwa_t_0_timeEvent_0"  target="thvMjy0rmC">
+						</transition>
+					</state>
+					<state id="thvMjy0rmC">
+						<transition   target="gjAYzGfjGx.choice_0">
+						</transition>
+					</state>
+					<state id="gjAYzGfjGx.choice_0">
+						<transition  cond="(stopsAt &amp; ~(1 &lt;&lt; station)) != 0" target="A4aFh9QgTl">
+						</transition>
+						<transition   target="thvMjy0rmC">
+						</transition>
+					</state>
+					<transition event="startEmergency"  target="IAodkUnFxm">
+					</transition>
+				</state>
+				<state id="A4aFh9QgTl">
+					<initial>
+						<transition target="VGOSnSGQ9h" type="internal">
+						</transition>
+					</initial>
+					<state id="JJyOcMqrJV">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="0" />
+							</send>
+						</onentry>
+						<transition event="atTargetSpeed"  target="gjAYzGfjGx">
+							 <assign location="station" expr="_event.data"/>
+							 <assign location="stopsAt" expr="stopsAt &amp; ~(1 &lt;&lt; _event.data)"/>
+						</transition>
+					</state>
+					<state id="wQ9TZ35Q51">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="24" />
+							</send>
+						</onentry>
+						<transition event="atTargetSpeed"  target="mHEqBh34XZ">
+						</transition>
+					</state>
+					<state id="mHEqBh34XZ">
+						<onentry>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+						<transition event="approachingStation" cond="(stopsAt &amp; (1 &lt;&lt; _event.data)) != 0" target="JJyOcMqrJV">
+						</transition>
+					</state>
+					<state id="VGOSnSGQ9h">
+						<initial>
+							<transition target="BK7qil8M7M" type="internal">
+							</transition>
+						</initial>
+						<state id="BK7qil8M7M">
+							<onentry>
+								<send event="BK7qil8M7M_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="BK7qil8M7M_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="BK7qil8M7M_t_0_timeEvent_0"  target="Pvf4yxWTzy">
+							</transition>
+						</state>
+						<state id="Pvf4yxWTzy">
+							<onentry>
+								<send event="Pvf4yxWTzy_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="Pvf4yxWTzy_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="Pvf4yxWTzy_t_0_timeEvent_0"  target="pgySbIcqDg">
+								<send event="startDoorsSignal">
+								</send>
+							</transition>
+							<transition event="board"  target="HBsUglms86">
+							</transition>
+							<transition event="unboard"  target="HBsUglms86">
+							</transition>
+						</state>
+						<state id="pgySbIcqDg">
+							<onentry>
+								<send event="pgySbIcqDg_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="pgySbIcqDg_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="closeDoors">
+								</send>
+								<send event="stopDoorsSignal">
+								</send>
+								 <assign location="doorsOpen" expr="false"/>
+							</onentry>
+							<transition event="pgySbIcqDg_t_0_timeEvent_0"  target="wQ9TZ35Q51">
+							</transition>
+						</state>
+						<state id="HBsUglms86">
+							<onentry>
+								<send event="HBsUglms86_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="HBsUglms86_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="startDoorsSignal">
+								</send>
+							</onentry>
+							<transition event="HBsUglms86_t_0_timeEvent_0"  target="Pvf4yxWTzy">
+							</transition>
+						</state>
+					</state>
+					<transition event="startEmergency"  target="dpSdDBdXWq">
+					</transition>
+				</state>
+				<state id="dpSdDBdXWq">
+					<transition event="stopEmergency"  target="A4aFh9QgTl">
+					</transition>
+				</state>
+				<state id="IAodkUnFxm">
+					<transition event="stopEmergency"  target="t8B1RbZlwa">
+					</transition>
+				</state>
+			</state>
+			<state id="_r1">
+				<initial>
+					<transition target="iOk6Z0w8BV" type="internal">
+					</transition>
+				</initial>
+				<state id="iOk6Z0w8BV">
+					<transition event="startEmergency"  target="uXShkZBXRY">
+					</transition>
+				</state>
+				<state id="uXShkZBXRY">
+					<onentry>
+						<send event="setTargetSpeed">
+						<content expr="0" />
+						</send>
+					</onentry>
+					<transition event="atTargetSpeed"  target="PDjZFNhBEX">
+					</transition>
+					<transition event="stopEmergency"  target="iOk6Z0w8BV">
+					</transition>
+				</state>
+				<state id="PDjZFNhBEX">
+					<onentry>
+						<send event="openDoors">
+						</send>
+						 <assign location="doorsOpen" expr="true"/>
+					</onentry>
+					<transition event="stopEmergency"  target="iOk6Z0w8BV">
+					</transition>
+				</state>
+			</state>
+			<state id="Xngvo1hOy6">
+				<initial>
+					<transition target="unboard" type="internal">
+					</transition>
+				</initial>
+				<state id="unboard">
+					<transition event="unboard" cond="doorsOpen &amp;&amp; numPassengers &gt; 0" target="F1bjCcIMob">
+						 <assign location="numPassengers" expr="numPassengers - 1"/>
+						 <assign location="remainingCapacity" expr="remainingCapacity + 1"/>
+					</transition>
+				</state>
+				<state id="F1bjCcIMob">
+					<onentry>
+						<send event="F1bjCcIMob_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="F1bjCcIMob_t_0_timeEvent_0" />
+					</onexit>
+					<transition event="F1bjCcIMob_t_0_timeEvent_0"  target="unboard">
+					</transition>
+				</state>
+			</state>
+			<state id="p4bnWEhP1D">
+				<initial>
+					<transition target="O9YFkiIsuf" type="internal">
+					</transition>
+				</initial>
+				<state id="O9YFkiIsuf">
+					<transition event="board" cond="doorsOpen &amp;&amp; remainingCapacity &gt; 0" target="jwpo4eItAq">
+						 <assign location="numPassengers" expr="numPassengers + 1"/>
+						 <assign location="remainingCapacity" expr="remainingCapacity - 1"/>
+					</transition>
+				</state>
+				<state id="jwpo4eItAq">
+					<onentry>
+						<send event="jwpo4eItAq_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="jwpo4eItAq_t_0_timeEvent_0" />
+					</onexit>
+					<transition event="jwpo4eItAq_t_0_timeEvent_0"  target="O9YFkiIsuf">
+					</transition>
+				</state>
+			</state>
+			<state id="_r4">
+				<initial>
+					<transition target="C4ZAaHGijZ" type="internal">
+					</transition>
+				</initial>
+				<state id="C4ZAaHGijZ">
+					<transition event="requestStop"  target="C4ZAaHGijZ">
+						 <assign location="stopsAt" expr="stopsAt | (1 &lt;&lt; _event.data)"/>
+					</transition>
+				</state>
+			</state>
+			<state id="_r5">
+				<initial>
+					<transition target="UhsUCpPPsl" type="internal">
+					</transition>
+				</initial>
+				<state id="UhsUCpPPsl">
+					<onentry>
+						<send event="UhsUCpPPsl_t_0_timeEvent_0" delay="500ms"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="UhsUCpPPsl_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="UhsUCpPPsl_t_0_timeEvent_0"  target="UhsUCpPPsl">
+					</transition>
+				</state>
+			</state>
+		</parallel>
+	</state>
+</scxml>

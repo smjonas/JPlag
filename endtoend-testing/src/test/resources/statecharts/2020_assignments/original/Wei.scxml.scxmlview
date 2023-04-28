@@ -1,0 +1,257 @@
+main: Region {
+  Main: Region {
+    buttons: Region {
+      buttonPressed: State {
+        Transition (-> idle) (event='ui.actionReleased') {
+        }
+        Timed transition (-> buttonHold)  {
+        }
+      }
+      idle: State {
+        Transition (-> buttonPressed) (event='ui.actionPressed') {
+        }
+      }
+      buttonHold: State {
+        Transition (-> idle) (event='ui.actionReleased') {
+          Send (event='ui.action', delay='null') {
+        }
+      }
+    }
+    timers: Region {
+      idle: State {
+        Transition (-> graceTimer) (event='timers.graceStart') {
+        }
+      }
+      graceTimer: Region {
+        Action (type=OnEntry) {
+          Script
+        }
+        Action (type=OnExit) {
+          Script
+        }
+        Transition (-> idle) (event='employee.goHome') {
+        }
+        Timed transition (-> shiftTimer)  {
+        }
+        g4: State {
+          Action (type=OnEntry) {
+            Script
+          }
+          Timed transition (-> g3)  {
+          }
+        }
+        g3: State {
+          Action (type=OnEntry) {
+            Script
+          }
+          Timed transition (-> g2)  {
+          }
+        }
+        g2: State {
+          Action (type=OnEntry) {
+            Script
+          }
+          Timed transition (-> g1)  {
+          }
+        }
+        g1: State {
+          Action (type=OnEntry) {
+            Script
+          }
+        }
+      }
+      shiftTimer: Region {
+        Action (type=OnEntry) {
+          Send (event='timers.shiftStart', delay='null') {
+        }
+        Timed transition (-> idle)  {
+          Send (event='timers.shiftEnd', delay='null') {
+        }
+        reduceEnergy: State {
+          Timed transition (-> reduceEnergy)  {
+          }
+          Timed transition (-> reduceEnergy) (cond='!employee_toiletBreaking') {
+            Script
+          }
+        }
+      }
+    }
+    factory: Region {
+      AtHome: State {
+        Transition (-> Grace) (event='employee.goToWork') {
+          Assignment
+          Script
+          Script
+          Script
+        }
+        Transition (-> AtHome) (event='employee.goHome') {
+          Script
+        }
+      }
+      Grace: State {
+        Action (type=OnEntry) {
+          If
+          Send (event='timers.graceStart', delay='null') {
+          }
+        }
+        Action (type=OnEntry) {
+          If
+          Script
+          }
+        }
+        Transition (-> Grace) (event='employee.shiftClicked') {
+          Assignment
+          Script
+        }
+        Transition (-> Shift) (event='timers.shiftStart') {
+          Script
+        }
+        Transition (-> Grace) (event='employee.goToWork') {
+          Script
+        }
+        Transition (-> AtHome) (event='employee.goHome') {
+          Script
+          Script
+          Script
+        }
+      }
+      Shift: Region {
+        Action (type=OnEntry) {
+          Script
+        }
+        Action (type=OnExit) {
+          Script
+        }
+        Transition (-> Grace) (event='timers.shiftEnd') {
+          Assignment
+          Assignment
+          Script
+          Script
+          Script
+        }
+        Shift.choice_0: State {
+          Transition (-> Unload) (cond='employee_selectedShift == 0') {
+          }
+          Transition (-> Assembly) (cond='employee_selectedShift == 1') {
+          }
+          Transition (-> Load)  {
+          }
+        }
+        Load: Region {
+          AtStock: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtTruck) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+            Transition (-> AtStockCarrying) (event='ui.action', cond='_event.data == 'Pick up' && getFinished(); > 0') {
+            }
+            Transition (-> AtToilet) (event='ui.action', cond='_event.data == 'Toilet Break'') {
+              Assignment
+            }
+          }
+          AtTruckCarrying: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStockCarrying) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+            Transition (-> AtTruck) (event='ui.action', cond='_event.data == 'Drop'') {
+              Script
+            }
+          }
+          AtTruck: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStock) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+          }
+          AtStockCarrying: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtTruckCarrying) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+          }
+          AtToilet: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStock) (event='ui.action', cond='_event.data == 'Done'') {
+              Assignment
+            }
+          }
+        }
+        Unload: Region {
+          AtTruck: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStock) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+            Transition (-> AtTruckCarrying) (event='ui.action', cond='_event.data == 'Pick up'') {
+            }
+          }
+          AtStock: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtTruck) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+            Transition (-> AtToilet) (event='ui.action', cond='_event.data == 'Toilet Break'') {
+              Assignment
+            }
+          }
+          AtStockCarrying: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtTruckCarrying) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+            Transition (-> AtStock) (event='ui.action', cond='_event.data == 'Drop'') {
+              Script
+            }
+          }
+          AtTruckCarrying: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStockCarrying) (event='ui.action', cond='_event.data == 'Walk'') {
+            }
+          }
+          AtToilet: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> AtStock) (event='ui.action', cond='_event.data == 'Done'') {
+              Assignment
+            }
+          }
+        }
+        Assembly: Region {
+          Assembly: State {
+            Action (type=OnEntry) {
+              Script
+              Script
+            }
+            Transition (-> Assembly) (event='ui.action', cond='_event.data == 'Assemble' && getMaterial(); > 0') {
+              Script
+              Script
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Sep">
+	<datamodel>
+		<data expr="0" id="stopsAt" />
+		<data expr="6" id="remainingCapacity" />
+		<data expr="0" id="numPassengers" />
+		<data expr="0" id="arrival" />
+		<data expr="1" id="i" />
+		<data expr="0" id="signal" />
+		<data expr="true" id="stop" />
+		<data expr="true" id="allow" />
+		<data expr="false" id="stopScheduled" />
+	</datamodel>
+	<state id="main_region">
+		<initial>
+			<transition target="Normal" type="internal">
+			</transition>
+		</initial>
+		<parallel id="Normal">
+			<state id="normal">
+				<initial>
+					<transition target="Norm" type="internal">
+					</transition>
+				</initial>
+				<history type="deep" id="h">
+					<transition target="Norm">
+					</transition>
+				</history>
+				<state id="Norm">
+					<initial>
+						<transition target="arrival" type="internal">
+						</transition>
+					</initial>
+					<state id="readyToDepart">
+						<onentry>
+							 <assign location="allow" expr="true"/>
+						</onentry>
+						<transition  cond="stopScheduled" target="departure">
+							 <assign location="signal" expr="0"/>
+						</transition>
+					</state>
+					<state id="toMove">
+						<onentry>
+							<send event="toMove_t_0_timeEvent_0" delay="1s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="toMove_t_0_timeEvent_0" />
+						</onexit>
+						<onentry>
+							 <assign location="allow" expr="false"/>
+							<send event="stopDoorsSignal">
+							</send>
+							<send event="closeDoors">
+							</send>
+						</onentry>
+						<transition event="toMove_t_0_timeEvent_0"  target="speedup">
+							 <assign location="stopsAt" expr="stopsAt &amp; ~(1 &lt;&lt; arrival)"/>
+						</transition>
+					</state>
+					<state id="Norm.choice_0">
+						<transition  cond="(stopsAt &amp; (1 &lt;&lt; _event.data)) != 0" target="speedDown">
+							 <assign location="arrival" expr="_event.data"/>
+						</transition>
+						<transition   target="speedup">
+						</transition>
+					</state>
+					<state id="arrival">
+						<onentry>
+							<send event="arrival_t_0_timeEvent_0" delay="2s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="arrival_t_0_timeEvent_0" />
+						</onexit>
+						<onentry>
+							<send event="openDoors">
+							</send>
+							 <assign location="allow" expr="true"/>
+							 <assign location="stop" expr="true"/>
+						</onentry>
+						<transition event="arrival_t_0_timeEvent_0"  target="readyToDepart">
+						</transition>
+					</state>
+					<state id="speedup">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="24" />
+							</send>
+							<send event="closeDoors">
+							</send>
+							 <assign location="stop" expr="false"/>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+						<transition event="approachingStation"  target="Norm.choice_0">
+						</transition>
+					</state>
+					<state id="departure">
+						<onentry>
+							<send event="startDoorsSignal">
+							</send>
+							 <assign location="allow" expr="true"/>
+						</onentry>
+						<transition  cond="signal &gt; 1" target="toMove">
+						</transition>
+					</state>
+					<state id="speedDown">
+						<onentry>
+							<send event="closeDoors">
+							</send>
+							<send event="setTargetSpeed">
+							<content expr="0" />
+							</send>
+						</onentry>
+						<transition event="atTargetSpeed"  target="arrival">
+						</transition>
+					</state>
+				</state>
+			</state>
+			<state id="boarding">
+				<initial>
+					<transition target="Normal.boarding.choice_2" type="internal">
+					</transition>
+				</initial>
+				<state id="arrivalUnboard">
+					<onentry>
+						 <assign location="numPassengers" expr="numPassengers - 1"/>
+						 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+						 <assign location="signal" expr="0"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+				</state>
+				<state id="Normal.boarding.choice_0">
+					<transition  cond="remainingCapacity &gt; 0" target="arivalBoard">
+					</transition>
+					<transition   target="boarding">
+					</transition>
+				</state>
+				<state id="arivalBoard">
+					<onentry>
+						<send event="arivalBoard_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="arivalBoard_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="numPassengers" expr="numPassengers + 1"/>
+						 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+						 <assign location="signal" expr="0"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="arivalBoard_t_0_timeEvent_0"  target="boarding">
+						 <assign location="signal" expr="0"/>
+					</transition>
+				</state>
+				<state id="boarding">
+					<onentry>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition  cond="!allow" target="notAllowed">
+					</transition>
+					<transition event="unboard"  target="Normal.boarding.choice_1">
+					</transition>
+					<transition event="board"  target="Normal.boarding.choice_0">
+					</transition>
+				</state>
+				<state id="Normal.boarding.choice_1">
+					<transition  cond="remainingCapacity &lt; 6" target="arrivalUnboard">
+					</transition>
+				</state>
+				<state id="Normal.boarding.choice_2">
+					<transition  cond="allow" target="boarding">
+					</transition>
+					<transition   target="notAllowed">
+					</transition>
+				</state>
+				<state id="notAllowed">
+				</state>
+			</state>
+			<state id="timer">
+				<initial>
+					<transition target="timer" type="internal">
+					</transition>
+				</initial>
+				<state id="timer">
+					<onentry>
+						<send event="timer_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="timer_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="signal" expr="signal + 1"/>
+					</onentry>
+					<transition event="timer_t_0_timeEvent_0"  target="timer">
+					</transition>
+				</state>
+			</state>
+			<state id="requests">
+				<initial>
+					<transition target="request" type="internal">
+					</transition>
+				</initial>
+				<state id="request">
+					<onentry>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="requestStop"  target="schedules">
+					</transition>
+				</state>
+				<state id="schedules">
+					<onentry>
+						 <assign location="i" expr="_event.data"/>
+						 <assign location="stopsAt" expr="stopsAt | (1 &lt;&lt; i)"/>
+						 <assign location="stopScheduled" expr="((stopsAt &amp; (1 &lt;&lt; 0)) != 0 || (stopsAt &amp; (1 &lt;&lt; 1)) != 0 || (stopsAt &amp; (1 &lt;&lt; 2)) != 0 || (stopsAt &amp; (1 &lt;&lt; 3)) != 0)"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="requestStop"  target="schedules">
+					</transition>
+				</state>
+			</state>
+			<transition event="startEmergency"  target="emergency">
+			</transition>
+		</parallel>
+		<state id="emergency">
+			<initial>
+				<transition target="emergency.choice_0" type="internal">
+				</transition>
+			</initial>
+			<state id="emergencystop">
+				<onentry>
+					<send event="setTargetSpeed">
+					<content expr="0" />
+					</send>
+					<send event="refreshUI">
+					</send>
+				</onentry>
+			</state>
+			<state id="emergency.choice_0">
+				<transition  cond="stop == false" target="emergencystop">
+				</transition>
+				<transition   target="emergencyOpen">
+				</transition>
+			</state>
+			<state id="emergencyOpen">
+				<onentry>
+					<send event="openDoors">
+					</send>
+					<send event="refreshUI">
+					</send>
+				</onentry>
+				<transition event="board"  target="emergency.choice_1">
+				</transition>
+				<transition event="unboard"  target="emergency.choice_2">
+				</transition>
+				<transition event="stopEmergency"  target="h">
+				</transition>
+			</state>
+			<state id="emergencyBoard">
+				<onentry>
+					 <assign location="numPassengers" expr="numPassengers + 1"/>
+					 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+					<send event="refreshUI">
+					</send>
+				</onentry>
+			</state>
+			<state id="emergencyUnboard">
+				<onentry>
+					<send event="emergencyUnboard_t_0_timeEvent_0" delay="1s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="emergencyUnboard_t_0_timeEvent_0" />
+				</onexit>
+				<onentry>
+					 <assign location="numPassengers" expr="numPassengers - 1"/>
+					 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+					<send event="refreshUI">
+					</send>
+				</onentry>
+				<transition event="emergencyUnboard_t_0_timeEvent_0"  target="emergencyOpen">
+				</transition>
+			</state>
+			<state id="emergency.choice_1">
+				<transition  cond="remainingCapacity &gt; 0" target="emergencyBoard">
+				</transition>
+				<transition   target="emergencyOpen">
+				</transition>
+			</state>
+			<state id="emergency.choice_2">
+				<transition  cond="remainingCapacity &lt; 6" target="emergencyUnboard">
+				</transition>
+				<transition   target="emergencyOpen">
+				</transition>
+			</state>
+		</state>
+	</state>
+</scxml>

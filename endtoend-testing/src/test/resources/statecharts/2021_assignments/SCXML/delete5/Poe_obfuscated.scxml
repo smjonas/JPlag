@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Poe">
+	<datamodel>
+		<data expr="1" id="stopsAt" />
+		<data expr="6" id="remainingCapacity" />
+		<data expr="0" id="numPassengers" />
+		<data expr="false" id="waited2s" />
+		<data expr="0" id="currentStation" />
+		<data expr="0" id="requestedStop" />
+		<data expr="0" id="currentSpeed" />
+		<data expr="true" id="noEmergency" />
+	</datamodel>
+	<state id="main_region">
+		<initial>
+			<transition target="layer1" type="internal">
+			</transition>
+		</initial>
+		<parallel id="layer1">
+			<state id="Main">
+				<initial>
+					<transition target="NormalOperation" type="internal">
+					</transition>
+				</initial>
+				<state id="NormalOperation">
+					<initial>
+						<transition target="ArrivalAtStation" type="internal">
+						</transition>
+					</initial>
+					<state id="Departure">
+						<initial>
+							<transition target="StartDeparture" type="internal">
+							</transition>
+						</initial>
+						<state id="StartDeparture">
+							<onentry>
+								<send event="startDoorsSignal">
+								</send>
+								<send event="wait1s">
+								</send>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="wait1sDone"  target="BoardingStop">
+							</transition>
+						</state>
+						<state id="BoardingStop">
+							<onentry>
+								<send event="BoardingStop_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="BoardingStop_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="stopBoarding">
+								</send>
+								<send event="stopDoorsSignal">
+								</send>
+								<send event="closeDoors">
+								</send>
+								 <assign location="waited2s" expr="false"/>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="BoardingStop_t_0_timeEvent_0"  target="StartDriving">
+							</transition>
+						</state>
+						<state id="StartDriving">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="24" />
+								</send>
+								 <assign location="currentSpeed" expr="24"/>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="atTargetSpeed"  target="FullyAccelerated">
+							</transition>
+						</state>
+						<state id="FullyAccelerated">
+							<transition event="approachingStation"  target="Departure.choice_0">
+							</transition>
+						</state>
+						<state id="Departure.choice_0">
+							<transition  cond="(stopsAt &amp; (1 &lt;&lt; _event.data)) != 0" target="ApproachingStation">
+							</transition>
+							<transition   target="FullyAccelerated">
+							</transition>
+						</state>
+						<state id="ApproachingStation">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="0" />
+								</send>
+								<send event="refreshUI">
+								</send>
+								 <assign location="currentStation" expr="_event.data"/>
+							</onentry>
+							<transition event="atTargetSpeed"  target="ArrivalAtStaion">
+								 <assign location="currentSpeed" expr="0"/>
+							</transition>
+						</state>
+					</state>
+					<history type = "shallow" id="ShallowHistory">
+						<transition target="ArrivalAtStation">
+						</transition>
+					</history>
+					<state id="ArrivalAtStation">
+						<initial>
+							<transition target="BoardingStart" type="internal">
+							</transition>
+						</initial>
+						<state id="ArrivalAtStaion">
+							<onentry>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+						</state>
+						<state id="WaitingForRequest">
+						</state>
+						<state id="BoardingStart">
+							<onentry>
+								<send event="BoardingStart_t_0_timeEvent_0" delay="2s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="BoardingStart_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="startBoarding">
+								</send>
+								 <assign location="currentSpeed" expr="0"/>
+								 <assign location="stopsAt" expr="stopsAt &amp; ~(1 &lt;&lt; currentStation)"/>
+								<send event="refreshUI">
+								</send>
+							</onentry>
+							<transition event="BoardingStart_t_0_timeEvent_0"  target="ArrivalAtStation.choice_0">
+								 <assign location="waited2s" expr="true"/>
+							</transition>
+						</state>
+						<state id="ArrivalAtStation.choice_0">
+							<transition  cond="stopsAt &gt; 0" target="Departure">
+							</transition>
+							<transition   target="WaitingForRequest">
+							</transition>
+						</state>
+					</state>
+					<transition event="startEmergency"  target="Emergency">
+						 <assign location="noEmergency" expr="false"/>
+						<send event="stopDoorsSignal">
+						</send>
+					</transition>
+				</state>
+				<state id="Emergency">
+					<initial>
+						<transition target="Emergency.choice_0" type="internal">
+						</transition>
+					</initial>
+					<state id="StartEmergencyA">
+						<onentry>
+							<send event="startBoarding">
+							</send>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+						<transition event="stopEmergency"  target="ShallowHistory">
+							 <assign location="noEmergency" expr="true"/>
+						</transition>
+					</state>
+					<state id="Emergency.choice_0">
+						<transition  cond="currentSpeed == 0" target="StartEmergencyA">
+						</transition>
+						<transition   target="StartEmergencyB">
+						</transition>
+					</state>
+					<state id="StartEmergencyB">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="0" />
+							</send>
+							 <assign location="currentSpeed" expr="0"/>
+							<send event="refreshUI">
+							</send>
+						</onentry>
+					</state>
+				</state>
+			</state>
+			<state id="Waiter">
+				<initial>
+					<transition target="NoWaiting" type="internal">
+					</transition>
+				</initial>
+				<state id="NoWaiting">
+					<transition event="wait1s"  target="StartWaiting">
+					</transition>
+				</state>
+				<state id="StartWaiting">
+					<onentry>
+						<send event="StartWaiting_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="StartWaiting_t_0_timeEvent_0" />
+					</onexit>
+					<transition event="StartWaiting_t_0_timeEvent_0" cond="noEmergency == true" target="NoWaiting">
+						<send event="wait1sDone">
+						</send>
+					</transition>
+					<transition event="unboard" cond="numPassengers &gt; 0" target="ResetWaiting">
+					</transition>
+					<transition event="board" cond="remainingCapacity &gt; 0" target="ResetWaiting">
+					</transition>
+				</state>
+				<state id="ResetWaiting">
+					<transition event="wait1s"  target="StartWaiting">
+					</transition>
+				</state>
+			</state>
+			<state id="Boarding">
+				<initial>
+					<transition target="NoBoarding" type="internal">
+					</transition>
+				</initial>
+				<state id="NoBoarding">
+					<onentry>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+				</state>
+				<state id="Boarding">
+					<transition event="board" cond="remainingCapacity &gt; 0" target="Board">
+					</transition>
+					<transition event="unboard" cond="numPassengers &gt; 0" target="Unboard">
+					</transition>
+					<transition event="wait1sDone"  target="NoBoarding">
+					</transition>
+				</state>
+				<state id="Board">
+					<onentry>
+						<send event="Board_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="Board_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="numPassengers" expr="numPassengers + 1"/>
+						 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="Board_t_0_timeEvent_0"  target="layer1.Boarding.choice_0">
+					</transition>
+				</state>
+				<state id="Unboard">
+					<onentry>
+						<send event="Unboard_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="Unboard_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="numPassengers" expr="numPassengers - 1"/>
+						 <assign location="remainingCapacity" expr="6 - numPassengers"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="Unboard_t_0_timeEvent_0"  target="layer1.Boarding.choice_1">
+					</transition>
+				</state>
+				<state id="layer1.Boarding.choice_0">
+					<transition   target="Boarding">
+					</transition>
+				</state>
+				<state id="layer1.Boarding.choice_1">
+					<transition  cond="stopsAt &gt; 0 &amp;&amp; noEmergency == true" target="Boarding">
+						<send event="wait1s">
+						</send>
+					</transition>
+					<transition   target="Boarding">
+					</transition>
+				</state>
+			</state>
+			<state id="StopRequests">
+				<initial>
+					<transition target="NoRequests" type="internal">
+					</transition>
+				</initial>
+				<state id="NoRequests">
+					<transition event="requestStop" cond="_event.data != currentStation" target="StopRequest">
+					</transition>
+				</state>
+				<state id="StopRequest">
+					<onentry>
+						 <assign location="requestedStop" expr="_event.data"/>
+						 <assign location="stopsAt" expr="stopsAt | (1 &lt;&lt; requestedStop)"/>
+						<send event="refreshUI">
+						</send>
+					</onentry>
+					<transition event="requestStop" cond="_event.data != currentStation" target="StopRequest">
+					</transition>
+				</state>
+			</state>
+		</parallel>
+	</state>
+</scxml>

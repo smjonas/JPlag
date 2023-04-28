@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Bor">
+	<datamodel>
+		<data expr="0" id="assignedShift" />
+	</datamodel>
+	<state id="kJXEQnfoEG">
+		<initial>
+			<transition target="U2diGQSzev" type="internal">
+			</transition>
+		</initial>
+		<state id="U2diGQSzev">
+			<onentry>
+				<script>
+					setMsg('At home.');
+				</script>
+				<script>
+					increaseEnergy(50);
+				</script>
+			</onentry>
+			<transition event="employee.goToWork"  target="p6GTVWMz2P">
+			</transition>
+		</state>
+		<state id="p6GTVWMz2P">
+			<onentry>
+				<script>
+					shiftsShow();
+				</script>
+				<script>
+					setMsg('At work.');
+				</script>
+				<script>
+					pushMsg();
+				</script>
+			</onentry>
+			<onexit>
+				<script>
+					shiftsHide();
+				</script>
+				<script>
+					popMsg();
+				</script>
+			</onexit>
+			<initial>
+				<transition target="XHI5KovcVl" type="internal">
+				 <assign location="assignedShift" expr="getRandomInteger(3);"/>
+				</transition>
+			</initial>
+			<state id="XHI5KovcVl">
+				<onentry>
+					<send event="XHI5KovcVl_t_2_timeEvent_0" delay="4s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="XHI5KovcVl_t_2_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<script>
+						shiftHighlightAssigned(assignedShift);
+					</script>
+					<script>
+						setMsg('Select a shift type.');
+					</script>
+				</onentry>
+				<onentry>
+					<if cond="getEnergy(); &lt; 25">
+					<script>
+						setMsg('Not enough energy to work.');
+					</script>
+					</if>
+				</onentry>
+				<transition event="employee.shiftClicked"  target="XHI5KovcVl">
+					 <assign location="assignedShift" expr="_event.data"/>
+				</transition>
+				<transition event="employee.goHome"  target="U2diGQSzev">
+				</transition>
+				<transition event="XHI5KovcVl_t_2_timeEvent_0" cond="getEnergy(); &gt;= 25" target="jZZtlD8eSk">
+					<script>
+						shiftHighlightActive(assignedShift);
+					</script>
+				</transition>
+			</state>
+			<parallel id="jZZtlD8eSk">
+				<onentry>
+					<send event="jZZtlD8eSk_t_0_timeEvent_0" delay="10s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="jZZtlD8eSk_t_0_timeEvent_0" />
+				</onexit>
+				<onexit>
+					<script>
+						increasePay(10);
+					</script>
+					<script>
+						setActions('');
+					</script>
+				</onexit>
+				<state id="Hzoh1oDWkT">
+					<initial>
+						<transition target="JoBLLVuWMj" type="internal">
+						</transition>
+					</initial>
+					<state id="X6fjX05YII">
+						<onentry>
+							<script>
+								setActions('Walk,Toilet break');
+							</script>
+							<script>
+								setMsg('At stock.');
+							</script>
+						</onentry>
+						<onentry>
+							<if cond="assignedShift == 2">
+							<script>
+								setActions('Walk,Toilet break,Pick up');
+							</script>
+							</if>
+						</onentry>
+						<transition event="walk"  target="Y50v1ruiTo">
+						</transition>
+						<transition event="toiletBreak"  target="HUkBAgjw0v">
+						</transition>
+						<transition event="pickUp" cond="assignedShift == 2 &amp;&amp; getFinished(); &gt; 0" target="izQ7g81VKv">
+							<script>
+								increaseFinished(-1);
+							</script>
+						</transition>
+					</state>
+					<state id="Y50v1ruiTo">
+						<onentry>
+							<script>
+								setActions('Walk');
+							</script>
+							<script>
+								setMsg('At truck.');
+							</script>
+						</onentry>
+						<onentry>
+							<if cond="assignedShift == 0">
+							<script>
+								setActions('Walk,Pick up');
+							</script>
+							</if>
+						</onentry>
+						<transition event="walk"  target="X6fjX05YII">
+						</transition>
+						<transition event="pickUp" cond="assignedShift == 0" target="SZyY4oShdd">
+						</transition>
+					</state>
+					<state id="izQ7g81VKv">
+						<onentry>
+							<script>
+								setActions('Walk');
+							</script>
+							<script>
+								setMsg('At stock, carrying material.');
+							</script>
+						</onentry>
+						<onentry>
+							<if cond="assignedShift == 0">
+							<script>
+								setActions('Walk,Drop');
+							</script>
+							</if>
+						</onentry>
+						<transition event="drop" cond="assignedShift == 0" target="X6fjX05YII">
+							<script>
+								increaseMaterial(1);
+							</script>
+						</transition>
+						<transition event="walk"  target="SZyY4oShdd">
+						</transition>
+					</state>
+					<state id="SZyY4oShdd">
+						<onentry>
+							<script>
+								setActions('Walk');
+							</script>
+							<script>
+								setMsg('At truck, carrying material.');
+							</script>
+						</onentry>
+						<onentry>
+							<if cond="assignedShift == 2">
+							<script>
+								setActions('Walk,Drop');
+							</script>
+							</if>
+						</onentry>
+						<transition event="walk"  target="izQ7g81VKv">
+						</transition>
+						<transition event="drop" cond="assignedShift == 2" target="Y50v1ruiTo">
+						</transition>
+					</state>
+					<state id="HUkBAgjw0v">
+						<onentry>
+							<script>
+								setActions('Done');
+							</script>
+							<script>
+								setMsg('On toilet break.');
+							</script>
+						</onentry>
+						<transition event="done"  target="X6fjX05YII">
+						</transition>
+					</state>
+					<state id="JoBLLVuWMj">
+						<onentry>
+							<send event="JoBLLVuWMj_t_0_timeEvent_0" delay="0s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="JoBLLVuWMj_t_0_timeEvent_0" />
+						</onexit>
+						<onentry>
+							<send event="JoBLLVuWMj_t_1_timeEvent_0" delay="0s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="JoBLLVuWMj_t_1_timeEvent_0" />
+						</onexit>
+						<transition event="JoBLLVuWMj_t_0_timeEvent_0" cond="assignedShift == 0 || assignedShift == 2" target="X6fjX05YII">
+						</transition>
+						<transition event="JoBLLVuWMj_t_1_timeEvent_0" cond="assignedShift == 1" target="bozwKKfSyA">
+						</transition>
+					</state>
+					<state id="bozwKKfSyA">
+						<onentry>
+							<script>
+								setActions('Assemble');
+							</script>
+							<script>
+								setMsg('At assembly.');
+							</script>
+						</onentry>
+						<transition event="assemble" cond="getMaterial(); &gt; 0" target="bozwKKfSyA">
+							<script>
+								increaseMaterial(-1);
+							</script>
+							<script>
+								increaseFinished(1);
+							</script>
+						</transition>
+					</state>
+				</state>
+				<state id="ZxUuC4M9hn">
+					<initial>
+						<transition target="qKzBGk10Am" type="internal">
+						</transition>
+					</initial>
+					<state id="qKzBGk10Am">
+						<transition event="ui.actionPressed"  target="fXabyXQStH">
+						</transition>
+					</state>
+					<state id="fXabyXQStH">
+						<onentry>
+							<send event="fXabyXQStH_t_1_timeEvent_0" delay="500ms"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="fXabyXQStH_t_1_timeEvent_0" />
+						</onexit>
+						<transition event="ui.actionReleased"  target="qKzBGk10Am">
+						</transition>
+						<transition event="fXabyXQStH_t_1_timeEvent_0"  target="futoqzT5JD">
+						</transition>
+					</state>
+					<state id="futoqzT5JD">
+						<onentry>
+							<if cond="_event.data == 'Walk'">
+							<send event="walk">
+							</send>
+							</if>
+						</onentry>
+						<onentry>
+							<if cond="_event.data == 'Pick up'">
+							<send event="pickUp">
+							</send>
+							</if>
+						</onentry>
+						<onentry>
+							<if cond="_event.data == 'Drop'">
+							<send event="drop">
+							</send>
+							</if>
+						</onentry>
+						<onentry>
+							<if cond="_event.data == 'Toilet break'">
+							<send event="toiletBreak">
+							</send>
+							</if>
+						</onentry>
+						<onentry>
+							<if cond="_event.data == 'Done'">
+							<send event="done">
+							</send>
+							</if>
+						</onentry>
+						<onentry>
+							<if cond="_event.data == 'Assemble'">
+							<send event="assemble">
+							</send>
+							</if>
+						</onentry>
+						<transition event="ui.actionReleased"  target="qKzBGk10Am">
+						</transition>
+					</state>
+				</state>
+				<state id="E2ZvAdyWjq">
+					<initial>
+						<transition target="RBHIEmyGT7" type="internal">
+						</transition>
+					</initial>
+					<state id="RBHIEmyGT7">
+						<onentry>
+							<send event="RBHIEmyGT7_t_1_timeEvent_0" delay="1s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="RBHIEmyGT7_t_1_timeEvent_0" />
+						</onexit>
+						<transition event="toiletBreak"  target="GEUjh5v1fP">
+						</transition>
+						<transition event="RBHIEmyGT7_t_1_timeEvent_0"  target="RBHIEmyGT7">
+							<script>
+								increaseEnergy(-2);
+							</script>
+						</transition>
+					</state>
+					<state id="GEUjh5v1fP">
+						<transition event="done"  target="RBHIEmyGT7">
+						</transition>
+					</state>
+				</state>
+				<transition event="jZZtlD8eSk_t_0_timeEvent_0"  target="XHI5KovcVl">
+					 <assign location="assignedShift" expr="getRandomInteger(3);"/>
+				</transition>
+			</parallel>
+		</state>
+	</state>
+</scxml>
