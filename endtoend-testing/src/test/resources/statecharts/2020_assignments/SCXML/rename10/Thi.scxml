@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Thi">
+	<datamodel>
+		<data expr="0" id="shiftChoice" />
+		<data expr="0" id="shiftGraceTimer" />
+		<data expr="0" id="shiftTimer" />
+		<data expr="0" id="actionTimer" />
+		<data expr="" id="action" />
+		<data expr="false" id="carryingStockMaterial" />
+	</datamodel>
+	<state id="oFiayqVrFs">
+		<initial>
+			<transition target="KGAJ7wQwpl" type="internal">
+			</transition>
+		</initial>
+		<state id="KGAJ7wQwpl">
+			<onentry>
+				<script>
+					setMsg('You are at home.');
+				</script>
+			</onentry>
+			<initial>
+				<transition target="AtHomeState" type="internal">
+				</transition>
+			</initial>
+			<state id="AtHomeState">
+				<transition event="employee.goToWork"  target="AtWorkState">
+					<script>
+						shiftsShow();
+					</script>
+					<script>
+						setMsg('You are at work.');
+					</script>
+					 <assign location="shiftChoice" expr="getRandomInteger(3);"/>
+				</transition>
+			</state>
+			<state id="AtWorkState">
+				<onentry>
+					<send event="doAlwaysTransition">
+					</send>
+					<script>
+						setActions('');
+					</script>
+				</onentry>
+				<transition   target="ChooseShiftState">
+					<script>
+						shiftHighlightAssigned(shiftChoice);
+					</script>
+					 <assign location="shiftGraceTimer" expr="4"/>
+				</transition>
+			</state>
+			<state id="ChooseShiftState">
+				<onentry>
+					<send event="ChooseShiftState_t_0_timeEvent_0" delay="1s"/>
+				</onentry>
+				<onexit>
+					<cancel sendid="ChooseShiftState_t_0_timeEvent_0" />
+				</onexit>
+				<onentry>
+					<send event="doAlwaysTransition">
+					</send>
+				</onentry>
+				<transition event="ChooseShiftState_t_0_timeEvent_0"  target="ChooseShiftState">
+					 <assign location="shiftGraceTimer" expr="shiftGraceTimer - 1"/>
+				</transition>
+				<transition event="employee.shiftClicked"  target="ChooseShiftState">
+					 <assign location="shiftChoice" expr="_event.data"/>
+					<script>
+						shiftHighlightClear();
+					</script>
+					<script>
+						shiftHighlightAssigned(_event.data);
+					</script>
+				</transition>
+				<transition event="employee.goHome"  target="increaseEnergyState">
+					 <assign location="shiftGraceTimer" expr="0"/>
+					<script>
+						shiftsHide();
+					</script>
+					<script>
+						setMsg('You are at home.');
+					</script>
+				</transition>
+				<transition  cond="shiftGraceTimer &lt;= 0 &amp;&amp; getEnergy(); &gt;= 25" target="EnergyDrainState">
+					<script>
+						increaseEnergy(-2);
+					</script>
+				</transition>
+			</state>
+			<state id="increaseEnergyState">
+				<onentry>
+					<send event="doAlwaysTransition">
+					</send>
+				</onentry>
+				<transition  cond="getEnergy(); &lt; 51" target="AtHomeState">
+					<script>
+						increaseEnergy(50);
+					</script>
+				</transition>
+				<transition  cond="getEnergy(); &gt; 50" target="AtHomeState">
+					<script>
+						increaseEnergy(100 - getEnergy(););
+					</script>
+				</transition>
+			</state>
+			<parallel id="EnergyDrainState">
+				<state id="Work">
+					<initial>
+						<transition target="GoToShiftState" type="internal">
+						</transition>
+					</initial>
+					<state id="AssemblyShift">
+						<onentry>
+							<send event="AssemblyShift_t_0_timeEvent_0" delay="10s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="AssemblyShift_t_0_timeEvent_0" />
+						</onexit>
+						<initial>
+							<transition target="AssembleState" type="internal">
+							</transition>
+						</initial>
+						<state id="AssembleState">
+							<onentry>
+								<script>
+									setMsg('At assembly line');
+								</script>
+								<script>
+									setActions('Assemble');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Assemble' &amp;&amp; getMaterial(); &gt; 0" target="f3kLnGgsEX">
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+						</state>
+						<state id="f3kLnGgsEX">
+							<onentry>
+								<send event="f3kLnGgsEX_t_0_timeEvent_0" delay="100ms"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="f3kLnGgsEX_t_0_timeEvent_0" />
+							</onexit>
+							<transition event="f3kLnGgsEX_t_0_timeEvent_0"  target="f3kLnGgsEX">
+								 <assign location="actionTimer" expr="actionTimer + 100"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="actionTimer &lt;= 500" target="AssembleState">
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="actionTimer &gt; 500" target="AssembleState">
+								 <assign location="actionTimer" expr="0"/>
+								<script>
+									increaseMaterial(-1);
+								</script>
+								<script>
+									increaseFinished(1);
+								</script>
+							</transition>
+						</state>
+						<transition event="AssemblyShift_t_0_timeEvent_0"  target="AtWorkState">
+							<script>
+								shiftHighlightClear();
+							</script>
+							 <assign location="actionTimer" expr="0"/>
+							<script>
+								increasePay(10);
+							</script>
+						</transition>
+					</state>
+					<state id="GoToShiftState">
+						<onentry>
+							<send event="doAlwaysTransition">
+							</send>
+						</onentry>
+						<transition  cond="shiftChoice == 1" target="AssemblyShift">
+							 <assign location="shiftTimer" expr="10"/>
+							<script>
+								shiftHighlightActive(shiftChoice);
+							</script>
+						</transition>
+						<transition  cond="shiftChoice == 2" target="KhtcZbbKTR">
+							 <assign location="shiftTimer" expr="10"/>
+							<script>
+								shiftHighlightActive(shiftChoice);
+							</script>
+						</transition>
+						<transition  cond="shiftChoice == 0" target="UnloadShift">
+							 <assign location="shiftTimer" expr="10"/>
+							<script>
+								shiftHighlightActive(shiftChoice);
+							</script>
+						</transition>
+					</state>
+					<state id="KhtcZbbKTR">
+						<onentry>
+							<send event="KhtcZbbKTR_t_0_timeEvent_0" delay="10s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="KhtcZbbKTR_t_0_timeEvent_0" />
+						</onexit>
+						<initial>
+							<transition target="AtStock" type="internal">
+							</transition>
+						</initial>
+						<state id="AtStock">
+							<onentry>
+								<script>
+									setMsg('At stock');
+								</script>
+								<script>
+									setActions('Walk,Pick up,Toilet Break');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Toilet Break'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'break'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkTruck'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Pick up' &amp;&amp; getFinished(); &gt; 0" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'pickup'"/>
+							</transition>
+						</state>
+						<state id="ActionCounter">
+							<onentry>
+								<send event="ActionCounter_t_2_timeEvent_0" delay="100ms"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="ActionCounter_t_2_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="doAlwaysTransition">
+								</send>
+							</onentry>
+							<transition event="ui.actionReleased" cond="(((action == 'walkStock') &amp;&amp; actionTimer &gt;= 500) || ((action == 'walkTruck' || action == 'pickup' || action == 'break') &amp;&amp; actionTimer &lt; 500)) &amp;&amp; !carryingStockMaterial" target="AtStock">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'stopbreak' &amp;&amp; actionTimer &lt; 500) || (action == 'break' &amp;&amp; actionTimer &gt;= 500))" target="ToiletBreak">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								<send event="break">
+								</send>
+							</transition>
+							<transition event="ActionCounter_t_2_timeEvent_0"  target="ActionCounter">
+								 <assign location="actionTimer" expr="actionTimer + 100"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'walkStock') &amp;&amp; actionTimer &gt;= 500) || ((action == 'walkTruck' || action == 'break') &amp;&amp; actionTimer &lt; 500)) &amp;&amp; carryingStockMaterial" target="AtStockLoaded">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(action == 'pickup' &amp;&amp; actionTimer &gt;= 500)" target="AtStockLoaded">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="carryingStockMaterial" expr="true"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'walkTruck') &amp;&amp; actionTimer &gt;= 500) || ((action == 'walkStock') &amp;&amp; actionTimer &lt; 500)) &amp;&amp; !carryingStockMaterial" target="AtTruck">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'drop') &amp;&amp; actionTimer &gt;= 500)) &amp;&amp; carryingStockMaterial" target="AtTruck">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="carryingStockMaterial" expr="false"/>
+								<script>
+									increaseFinished(-1);
+								</script>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'walkTruck') &amp;&amp; actionTimer &gt;= 500) || ((action == 'walkStock' || action == 'drop') &amp;&amp; actionTimer &lt; 500)) &amp;&amp; carryingStockMaterial" target="AtTruckLoaded">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'stopbreak') &amp;&amp; actionTimer &gt;= 500)) &amp;&amp; !carryingStockMaterial" target="AtStock">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								<send event="stopbreak">
+								</send>
+							</transition>
+						</state>
+						<state id="ToiletBreak">
+							<onentry>
+								<script>
+									setActions('Done');
+								</script>
+								<script>
+									setMsg('On toilet');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Done'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'stopbreak'"/>
+							</transition>
+						</state>
+						<state id="AtStockLoaded">
+							<onentry>
+								<script>
+									setActions('Walk');
+								</script>
+								<script>
+									setMsg('At stock, carrying material.');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkTruck'"/>
+							</transition>
+						</state>
+						<state id="AtTruck">
+							<onentry>
+								<script>
+									setActions('Walk');
+								</script>
+								<script>
+									setMsg('At truck.');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkStock'"/>
+							</transition>
+						</state>
+						<state id="AtTruckLoaded">
+							<onentry>
+								<script>
+									setActions('Walk,Drop');
+								</script>
+								<script>
+									setMsg('At truck, carrying material.');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkStock'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Drop'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'drop'"/>
+							</transition>
+						</state>
+						<transition event="KhtcZbbKTR_t_0_timeEvent_0"  target="AtWorkState">
+							<script>
+								shiftHighlightClear();
+							</script>
+							 <assign location="actionTimer" expr="0"/>
+							 <assign location="carryingStockMaterial" expr="false"/>
+							 <assign location="action" expr="''"/>
+							<script>
+								increasePay(10);
+							</script>
+						</transition>
+					</state>
+					<state id="UnloadShift">
+						<onentry>
+							<send event="UnloadShift_t_0_timeEvent_0" delay="10s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="UnloadShift_t_0_timeEvent_0" />
+						</onexit>
+						<initial>
+							<transition target="AtStock" type="internal">
+							</transition>
+						</initial>
+						<state id="AtStock">
+							<onentry>
+								<script>
+									setActions('Walk,Toilet break');
+								</script>
+								<script>
+									setMsg('In stock');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkTruck'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Toilet break'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'break'"/>
+							</transition>
+						</state>
+						<state id="ActionCounter">
+							<onentry>
+								<send event="ActionCounter_t_0_timeEvent_0" delay="100ms"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="ActionCounter_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="doAlwaysTransition">
+								</send>
+							</onentry>
+							<transition event="ActionCounter_t_0_timeEvent_0"  target="ActionCounter">
+								 <assign location="actionTimer" expr="actionTimer + 100"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(((action == 'walkTruck' || action == 'break') &amp;&amp; actionTimer &lt; 500) || ((action == 'walkStock') &amp;&amp; actionTimer &gt;= 500)) &amp;&amp; !carryingStockMaterial" target="AtStock">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'walkTruck' &amp;&amp; actionTimer &gt;= 500) || ((action == 'walkStock' || action == 'pickup') &amp;&amp; actionTimer &lt; 500)) &amp;&amp; !carryingStockMaterial" target="AtTruck">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'walkTruck' &amp;&amp; actionTimer &lt; 500) || (action == 'walkStock' &amp;&amp; actionTimer &gt;= 500)) &amp;&amp; carryingStockMaterial" target="AtStockCarrying">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'walkTruck' &amp;&amp; actionTimer &gt;= 500) || (action == 'walkStock' &amp;&amp; actionTimer &lt; 500)) &amp;&amp; carryingStockMaterial" target="AtTruckLoaded">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(action == 'pickup' &amp;&amp; actionTimer &gt;= 500)" target="AtTruckLoaded">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="carryingStockMaterial" expr="true"/>
+							</transition>
+							<transition event="ui.actionReleased" cond="(action == 'Drop' &amp;&amp; actionTimer &gt;= 500)" target="AtStock">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="carryingStockMaterial" expr="false"/>
+								<script>
+									increaseMaterial(1);
+								</script>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'stopbreak' &amp;&amp; actionTimer &lt; 500) || (action == 'break' &amp;&amp; actionTimer &gt;= 500))" target="ToiletBreak">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								<send event="break">
+								</send>
+							</transition>
+							<transition event="ui.actionReleased" cond="((action == 'stopbreak') &amp;&amp; actionTimer &gt;= 500) &amp;&amp; !carryingStockMaterial" target="AtStock">
+								 <assign location="action" expr="''"/>
+								 <assign location="actionTimer" expr="0"/>
+								<send event="stopbreak">
+								</send>
+							</transition>
+						</state>
+						<state id="AtTruck">
+							<onentry>
+								<script>
+									setActions('Walk,Pick up');
+								</script>
+								<script>
+									setMsg('At truck');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkStock'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Pick up'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'pickup'"/>
+							</transition>
+						</state>
+						<state id="AtStockCarrying">
+							<onentry>
+								<script>
+									setActions('Walk,Drop');
+								</script>
+								<script>
+									setMsg('An stock, carrying material.');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkTruck'"/>
+							</transition>
+							<transition event="ui.actionPressed" cond="_event.data == 'Drop'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'Drop'"/>
+							</transition>
+						</state>
+						<state id="AtTruckLoaded">
+							<onentry>
+								<script>
+									setActions('Walk');
+								</script>
+								<script>
+									setMsg('At truck, carrying material.');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Walk'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'walkStock'"/>
+							</transition>
+						</state>
+						<state id="ToiletBreak">
+							<onentry>
+								<script>
+									setActions('Done');
+								</script>
+								<script>
+									setMsg('On toilet');
+								</script>
+							</onentry>
+							<transition event="ui.actionPressed" cond="_event.data == 'Done'" target="ActionCounter">
+								 <assign location="actionTimer" expr="0"/>
+								 <assign location="action" expr="'stopbreak'"/>
+							</transition>
+						</state>
+						<transition event="UnloadShift_t_0_timeEvent_0"  target="AtWorkState">
+							<script>
+								shiftHighlightClear();
+							</script>
+							 <assign location="actionTimer" expr="0"/>
+							 <assign location="carryingStockMaterial" expr="false"/>
+							 <assign location="action" expr="''"/>
+							<script>
+								increasePay(10);
+							</script>
+						</transition>
+					</state>
+				</state>
+				<state id="Energy">
+					<initial>
+						<transition target="decreaseEnergyState" type="internal">
+						</transition>
+					</initial>
+					<state id="decreaseEnergyState">
+						<onentry>
+							<send event="decreaseEnergyState_t_0_timeEvent_0" delay="1s"/>
+						</onentry>
+						<onexit>
+							<cancel sendid="decreaseEnergyState_t_0_timeEvent_0" />
+						</onexit>
+						<transition event="decreaseEnergyState_t_0_timeEvent_0"  target="decreaseEnergyState">
+							<script>
+								increaseEnergy(-2);
+							</script>
+						</transition>
+						<transition event="break"  target="YnFzSfcJJF">
+						</transition>
+					</state>
+					<state id="YnFzSfcJJF">
+						<transition event="stopbreak"  target="decreaseEnergyState">
+						</transition>
+					</state>
+				</state>
+			</parallel>
+		</state>
+	</state>
+</scxml>

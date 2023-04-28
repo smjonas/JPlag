@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" name="Eva">
+	<datamodel>
+		<data expr="1" id="stopsAt" />
+		<data expr="6" id="remainingCapacity" />
+		<data expr="0" id="numPassengers" />
+		<data expr="false" id="waited2sec" />
+		<data expr="0" id="curStation" />
+		<data expr="false" id="doorsOpen" />
+		<data expr="false" id="doorsBlocked" />
+		<data expr="false" id="standstill" />
+	</datamodel>
+	<state id="main_region">
+		<initial>
+			<transition target="Trolley" type="internal">
+			</transition>
+		</initial>
+		<parallel id="Trolley">
+			<state id="r1">
+				<initial>
+					<transition target="lVdrOdrwMG" type="internal">
+					</transition>
+				</initial>
+				<state id="lVdrOdrwMG">
+					<initial>
+						<transition target="Arrival" type="internal">
+						</transition>
+					</initial>
+					<state id="LisUUfTbhK">
+						<initial>
+							<transition target="ClosingDoors" type="internal">
+							</transition>
+						</initial>
+						<state id="pdfzU8zyFN">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="24" />
+								</send>
+								 <assign location="standstill" expr="false"/>
+							</onentry>
+							<transition event="atTargetSpeed"  target="Accepting">
+							</transition>
+						</state>
+						<state id="ClosingDoors">
+							<onentry>
+								<send event="ClosingDoors_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="ClosingDoors_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								<send event="closeDoors">
+								</send>
+								 <assign location="doorsOpen" expr="false"/>
+								<send event="stopDoorsSignal">
+								</send>
+							</onentry>
+							<transition event="ClosingDoors_t_0_timeEvent_0"  target="pdfzU8zyFN">
+							</transition>
+						</state>
+						<state id="Accepting">
+							<transition event="approachingStation" cond="(stopsAt &amp; (1 &lt;&lt; _event.data)) != 0" target="Approaching">
+								 <assign location="curStation" expr="_event.data"/>
+							</transition>
+						</state>
+						<state id="Approaching">
+							<onentry>
+								<send event="setTargetSpeed">
+								<content expr="0" />
+								</send>
+							</onentry>
+							<transition event="atTargetSpeed"  target="Arrival">
+								 <assign location="standstill" expr="true"/>
+							</transition>
+						</state>
+					</state>
+					<state id="Arrival">
+						<initial>
+							<transition target="Stopping" type="internal">
+							</transition>
+						</initial>
+						<state id="Stopping">
+							<onentry>
+								<send event="Stopping_t_0_timeEvent_0" delay="1s"/>
+							</onentry>
+							<onexit>
+								<cancel sendid="Stopping_t_0_timeEvent_0" />
+							</onexit>
+							<onentry>
+								 <assign location="standstill" expr="true"/>
+							</onentry>
+							<transition event="Stopping_t_0_timeEvent_0"  target="k0wR4qNW8R">
+								 <assign location="stopsAt" expr="stopsAt &amp; ~(1 &lt;&lt; curStation)"/>
+								<send event="refreshUI">
+								</send>
+							</transition>
+						</state>
+						<parallel id="k0wR4qNW8R">
+							<state id="r1">
+								<initial>
+									<transition target="dmoBVFujpC" type="internal">
+									</transition>
+								</initial>
+								<state id="UC7p0xDTp7">
+									<onentry>
+										<send event="UC7p0xDTp7_t_1_timeEvent_0" delay="100ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="UC7p0xDTp7_t_1_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="startDoorsSignal">
+										</send>
+									</onentry>
+									<transition  cond="!doorsBlocked" target="LisUUfTbhK">
+									</transition>
+									<transition event="UC7p0xDTp7_t_1_timeEvent_0"  target="UC7p0xDTp7">
+									</transition>
+								</state>
+								<state id="dmoBVFujpC">
+									<onentry>
+										<send event="dmoBVFujpC_t_1_timeEvent_0" delay="100ms"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="dmoBVFujpC_t_1_timeEvent_0" />
+									</onexit>
+									<onentry>
+										<send event="openDoors">
+										</send>
+										 <assign location="doorsOpen" expr="true"/>
+									</onentry>
+									<transition  cond="stopsAt != 0 &amp;&amp; waited2sec" target="UC7p0xDTp7">
+									</transition>
+									<transition event="dmoBVFujpC_t_1_timeEvent_0"  target="dmoBVFujpC">
+									</transition>
+								</state>
+							</state>
+							<state id="r2">
+								<initial>
+									<transition target="Waiting" type="internal">
+									</transition>
+								</initial>
+								<state id="Waiting">
+									<onentry>
+										<send event="Waiting_t_0_timeEvent_0" delay="2s"/>
+									</onentry>
+									<onexit>
+										<cancel sendid="Waiting_t_0_timeEvent_0" />
+									</onexit>
+									<onentry>
+										 <assign location="waited2sec" expr="false"/>
+									</onentry>
+									<transition event="Waiting_t_0_timeEvent_0"  target="Waited2sec">
+									</transition>
+								</state>
+								<state id="Waited2sec">
+									<onentry>
+										 <assign location="waited2sec" expr="true"/>
+									</onentry>
+								</state>
+							</state>
+						</parallel>
+					</state>
+					<history type = "shallow" id="h">
+						<transition target="Arrival">
+						</transition>
+					</history>
+					<transition event="startEmergency"  target="njm1qs2YgX">
+					</transition>
+				</state>
+				<state id="njm1qs2YgX">
+					<initial>
+						<transition target="Braking" type="internal">
+						</transition>
+					</initial>
+					<state id="Braking">
+						<onentry>
+							<send event="setTargetSpeed">
+							<content expr="0" />
+							</send>
+						</onentry>
+						<transition event="atTargetSpeed"  target="DoorsOpen">
+						</transition>
+						<transition  cond="standstill" target="DoorsOpen">
+						</transition>
+					</state>
+					<state id="DoorsOpen">
+						<onentry>
+							<send event="openDoors">
+							</send>
+							 <assign location="doorsOpen" expr="true"/>
+						</onentry>
+					</state>
+					<transition event="stopEmergency"  target="h">
+					</transition>
+				</state>
+			</state>
+			<state id="passengers">
+				<initial>
+					<transition target="NoPassengers" type="internal">
+					</transition>
+				</initial>
+				<state id="NoPassengers">
+					<onentry>
+						<send event="NoPassengers_t_2_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="NoPassengers_t_2_timeEvent_0" />
+					</onexit>
+					<transition event="board" cond="doorsOpen &amp;&amp; remainingCapacity &gt; 0" target="S0fryIuTCy">
+						 <assign location="numPassengers" expr="numPassengers + 1"/>
+						 <assign location="remainingCapacity" expr="remainingCapacity - 1"/>
+						<send event="refreshUI">
+						</send>
+					</transition>
+					<transition event="unboard" cond="doorsOpen &amp;&amp; numPassengers &gt; 0" target="S0fryIuTCy">
+						 <assign location="numPassengers" expr="numPassengers - 1"/>
+						 <assign location="remainingCapacity" expr="remainingCapacity + 1"/>
+						<send event="refreshUI">
+						</send>
+					</transition>
+					<transition event="NoPassengers_t_2_timeEvent_0"  target="FPmIE93eou">
+					</transition>
+				</state>
+				<state id="S0fryIuTCy">
+					<onentry>
+						<send event="S0fryIuTCy_t_0_timeEvent_0" delay="1s"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="S0fryIuTCy_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="doorsBlocked" expr="true"/>
+					</onentry>
+					<transition event="S0fryIuTCy_t_0_timeEvent_0"  target="NoPassengers">
+					</transition>
+				</state>
+				<state id="FPmIE93eou">
+					<onentry>
+						<send event="FPmIE93eou_t_0_timeEvent_0" delay="100ms"/>
+					</onentry>
+					<onexit>
+						<cancel sendid="FPmIE93eou_t_0_timeEvent_0" />
+					</onexit>
+					<onentry>
+						 <assign location="doorsBlocked" expr="false"/>
+					</onentry>
+					<transition event="FPmIE93eou_t_0_timeEvent_0"  target="NoPassengers">
+					</transition>
+				</state>
+			</state>
+			<state id="stop">
+				<initial>
+					<transition target="Concurrently" type="internal">
+					</transition>
+				</initial>
+				<state id="Concurrently">
+					<transition event="requestStop"  target="Concurrently">
+						 <assign location="stopsAt" expr="stopsAt | (1 &lt;&lt; _event.data)"/>
+						<send event="refreshUI">
+						</send>
+					</transition>
+				</state>
+			</state>
+		</parallel>
+	</state>
+</scxml>

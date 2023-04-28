@@ -57,6 +57,7 @@ public class Util {
                 builder.append(System.lineSeparator());
             }
             writer.write(builder.toString());
+            System.out.println("File written to " + file.getAbsolutePath());
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
             fail();

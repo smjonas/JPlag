@@ -12,6 +12,8 @@ import de.jplag.scxml.parser.model.StatechartElement;
 import de.jplag.scxml.parser.model.Transition;
 import de.jplag.scxml.parser.model.executable_content.*;
 import de.jplag.scxml.sorting.RecursiveSortingStrategy;
+import de.jplag.scxml.sorting.SimpleSortingStrategy;
+import de.jplag.scxml.sorting.NoOpSortingStrategy;
 import de.jplag.scxml.sorting.SortingStrategy;
 
 /**
@@ -42,6 +44,8 @@ public abstract class AbstractScxmlVisitor {
     protected AbstractScxmlVisitor(ScxmlParserAdapter adapter) {
         this.adapter = adapter;
         this.sorter = new RecursiveSortingStrategy(this);
+        // this.sorter = new SimpleSortingStrategy(this);
+        // this.sorter = new NoOpSortingStrategy();
     }
 
     /**
